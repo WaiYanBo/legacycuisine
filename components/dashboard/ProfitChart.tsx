@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   BarChart,
   Bar,
@@ -16,24 +16,39 @@ interface ProfitChartProps {
 }
 
 export const ProfitChart: React.FC<ProfitChartProps> = ({ data = [] }) => {
+  const [mounted, setMounted] = useState(false);
+
+  // Prevent Next.js hydration warnings by rendering only after mounting on the client
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const formatValue = (val: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-MY', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'MYR',
       maximumFractionDigits: 0
     }).format(val);
   };
 
+  if (!mounted) {
+    return (
+      <div className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 h-80 flex items-center justify-center text-slate-400">
+        Loading chart visualization...
+      </div>
+    );
+  }
+
   return (
-    <div className="w-full bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+    <div className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-sm">
       <div className="mb-4">
-        <h3 className="text-lg font-bold text-slate-800">Margin Breakdown Trends</h3>
+        <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Margin Breakdown Trends</h3>
         <p className="text-xs text-slate-400">Comparing base payouts against leftover agency profit margins.</p>
       </div>
 
       <div className="h-80 w-full">
         {data.length === 0 ? (
-          <div className="h-full flex items-center justify-center border-2 border-dashed border-slate-100 rounded-lg text-slate-400">
+          <div className="h-full flex items-center justify-center border-2 border-dashed border-slate-100 dark:border-slate-850 rounded-lg text-slate-400">
             No data available for the selected dates.
           </div>
         ) : (
@@ -52,7 +67,7 @@ export const ProfitChart: React.FC<ProfitChartProps> = ({ data = [] }) => {
               <YAxis 
                 tickLine={false}
                 axisLine={false}
-                tickFormatter={(value) => `$${value}`}
+                tickFormatter={(value) => `RM${value}`}
                 tick={{ fill: '#64748b', fontSize: 11 }}
               />
               <Tooltip 
@@ -72,7 +87,6 @@ export const ProfitChart: React.FC<ProfitChartProps> = ({ data = [] }) => {
                 iconSize={8}
                 wrapperStyle={{ fontSize: '12px' }}
               />
-              {/* Stacked or side-by-side bars */}
               <Bar 
                 name="Vendor Payout" 
                 dataKey="vendorPayouts" 

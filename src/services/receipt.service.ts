@@ -80,10 +80,7 @@ export class ReceiptService {
         let product = await tx.productMaster.findFirst({
           where: {
             storefrontId: storefront.id,
-            name: {
-              equals: item.itemName,
-              mode: 'insensitive'
-            }
+            name: item.itemName
           }
         });
 

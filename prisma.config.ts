@@ -1,8 +1,7 @@
 import "dotenv/config";
 import { defineConfig } from "prisma/config";
 
-// Fallback to a dummy connection string in development/CI environments
-const databaseUrl = process.env.DATABASE_URL || "postgresql://postgres:postgres@localhost:5432/legacy_cuisine?schema=public";
+const databaseUrl = process.env.DATABASE_URL || "file:./dev.db";
 
 export default defineConfig({
   schema: "prisma/schema.prisma",

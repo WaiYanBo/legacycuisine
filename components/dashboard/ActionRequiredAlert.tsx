@@ -122,7 +122,7 @@ export const ActionRequiredAlert: React.FC<ActionRequiredAlertProps> = ({ onReco
   }
 
   return (
-    <div className="w-full bg-amber-50 border border-amber-200 text-amber-900 rounded-xl p-5 shadow-sm">
+    <div className="w-full bg-amber-50 dark:bg-amber-950/10 border border-amber-200 dark:border-amber-900/30 text-amber-900 dark:text-amber-200 rounded-xl p-5 shadow-sm">
       <div className="flex items-start gap-4 mb-4">
         <div className="bg-amber-500 rounded-full p-2 text-white flex-shrink-0">
           <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -130,26 +130,30 @@ export const ActionRequiredAlert: React.FC<ActionRequiredAlertProps> = ({ onReco
           </svg>
         </div>
         <div>
-          <h4 className="font-bold text-amber-950 text-lg">Action Required ({items.length} Pending Review)</h4>
-          <p className="text-amber-800 text-sm">
+          <h4 className="font-bold text-amber-950 dark:text-amber-300 text-lg">Action Required ({items.length} Pending Review)</h4>
+          <p className="text-amber-800 dark:text-amber-400 text-sm">
             GrabFood imported transactions for unregistered items. Please define the restaurant's actual base price (what they expect to be paid) to correct margin allocations.
           </p>
         </div>
       </div>
 
-      <div className="mt-3 max-h-60 overflow-y-auto divide-y divide-amber-200 bg-white border border-amber-200 rounded-lg shadow-inner">
+      <div className="mt-3 max-h-60 overflow-y-auto divide-y divide-amber-200 dark:divide-slate-800 bg-white dark:bg-slate-950 border border-amber-200 dark:border-slate-850 rounded-lg shadow-inner">
         {items.map((item) => (
           <div key={item.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 gap-4">
             <div className="flex-1">
-              <span className="text-xs font-semibold uppercase tracking-wider text-amber-600 bg-amber-100 px-2 py-0.5 rounded">SKU: {item.sku}</span>
-              <p className="font-bold text-slate-800 mt-1">{item.name}</p>
-              <p className="text-xs text-slate-500">Grab expected price: ${item.grabExpectedPrice ? item.grabExpectedPrice.toFixed(2) : 'N/A'}</p>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-950/45 px-2 py-0.5 rounded">SKU: {item.sku}</span>
+              <p className="font-bold text-slate-850 dark:text-slate-100 mt-1">{item.name}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Grab expected price: {item.grabExpectedPrice !== null && item.grabExpectedPrice !== undefined
+                  ? `$${parseFloat(item.grabExpectedPrice.toString()).toFixed(2)}`
+                  : 'N/A'}
+              </p>
             </div>
             
             <div className="flex items-center gap-3 w-full sm:w-auto">
               <div className="relative rounded-md shadow-sm w-36">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <span className="text-slate-500 sm:text-sm">$</span>
+                  <span className="text-slate-500 dark:text-slate-450 sm:text-sm">$</span>
                 </div>
                 <input
                   type="number"
@@ -158,7 +162,7 @@ export const ActionRequiredAlert: React.FC<ActionRequiredAlertProps> = ({ onReco
                   value={prices[item.id] || ''}
                   onChange={(e) => handlePriceChange(item.id, e.target.value)}
                   disabled={updatingId === item.id}
-                  className="block w-full pl-7 pr-3 py-2 text-sm border border-slate-300 rounded-md focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 text-slate-800"
+                  className="block w-full pl-7 pr-3 py-2 text-sm bg-white dark:bg-slate-900 border border-slate-350 dark:border-slate-800 rounded-md focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 text-slate-800 dark:text-slate-100"
                   placeholder="Base Price"
                 />
               </div>

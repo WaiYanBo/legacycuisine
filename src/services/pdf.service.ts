@@ -438,4 +438,74 @@ export class PdfService {
       await browser.close();
     }
   }
+
+  /**
+   * Takes a list of ReconciliationLog IDs, groups them by Vendor, creates invoices,
+   * and runs Puppeteer to render a consolidated statement PDF for each.
+   */
+  static async generateBatchInvoices(logIds: string[]): Promise<any[]> {
+    // 1. Fetch matching logs including storefront vendor info
+    const logs = await prisma.reconciliationLog.findMany({
+      where: { id: { in: logIds } },
+      include: {
+        grabOrder: {
+          include: {
+            storefront: true
+          }
+        }
+      }
+    });
+
+    if (logs.length === 0) {
+      throw new Error('No reconciliation logs found for the provided IDs.');
+    }
+
+    // 2. Group logs by Vendor ID
+    const vendorLogsMap: Record<string, typeof logs> = {};
+    for (const log of logs) {
+      const vendorId = log.grabOrder.storefront.vendorId;
+      if (!vendorLogsMap[vendorId]) {
+        vendorLogsMap[vendorId] = [];
+      }
+      vendorLogsMap[vendorId].push(log);
+    }
+
+    const results = [];
+
+    // 3. For each vendor, create an Invoice and compile the PDF
+    for (const [vendorId, vendorLogs] of Object.entries(vendorLogsMap)) {
+      const invoiceNum = `INV-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      
+      const invoice = await prisma.invoice.create({
+        data: {
+          vendorId,
+          invoiceNumber: invoiceNum,
+          billingDate: new Date(),
+          status: 'DRAFT'
+        }
+      });
+
+      // Link logs to this invoice and update their status to INVOICED
+      await prisma.reconciliationLog.updateMany({
+        where: { id: { in: vendorLogs.map(l => l.id) } },
+        data: {
+          invoiceId: invoice.id,
+          status: 'INVOICED'
+        }
+      });
+
+      // Render the PDF
+      const pdfPath = await this.generateInvoicePdf(invoice.id);
+
+      results.push({
+        invoiceId: invoice.id,
+        invoiceNumber: invoiceNum,
+        vendorId,
+        pdfPath,
+        logsLinked: vendorLogs.length
+      });
+    }
+
+    return results;
+  }
 }

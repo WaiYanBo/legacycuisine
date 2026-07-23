@@ -44,6 +44,16 @@ export interface DashboardMetrics {
   totalPayouts: number;
   netProfit: number;
   chartData: ChartDataPoint[];
+  storefrontsPerformance?: StorefrontPerformance[];
+}
+
+export interface StorefrontPerformance {
+  name: string;
+  email: string;
+  revenue: number;
+  payout: number;
+  profit: number;
+  count: number;
 }
 
 export interface ChartDataPoint {

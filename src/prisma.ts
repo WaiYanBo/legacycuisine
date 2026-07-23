@@ -1,11 +1,11 @@
 import { PrismaClient } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
-import { Pool } from 'pg';
+import { PrismaLibSql } from '@prisma/adapter-libsql';
 
-const connectionString = process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/legacy_cuisine?schema=public';
+const databaseUrl = process.env.DATABASE_URL || 'file:dev.db';
 
-// Setup connection pool and Prisma driver adapter
-const pool = new Pool({ connectionString });
-const adapter = new PrismaPg(pool);
+// Pass the Config object directly to the PrismaLibSql constructor
+const adapter = new PrismaLibSql({
+  url: databaseUrl,
+});
 
 export const prisma = new PrismaClient({ adapter });

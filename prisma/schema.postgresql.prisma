@@ -6,12 +6,12 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
 }
 
 /// Vendor represents the local restaurant owner/seller.
 model Vendor {
-  id           String       @id @default(uuid())
+  id           String       @id @default(uuid()) @db.Uuid
   name         String
   businessName String       @map("business_name")
   contactEmail String       @map("contact_email")
@@ -35,8 +35,8 @@ enum VendorStatus {
 
 /// Storefront represents the Grab Account link mapping to a unique Grab email/domain.
 model Storefront {
-  id        String   @id @default(uuid())
-  vendorId  String   @map("vendor_id")
+  id        String   @id @default(uuid()) @db.Uuid
+  vendorId  String   @map("vendor_id") @db.Uuid
   vendor    Vendor   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
   grabEmail String   @unique @map("grab_email")
   name      String
@@ -53,18 +53,18 @@ model Storefront {
 
 /// ProductMaster serves as the Price Ledger, storing base prices and expected grab prices.
 model ProductMaster {
-  id                  String   @id @default(uuid())
-  storefrontId        String   @map("storefront_id")
+  id                  String   @id @default(uuid()) @db.Uuid
+  storefrontId        String   @map("storefront_id") @db.Uuid
   storefront          Storefront @relation(fields: [storefrontId], references: [id], onDelete: Cascade)
   sku                 String
   name                String
-  restaurantBasePrice Decimal  @map("restaurant_base_price")
-  grabExpectedPrice   Decimal? @map("grab_expected_price")
+  restaurantBasePrice Decimal  @map("restaurant_base_price") @db.Decimal(12, 2)
+  grabExpectedPrice   Decimal? @map("grab_expected_price") @db.Decimal(12, 2)
   createdAt           DateTime @default(now()) @map("created_at")
   updatedAt           DateTime @updatedAt @map("updated_at")
 
   orderLineItems      OrderLineItem[]
-  needsReview         Boolean  @default(false) @map("needs_review")
+  needsReview         Boolean @default(false) @map("needs_review")
 
   @@unique([storefrontId, sku])
   @@index([storefrontId])
@@ -73,17 +73,17 @@ model ProductMaster {
 
 /// GrabOrder stores raw Grab orders and their financial breakdowns.
 model GrabOrder {
-  id                   String            @id @default(uuid())
-  storefrontId         String            @map("storefront_id")
+  id                   String            @id @default(uuid()) @db.Uuid
+  storefrontId         String            @map("storefront_id") @db.Uuid
   storefront           Storefront        @relation(fields: [storefrontId], references: [id], onDelete: Cascade)
   grabOrderId          String            @unique @map("grab_order_id")
   grabEmail            String            @map("grab_email")
   orderDate            DateTime          @map("order_date")
-  rawSubtotal          Decimal           @map("raw_subtotal")
-  rawDeliveryFee       Decimal           @default(0.00) @map("raw_delivery_fee")
-  rawTax               Decimal           @default(0.00) @map("raw_tax")
-  rawGrabCommission    Decimal           @default(0.00) @map("raw_grab_commission")
-  totalCollectedByGrab Decimal           @map("total_collected_by_grab")
+  rawSubtotal          Decimal           @map("raw_subtotal") @db.Decimal(12, 2)
+  rawDeliveryFee       Decimal           @default(0.00) @map("raw_delivery_fee") @db.Decimal(12, 2)
+  rawTax               Decimal           @default(0.00) @map("raw_tax") @db.Decimal(12, 2)
+  rawGrabCommission    Decimal           @default(0.00) @map("raw_grab_commission") @db.Decimal(12, 2)
+  totalCollectedByGrab Decimal           @map("total_collected_by_grab") @db.Decimal(12, 2)
   createdAt            DateTime          @default(now()) @map("created_at")
   updatedAt            DateTime          @updatedAt @map("updated_at")
 
@@ -97,14 +97,14 @@ model GrabOrder {
 
 /// OrderLineItem captures individual foods sold and captures unit prices at the time of sale.
 model OrderLineItem {
-  id                              String        @id @default(uuid())
-  grabOrderId                     String        @map("grab_order_id")
+  id                              String        @id @default(uuid()) @db.Uuid
+  grabOrderId                     String        @map("grab_order_id") @db.Uuid
   grabOrder                       GrabOrder     @relation(fields: [grabOrderId], references: [id], onDelete: Cascade)
-  productMasterId                 String        @map("product_master_id")
+  productMasterId                 String        @map("product_master_id") @db.Uuid
   productMaster                   ProductMaster @relation(fields: [productMasterId], references: [id], onDelete: Restrict)
   quantity                        Int
-  grabUnitPriceCharged            Decimal       @map("grab_unit_price_charged")
-  restaurantUnitPriceAtTimeOfSale Decimal       @map("restaurant_unit_price_at_time_of_sale")
+  grabUnitPriceCharged            Decimal       @map("grab_unit_price_charged") @db.Decimal(12, 2)
+  restaurantUnitPriceAtTimeOfSale Decimal       @map("restaurant_unit_price_at_time_of_sale") @db.Decimal(12, 2)
   createdAt                       DateTime      @default(now()) @map("created_at")
   updatedAt                       DateTime      @updatedAt @map("updated_at")
 
@@ -115,16 +115,16 @@ model OrderLineItem {
 
 /// ReconciliationLog tracks calculated margins, payout totals, and status.
 model ReconciliationLog {
-  id                String               @id @default(uuid())
-  grabOrderId       String               @unique @map("grab_order_id")
+  id                String               @id @default(uuid()) @db.Uuid
+  grabOrderId       String               @unique @map("grab_order_id") @db.Uuid
   grabOrder         GrabOrder            @relation(fields: [grabOrderId], references: [id], onDelete: Cascade)
-  totalGrabAmount   Decimal              @map("total_grab_amount")
-  totalVendorPayout Decimal              @map("total_vendor_payout")
-  clientGrossProfit Decimal              @map("client_gross_profit")
-  adjustmentAmount  Decimal              @default(0.00) @map("adjustment_amount")
+  totalGrabAmount   Decimal              @map("total_grab_amount") @db.Decimal(12, 2)
+  totalVendorPayout Decimal              @map("total_vendor_payout") @db.Decimal(12, 2)
+  clientGrossProfit Decimal              @map("client_gross_profit") @db.Decimal(12, 2)
+  adjustmentAmount  Decimal              @default(0.00) @map("adjustment_amount") @db.Decimal(12, 2)
   adjustmentNote    String?              @map("adjustment_note")
   status            ReconciliationStatus @default(PENDING)
-  invoiceId         String?              @map("invoice_id")
+  invoiceId         String?              @map("invoice_id") @db.Uuid
   invoice           Invoice?             @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
   createdAt         DateTime             @default(now()) @map("created_at")
   updatedAt         DateTime             @updatedAt @map("updated_at")
@@ -143,8 +143,8 @@ enum ReconciliationStatus {
 
 /// Invoice tracks statements generated for local sellers.
 model Invoice {
-  id            String        @id @default(uuid())
-  vendorId      String        @map("vendor_id")
+  id            String        @id @default(uuid()) @db.Uuid
+  vendorId      String        @map("vendor_id") @db.Uuid
   vendor        Vendor        @relation(fields: [vendorId], references: [id], onDelete: Cascade)
   invoiceNumber String        @unique @map("invoice_number")
   pdfPath       String?       @map("pdf_path")
