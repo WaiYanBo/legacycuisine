@@ -126,7 +126,7 @@ export class DashboardService {
    * Runs in an ACID database transaction.
    */
   static async updateProductBasePrice(productId: string, basePrice: number) {
-    return await prisma.$transaction(async (tx) => {
+    return await prisma.$transaction(async (tx: any) => {
       // 1. Update the price mapping in the product ledger
       const product = await tx.productMaster.update({
         where: { id: productId },

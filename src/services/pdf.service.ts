@@ -108,7 +108,7 @@ export class PdfService {
     let grandTotalPayout = 0;
     let barcodeValue = 'NONE';
 
-    const transactionRows = invoice.reconciliationLogs.map((log) => {
+    const transactionRows = invoice.reconciliationLogs.map((log: any) => {
       const grabOrder = log.grabOrder;
       const subtotal = grabOrder.rawSubtotal.toNumber();
       const basePayout = log.totalVendorPayout.toNumber();
@@ -343,7 +343,7 @@ export class PdfService {
         </tr>
       </thead>
       <tbody>
-        ${transactionRows.map(row => `
+        ${transactionRows.map((row: any) => `
           <tr>
             <td><strong>${row.orderId}</strong></td>
             <td>${row.date}</td>
@@ -491,7 +491,7 @@ export class PdfService {
 
       // Link logs to this invoice and update their status to INVOICED
       await prisma.reconciliationLog.updateMany({
-        where: { id: { in: vendorLogs.map(l => l.id) } },
+        where: { id: { in: vendorLogs.map((l: any) => l.id) } },
         data: {
           invoiceId: invoice.id,
           status: 'INVOICED'

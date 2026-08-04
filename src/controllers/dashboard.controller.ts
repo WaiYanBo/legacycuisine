@@ -111,7 +111,7 @@ export class DashboardController {
 
       // Link logs to this invoice and update their status to INVOICED
       await prisma.reconciliationLog.updateMany({
-        where: { id: { in: logs.map(l => l.id) } },
+        where: { id: { in: logs.map((l: any) => l.id) } },
         data: {
           invoiceId: invoice.id,
           status: 'INVOICED',
