@@ -175,6 +175,13 @@ export default function TripleClickDoorGatePage() {
           </div>
         )}
       </div>
+
+      {/* ⚠️ Maintenance Notice */}
+      {!showForm && (
+        <p className="mt-8 text-xs sm:text-sm font-medium text-slate-500 tracking-wide text-center max-w-sm px-4">
+          The Website is under Maintenance and will live again shortly
+        </p>
+      )}
     </main>
   );
 }
