@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import puppeteer from 'puppeteer';
 import { prisma } from '../prisma';
+import { CompressionUtil } from '../utils/compression.util';
 
 /**
  * Utility helper to convert numeric values to Malaysian Ringgit word formats.
@@ -410,12 +411,11 @@ export class PdfService {
         fs.mkdirSync(targetDir, { recursive: true });
       }
 
-      const fileName = `invoice-${invoice.invoiceNumber}.pdf`;
+      const fileName = `invoice-${invoice.invoiceNumber}.pdf.gz`;
       const localFilePath = path.join(targetDir, fileName);
 
-      // Print PDF to path
-      await page.pdf({
-        path: localFilePath,
+      // Print PDF to memory buffer
+      const rawPdfBuffer = await page.pdf({
         format: 'A4',
         printBackground: true,
         margin: {
@@ -425,6 +425,10 @@ export class PdfService {
           right: '20px'
         }
       });
+
+      // Compress PDF buffer using Gzip compression before disk/cloud storage
+      const compressedBuffer = await CompressionUtil.compressBuffer(Buffer.from(rawPdfBuffer));
+      fs.writeFileSync(localFilePath, compressedBuffer);
 
       // Update invoice path in database
       const dbPath = `/storage/invoices/${fileName}`;

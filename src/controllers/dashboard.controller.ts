@@ -1,6 +1,9 @@
 import { Request, Response } from 'express';
+import fs from 'fs';
+import path from 'path';
 import { DashboardService } from '../services/dashboard.service';
 import { PdfService } from '../services/pdf.service';
+import { CompressionUtil } from '../utils/compression.util';
 import { prisma } from '../prisma';
 
 export class DashboardController {
@@ -124,11 +127,50 @@ export class DashboardController {
           id: invoice.id,
           invoiceNumber: invoiceNum,
           pdfPath,
+          downloadUrl: `/api/invoices/${invoice.id}/download`,
           logsLinked: logs.length,
         },
       });
     } catch (error: any) {
       res.status(500).json({ error: 'Failed to generate batch invoices.', details: error.message });
+    }
+  }
+
+  /**
+   * GET /api/invoices/:id/download
+   * Decompresses and streams generated PDF statement directly to browser.
+   */
+  static async downloadInvoicePdf(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      const invoice = await prisma.invoice.findUnique({ where: { id } });
+
+      if (!invoice || !invoice.pdfPath) {
+        res.status(404).json({ error: `Invoice with ID "${id}" or its PDF statement was not found.` });
+        return;
+      }
+
+      const relativePath = invoice.pdfPath.replace(/^\//, '');
+      const fullPath = path.join(process.cwd(), relativePath);
+
+      if (!fs.existsSync(fullPath)) {
+        res.status(404).json({ error: 'PDF file not found on disk storage.' });
+        return;
+      }
+
+      const compressedBuffer = fs.readFileSync(fullPath);
+      let pdfBuffer: Buffer;
+      if (fullPath.endsWith('.gz')) {
+        pdfBuffer = await CompressionUtil.decompressBuffer(compressedBuffer);
+      } else {
+        pdfBuffer = compressedBuffer;
+      }
+
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `inline; filename="${invoice.invoiceNumber}.pdf"`);
+      res.send(pdfBuffer);
+    } catch (error: any) {
+      res.status(500).json({ error: 'Failed to download invoice PDF.', details: error.message });
     }
   }
 }
