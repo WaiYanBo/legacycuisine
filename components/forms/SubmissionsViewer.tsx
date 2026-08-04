@@ -136,12 +136,25 @@ export default function SubmissionsViewer({ lang = 'en' }: SubmissionsViewerProp
               <div key={r.id} className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-md flex flex-col justify-between space-y-4">
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-2">
-                    <h3 className="text-xl font-bold text-white">{r.businessName}</h3>
-                    <span className="px-2.5 py-0.5 rounded-full bg-slate-800 text-amber-400 text-[10px] font-bold uppercase">
-                      {r.language}
-                    </span>
+                    <div>
+                      <h3 className="text-xl font-bold text-white">{r.businessName || r.fullName}</h3>
+                      {r.registrationNo && (
+                        <div className="text-[11px] text-slate-400">SSM: {r.registrationNo}</div>
+                      )}
+                    </div>
+                    <div className="flex flex-col items-end gap-1">
+                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                        r.status === 'Diluluskan'
+                          ? 'bg-emerald-950 text-emerald-400 border border-emerald-500/40'
+                          : r.status === 'Ditolak'
+                          ? 'bg-rose-950 text-rose-400 border border-rose-500/40'
+                          : 'bg-amber-500/20 text-amber-400 border border-amber-500/40'
+                      }`}>
+                        {r.status || 'Dalam Proses'}
+                      </span>
+                      <span className="text-[10px] text-slate-400">No. Ahli: {r.memberNo || 'N/A'}</span>
+                    </div>
                   </div>
-                  <div className="text-xs text-amber-400 font-medium mb-3">{r.typeOfFood}</div>
 
                   {r.shopPhotoUrl && (
                     <div className="w-full h-44 rounded-xl overflow-hidden mb-4 border border-slate-800">
@@ -149,16 +162,23 @@ export default function SubmissionsViewer({ lang = 'en' }: SubmissionsViewerProp
                     </div>
                   )}
 
-                  <div className="space-y-1 text-xs text-slate-300">
-                    <div><strong className="text-slate-400">PIC:</strong> {r.personInCharge}</div>
-                    <div><strong className="text-slate-400">Contact:</strong> {r.contactNumber}</div>
+                  <div className="space-y-1.5 text-xs text-slate-300 bg-slate-950 p-4 rounded-xl border border-slate-850">
+                    <div><strong className="text-slate-400">Nama Penuh:</strong> {r.fullName || r.personInCharge}</div>
+                    <div><strong className="text-slate-400">No. IC / Pasport:</strong> {r.icPassportNo || 'N/A'}</div>
+                    <div><strong className="text-slate-400">Contact / Phone:</strong> {r.contactNumber}</div>
                     <div><strong className="text-slate-400">Email:</strong> {r.emailAddress}</div>
-                    <div><strong className="text-slate-400">Address:</strong> {r.storeAddress}</div>
+                    <div><strong className="text-slate-400">Alamat Premis:</strong> {r.storeAddress}</div>
+                    {r.bankName && (
+                      <div><strong className="text-slate-400">Bank:</strong> {r.bankName} — {r.bankAccountNumber} ({r.bankAccountName})</div>
+                    )}
+                    {r.operatingHours && (
+                      <div><strong className="text-slate-400">Waktu Operasi:</strong> {r.operatingHours}</div>
+                    )}
                   </div>
                 </div>
 
                 <div className="text-[11px] text-slate-500 pt-3 border-t border-slate-800 flex justify-between">
-                  <span>ID: {r.id.slice(0, 8)}...</span>
+                  <span>Merchant ID: {r.id.slice(0, 8)}...</span>
                   <span>{new Date(r.createdAt).toLocaleString()}</span>
                 </div>
               </div>

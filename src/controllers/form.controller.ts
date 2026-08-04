@@ -84,47 +84,132 @@ export async function getChecklists(req: Request, res: Response): Promise<void> 
 }
 
 /**
- * Controller for handling Business Registration submissions.
+ * Controller for handling Business Registration (Borang Peniaga) submissions.
  */
 export async function createBusinessRegistration(req: Request, res: Response): Promise<void> {
   try {
     const {
+      date,
+      memberNo,
+      fullName,
+      mailingAddress,
+      storeAddress,
       businessName,
+      registrationNo,
+      icPassportNo,
+      dateOfBirth,
+      age,
+      religion,
+      race,
+      nationality,
+      contactNumber,
+      emailAddress,
+      gender,
       personInCharge,
       typeOfFood,
-      emailAddress,
-      contactNumber,
-      storeAddress,
+      operatingDays,
+      operatingHours,
+      bankName,
+      bankAccountName,
+      bankAccountNumber,
+      documentsChecklist,
       shopPhotoUrl,
+      receivedDate,
+      processingOfficer,
+      status,
+      rejectionReason,
+      activationDate,
+      agreedToTerms,
+      merchantSignature,
+      merchantSignatureName,
+      merchantSignatureIc,
+      merchantSignatureDate,
+      agentSignature,
+      agentSignatureName,
+      agentSignatureId,
+      agentSignatureDate,
+      reviewerSignature,
+      reviewerName,
+      reviewerRole,
+      reviewerDate,
+      approverSignature,
+      approverName,
+      approverRole,
+      approverDate,
       language,
     } = req.body;
 
-    if (!businessName || !personInCharge || !typeOfFood || !emailAddress || !contactNumber || !storeAddress) {
-      res.status(400).json({ error: 'Missing required business registration fields.' });
+    const picName = fullName || personInCharge || businessName;
+    const phone = contactNumber || '';
+    const email = emailAddress || '';
+    const address = storeAddress || mailingAddress || '';
+
+    if (!businessName && !fullName) {
+      res.status(400).json({ error: 'Sila masukkan Nama Syarikat atau Nama Penuh.' });
       return;
     }
 
     const registration = await prisma.businessRegistration.create({
       data: {
-        businessName,
-        personInCharge,
-        typeOfFood,
-        emailAddress,
-        contactNumber,
-        storeAddress,
+        date: date ? new Date(date) : new Date(),
+        memberNo: memberNo || '',
+        fullName: fullName || picName,
+        mailingAddress: mailingAddress || '',
+        storeAddress: address,
+        businessName: businessName || picName,
+        registrationNo: registrationNo || '',
+        icPassportNo: icPassportNo || '',
+        dateOfBirth: dateOfBirth || '',
+        age: age || '',
+        religion: religion || '',
+        race: race || '',
+        nationality: nationality || 'Malaysia',
+        contactNumber: phone,
+        emailAddress: email,
+        gender: gender || '',
+        personInCharge: picName,
+        typeOfFood: typeOfFood || '',
+        operatingDays: typeof operatingDays === 'string' ? operatingDays : JSON.stringify(operatingDays || []),
+        operatingHours: operatingHours || '',
+        bankName: bankName || '',
+        bankAccountName: bankAccountName || picName,
+        bankAccountNumber: bankAccountNumber || '',
+        documentsChecklist: typeof documentsChecklist === 'string' ? documentsChecklist : JSON.stringify(documentsChecklist || {}),
         shopPhotoUrl: shopPhotoUrl || null,
-        language: language || 'EN',
+        receivedDate: receivedDate ? new Date(receivedDate) : null,
+        processingOfficer: processingOfficer || '',
+        status: status || 'Dalam Proses',
+        rejectionReason: rejectionReason || '',
+        activationDate: activationDate ? new Date(activationDate) : null,
+        agreedToTerms: agreedToTerms !== undefined ? Boolean(agreedToTerms) : true,
+        merchantSignature: merchantSignature || merchantSignatureName || '',
+        merchantSignatureName: merchantSignatureName || fullName || picName,
+        merchantSignatureIc: merchantSignatureIc || icPassportNo || '',
+        merchantSignatureDate: merchantSignatureDate ? new Date(merchantSignatureDate) : new Date(),
+        agentSignature: agentSignature || agentSignatureName || '',
+        agentSignatureName: agentSignatureName || '',
+        agentSignatureId: agentSignatureId || '',
+        agentSignatureDate: agentSignatureDate ? new Date(agentSignatureDate) : null,
+        reviewerSignature: reviewerSignature || reviewerName || '',
+        reviewerName: reviewerName || '',
+        reviewerRole: reviewerRole || '',
+        reviewerDate: reviewerDate ? new Date(reviewerDate) : null,
+        approverSignature: approverSignature || approverName || '',
+        approverName: approverName || '',
+        approverRole: approverRole || '',
+        approverDate: approverDate ? new Date(approverDate) : null,
+        language: language || 'MS',
       },
     });
 
     res.status(201).json({
       success: true,
-      message: 'Business registration submitted successfully to Supabase.',
+      message: 'Borang Peniaga berjaya disimpan ke pangkalan data.',
       data: registration,
     });
   } catch (error: any) {
     console.error('[FormController] Error creating business registration:', error);
-    res.status(500).json({ error: error.message || 'Failed to save business registration.' });
+    res.status(500).json({ error: error.message || 'Gagal menyimpan borang peniaga.' });
   }
 }
 
@@ -139,6 +224,93 @@ export async function getBusinessRegistrations(req: Request, res: Response): Pro
     res.json({ success: true, data: registrations });
   } catch (error: any) {
     console.error('[FormController] Error fetching registrations:', error);
-    res.status(500).json({ error: error.message || 'Failed to fetch registrations.' });
+    res.status(500).json({ error: error.message || 'Gagal mengambil rekod pendaftaran peniaga.' });
+  }
+}
+
+/**
+ * Controller for handling Agent Registration (Borang Ejen) submissions.
+ */
+export async function createAgentRegistration(req: Request, res: Response): Promise<void> {
+  try {
+    const {
+      date,
+      agentNo,
+      agentName,
+      icNumber,
+      race,
+      religion,
+      address,
+      phoneNumber,
+      bankAccountName,
+      bankName,
+      bankAccountNumber,
+      registeredMerchants,
+      prospectSource,
+      prospectSourceOther,
+      approachedByOtherAgents,
+      confidenceLevel,
+      estimatedDuration,
+      agentSignature,
+      supervisorSignature,
+      supervisorName,
+      supervisorDate,
+    } = req.body;
+
+    if (!agentName || !agentNo || !icNumber || !phoneNumber || !bankAccountNumber) {
+      res.status(400).json({ error: 'Sila lengkapkan maklumat wajib ejen.' });
+      return;
+    }
+
+    const record = await prisma.agentRegistration.create({
+      data: {
+        date: date ? new Date(date) : new Date(),
+        agentNo,
+        agentName,
+        icNumber,
+        race: race || '',
+        religion: religion || '',
+        address: address || '',
+        phoneNumber,
+        bankAccountName: bankAccountName || agentName,
+        bankName: bankName || '',
+        bankAccountNumber,
+        registeredMerchants: typeof registeredMerchants === 'string' ? registeredMerchants : JSON.stringify(registeredMerchants || []),
+        prospectSource: prospectSource || 'Rujukan',
+        prospectSourceOther: prospectSourceOther || '',
+        approachedByOtherAgents: approachedByOtherAgents || 'Tidak',
+        confidenceLevel: confidenceLevel || 'Tinggi',
+        estimatedDuration: estimatedDuration || '',
+        agentSignature: agentSignature || '',
+        agentSignatureDate: new Date(),
+        supervisorSignature: supervisorSignature || '',
+        supervisorName: supervisorName || '',
+        supervisorDate: supervisorDate ? new Date(supervisorDate) : null,
+      },
+    });
+
+    res.status(201).json({
+      success: true,
+      message: 'Borang Pendaftaran Ejen berjaya disimpan.',
+      data: record,
+    });
+  } catch (error: any) {
+    console.error('[FormController] Error creating agent registration:', error);
+    res.status(500).json({ error: error.message || 'Gagal menyimpan borang ejen.' });
+  }
+}
+
+/**
+ * Controller for retrieving all Agent Registration submissions.
+ */
+export async function getAgentRegistrations(req: Request, res: Response): Promise<void> {
+  try {
+    const records = await prisma.agentRegistration.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
+    res.json({ success: true, data: records });
+  } catch (error: any) {
+    console.error('[FormController] Error fetching agent registrations:', error);
+    res.status(500).json({ error: error.message || 'Gagal mengambil rekod pendaftaran ejen.' });
   }
 }
