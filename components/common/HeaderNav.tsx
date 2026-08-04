@@ -28,6 +28,12 @@ export default function HeaderNav({ currentLang }: HeaderNavProps) {
 
   const isEn = currentLang === 'en';
 
+  const handleLogout = () => {
+    document.cookie = 'lc_auth=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+    localStorage.removeItem('lc_auth');
+    router.push('/');
+  };
+
   return (
     <header className="sticky top-0 z-50 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -86,27 +92,40 @@ export default function HeaderNav({ currentLang }: HeaderNavProps) {
           </Link>
         </nav>
 
-        {/* Language Switcher Pills */}
-        <div className="flex items-center gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800">
+        {/* Right Section: Language Switcher & Logout */}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800">
+            <button
+              onClick={() => toggleLanguage('en')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold tracking-wider transition-all ${
+                isEn
+                  ? 'bg-amber-500 text-slate-950 shadow'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              EN 🇬🇧
+            </button>
+            <button
+              onClick={() => toggleLanguage('ms')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold tracking-wider transition-all ${
+                !isEn
+                  ? 'bg-amber-500 text-slate-950 shadow'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              BM 🇲🇾
+            </button>
+          </div>
+
           <button
-            onClick={() => toggleLanguage('en')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold tracking-wider transition-all ${
-              isEn
-                ? 'bg-amber-500 text-slate-950 shadow'
-                : 'text-slate-400 hover:text-white'
-            }`}
+            onClick={handleLogout}
+            title="Lock Access Portal"
+            className="p-2 rounded-xl bg-slate-950 text-slate-400 hover:text-rose-400 hover:bg-slate-800/80 border border-slate-800 transition-all flex items-center gap-1.5 text-xs font-medium"
           >
-            EN 🇬🇧
-          </button>
-          <button
-            onClick={() => toggleLanguage('ms')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold tracking-wider transition-all ${
-              !isEn
-                ? 'bg-amber-500 text-slate-950 shadow'
-                : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            BM 🇲🇾
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            <span className="hidden sm:inline">Logout</span>
           </button>
         </div>
       </div>

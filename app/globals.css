@@ -56,3 +56,131 @@
     transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
   }
 }
+
+/* Deep Core Luxury Security Gate Animations */
+@keyframes corePulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.45;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.25);
+    opacity: 0.75;
+  }
+}
+
+@keyframes floatSlow {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-12px) rotate(0.5deg);
+  }
+}
+
+@keyframes spinSlow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spinReverse {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes shimmerGold {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-core-pulse {
+  animation: corePulse 8s ease-in-out infinite;
+}
+
+.animate-float-slow {
+  animation: floatSlow 6s ease-in-out infinite;
+}
+
+.animate-spin-slow {
+  animation: spinSlow 25s linear infinite;
+}
+
+.animate-spin-reverse {
+  animation: spinReverse 35s linear infinite;
+}
+
+.shimmer-gold {
+  background: linear-gradient(90deg, rgba(217, 119, 6, 0) 0%, rgba(251, 191, 36, 0.4) 50%, rgba(217, 119, 6, 0) 100%);
+  background-size: 200% 100%;
+  animation: shimmerGold 4s infinite;
+}
+
+/* 🚪 3D Double Door Opening Animation Classes */
+.perspective-container {
+  perspective: 1200px;
+}
+
+.clip-door-left {
+  clip-path: polygon(0% 0%, 50.2% 0%, 50.2% 100%, 0% 100%);
+  transform-origin: left center;
+}
+
+.clip-door-right {
+  clip-path: polygon(49.8% 0%, 100% 0%, 100% 100%, 49.8% 100%);
+  transform-origin: right center;
+}
+
+@keyframes doorOpenLeft {
+  0% {
+    transform: perspective(1200px) rotateY(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: perspective(1200px) rotateY(-115deg);
+    opacity: 0;
+  }
+}
+
+@keyframes doorOpenRight {
+  0% {
+    transform: perspective(1200px) rotateY(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: perspective(1200px) rotateY(115deg);
+    opacity: 0;
+  }
+}
+
+.animate-door-open-left {
+  animation: doorOpenLeft 0.85s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-door-open-right {
+  animation: doorOpenRight 0.85s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes microShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px) rotate(-1.5deg); }
+  75% { transform: translateX(5px) rotate(1.5deg); }
+}
+
+.animate-micro-shake {
+  animation: microShake 0.22s ease-in-out;
+}
+
+
+
