@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { getDictionary, Locale } from '../../lib/i18n';
 
@@ -39,8 +40,14 @@ export default function HeaderNav({ currentLang }: HeaderNavProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Brand Logo & Title */}
         <Link href={`/${currentLang}/forms/checklist`} className="flex items-center gap-3 group">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-600 to-amber-400 flex items-center justify-center text-slate-950 font-bold text-xl shadow-md shadow-amber-500/20 group-hover:scale-105 transition-transform">
-            LC
+          <div className="w-10 h-10 rounded-xl bg-white p-1 flex items-center justify-center shadow-md shadow-amber-500/20 group-hover:scale-105 transition-transform overflow-hidden">
+            <Image
+              src="/logo.png"
+              alt="Legacy Cuisine Logo"
+              width={40}
+              height={40}
+              className="object-contain w-full h-full"
+            />
           </div>
           <div>
             <div className="text-white font-semibold text-lg tracking-wide group-hover:text-amber-400 transition-colors">

@@ -1,0 +1,14 @@
+{
+  "name": "Legacy Cuisine F&B Management",
+  "short_name": "Legacy Cuisine",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "1254x1254",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#090d16",
+  "background_color": "#ffffff",
+  "display": "standalone"
+}
