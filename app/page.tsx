@@ -65,12 +65,12 @@ export default function TripleClickDoorGatePage() {
       <div className="relative w-80 h-80 sm:w-[420px] sm:h-[420px] flex items-center justify-center perspective-container">
         
         {/* Logo Double Door (Shown until doors open fully) */}
-        {(!showForm || isDoorOpen) && (
+        {!showForm && (
           <div 
             onClick={handleLogoClick}
-            className={`absolute inset-0 cursor-pointer flex items-center justify-center transition-all ${
+            className={`absolute inset-0 cursor-pointer flex items-center justify-center transition-all z-10 ${
               isShaking ? 'animate-micro-shake' : ''
-            }`}
+            } ${isDoorOpen ? 'pointer-events-none' : ''}`}
             title="Secret Access Gate"
           >
             {/* Left Door Leaf */}
@@ -113,7 +113,7 @@ export default function TripleClickDoorGatePage() {
 
         {/* 🔐 Login Section (Emerges inside the opened door portal) */}
         {showForm && (
-          <div className="w-full bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-2xl animate-in fade-in zoom-in-90 duration-500">
+          <div className="relative z-20 w-full bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-2xl animate-in fade-in zoom-in-90 duration-500">
             <div className="text-center mb-5">
               <h2 className="text-lg font-bold tracking-wider text-slate-900 uppercase">Administrator Portal</h2>
               <p className="text-xs text-amber-600 font-medium mt-1">Authorized Access Verified</p>
