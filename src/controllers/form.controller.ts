@@ -2,6 +2,15 @@ import { Request, Response } from 'express';
 import { prisma } from '../prisma';
 
 /**
+ * Helper to sanitize string inputs: trims whitespace and defaults empty values to "-"
+ */
+function s(val: any, fallback: string = '-'): string {
+  if (val === null || val === undefined) return fallback;
+  const str = String(val).trim();
+  return str === '' ? fallback : str;
+}
+
+/**
  * Controller for handling Vendor Recruitment & Registration Checklist submissions.
  */
 export async function createChecklist(req: Request, res: Response): Promise<void> {
@@ -28,27 +37,32 @@ export async function createChecklist(req: Request, res: Response): Promise<void
       totalChecked,
     } = req.body;
 
-    if (!agentName || !vendor || !personInCharge || !emailAddress) {
-      res.status(400).json({ error: 'Missing required header fields.' });
+    const sAgentName = s(agentName);
+    const sVendor = s(vendor);
+    const sPIC = s(personInCharge);
+    const sEmail = s(emailAddress);
+
+    if (sAgentName === '-' || sVendor === '-' || sPIC === '-' || sEmail === '-') {
+      res.status(400).json({ error: 'Sila lengkapkan maklumat wajib (Nama Ejen, Syarikat, PIC, E-mel).' });
       return;
     }
 
     const record = await prisma.vendorChecklist.create({
       data: {
-        agentName,
+        agentName: sAgentName,
         date: date ? new Date(date) : new Date(),
-        vendor,
-        personInCharge,
-        mobileNumber: mobileNumber || '',
-        emailAddress,
-        outletAddress: outletAddress || '',
+        vendor: sVendor,
+        personInCharge: sPIC,
+        mobileNumber: s(mobileNumber),
+        emailAddress: sEmail,
+        outletAddress: s(outletAddress),
         numberOfOutlets: Number(numberOfOutlets) || 1,
-        businessType: businessType || 'Shop',
-        targetPlatform: targetPlatform || 'Foodpanda / GrabFood / ShopeeFood',
-        leadStatus: leadStatus || 'Interested',
-        language: language || 'EN',
+        businessType: s(businessType, 'Kedai / Shop'),
+        targetPlatform: s(targetPlatform, 'Foodpanda / GrabFood / ShopeeFood'),
+        leadStatus: s(leadStatus, 'Berminat / Interested'),
+        language: s(language, 'MS'),
         agentSelfCheck: typeof agentSelfCheck === 'string' ? agentSelfCheck : JSON.stringify(agentSelfCheck || {}),
-        agentNotes: agentNotes || '',
+        agentNotes: s(agentNotes),
         qualificationCheck: typeof qualificationCheck === 'string' ? qualificationCheck : JSON.stringify(qualificationCheck || {}),
         yesScore: Number(yesScore) || 0,
         noScore: Number(noScore) || 0,
@@ -139,12 +153,13 @@ export async function createBusinessRegistration(req: Request, res: Response): P
       language,
     } = req.body;
 
-    const picName = fullName || personInCharge || businessName;
-    const phone = contactNumber || '';
-    const email = emailAddress || '';
-    const address = storeAddress || mailingAddress || '';
+    const sFullName = s(fullName || personInCharge);
+    const sBusinessName = s(businessName || personInCharge);
+    const sPhone = s(contactNumber);
+    const sEmail = s(emailAddress);
+    const sStoreAddress = s(storeAddress || mailingAddress);
 
-    if (!businessName && !fullName) {
+    if (sFullName === '-' && sBusinessName === '-') {
       res.status(400).json({ error: 'Sila masukkan Nama Syarikat atau Nama Penuh.' });
       return;
     }
@@ -152,53 +167,53 @@ export async function createBusinessRegistration(req: Request, res: Response): P
     const registration = await prisma.businessRegistration.create({
       data: {
         date: date ? new Date(date) : new Date(),
-        memberNo: memberNo || '',
-        fullName: fullName || picName,
-        mailingAddress: mailingAddress || '',
-        storeAddress: address,
-        businessName: businessName || picName,
-        registrationNo: registrationNo || '',
-        icPassportNo: icPassportNo || '',
-        dateOfBirth: dateOfBirth || '',
-        age: age || '',
-        religion: religion || '',
-        race: race || '',
-        nationality: nationality || 'Malaysia',
-        contactNumber: phone,
-        emailAddress: email,
-        gender: gender || '',
-        personInCharge: picName,
-        typeOfFood: typeOfFood || '',
+        memberNo: s(memberNo),
+        fullName: sFullName,
+        mailingAddress: s(mailingAddress),
+        storeAddress: sStoreAddress,
+        businessName: sBusinessName,
+        registrationNo: s(registrationNo),
+        icPassportNo: s(icPassportNo),
+        dateOfBirth: s(dateOfBirth),
+        age: s(age),
+        religion: s(religion, 'Islam'),
+        race: s(race, 'Melayu'),
+        nationality: s(nationality, 'Malaysia'),
+        contactNumber: sPhone,
+        emailAddress: sEmail,
+        gender: s(gender, 'Lelaki'),
+        personInCharge: sFullName,
+        typeOfFood: s(typeOfFood, 'Restoran / Makanan'),
         operatingDays: typeof operatingDays === 'string' ? operatingDays : JSON.stringify(operatingDays || []),
-        operatingHours: operatingHours || '',
-        bankName: bankName || '',
-        bankAccountName: bankAccountName || picName,
-        bankAccountNumber: bankAccountNumber || '',
+        operatingHours: s(operatingHours, '8:00 AM - 10:00 PM'),
+        bankName: s(bankName),
+        bankAccountName: s(bankAccountName, sFullName),
+        bankAccountNumber: s(bankAccountNumber),
         documentsChecklist: typeof documentsChecklist === 'string' ? documentsChecklist : JSON.stringify(documentsChecklist || {}),
         shopPhotoUrl: shopPhotoUrl || null,
         receivedDate: receivedDate ? new Date(receivedDate) : null,
-        processingOfficer: processingOfficer || '',
-        status: status || 'Dalam Proses',
-        rejectionReason: rejectionReason || '',
+        processingOfficer: s(processingOfficer),
+        status: s(status, 'Dalam Proses'),
+        rejectionReason: s(rejectionReason),
         activationDate: activationDate ? new Date(activationDate) : null,
         agreedToTerms: agreedToTerms !== undefined ? Boolean(agreedToTerms) : true,
-        merchantSignature: merchantSignature || merchantSignatureName || '',
-        merchantSignatureName: merchantSignatureName || fullName || picName,
-        merchantSignatureIc: merchantSignatureIc || icPassportNo || '',
+        merchantSignature: s(merchantSignature || merchantSignatureName, sFullName),
+        merchantSignatureName: s(merchantSignatureName, sFullName),
+        merchantSignatureIc: s(merchantSignatureIc, s(icPassportNo)),
         merchantSignatureDate: merchantSignatureDate ? new Date(merchantSignatureDate) : new Date(),
-        agentSignature: agentSignature || agentSignatureName || '',
-        agentSignatureName: agentSignatureName || '',
-        agentSignatureId: agentSignatureId || '',
+        agentSignature: s(agentSignature || agentSignatureName),
+        agentSignatureName: s(agentSignatureName),
+        agentSignatureId: s(agentSignatureId),
         agentSignatureDate: agentSignatureDate ? new Date(agentSignatureDate) : null,
-        reviewerSignature: reviewerSignature || reviewerName || '',
-        reviewerName: reviewerName || '',
-        reviewerRole: reviewerRole || '',
+        reviewerSignature: s(reviewerSignature || reviewerName),
+        reviewerName: s(reviewerName),
+        reviewerRole: s(reviewerRole, 'Penyelia Audit'),
         reviewerDate: reviewerDate ? new Date(reviewerDate) : null,
-        approverSignature: approverSignature || approverName || '',
-        approverName: approverName || '',
-        approverRole: approverRole || '',
+        approverSignature: s(approverSignature || approverName),
+        approverName: s(approverName),
+        approverRole: s(approverRole, 'Pengurus Peniaga'),
         approverDate: approverDate ? new Date(approverDate) : null,
-        language: language || 'MS',
+        language: s(language, 'MS'),
       },
     });
 
@@ -257,34 +272,39 @@ export async function createAgentRegistration(req: Request, res: Response): Prom
       supervisorDate,
     } = req.body;
 
-    if (!agentName || !agentNo || !icNumber || !phoneNumber || !bankAccountNumber) {
-      res.status(400).json({ error: 'Sila lengkapkan maklumat wajib ejen.' });
+    const sAgentName = s(agentName);
+    const sAgentNo = s(agentNo);
+    const sIC = s(icNumber);
+    const sPhone = s(phoneNumber);
+
+    if (sAgentName === '-' || sAgentNo === '-' || sIC === '-' || sPhone === '-') {
+      res.status(400).json({ error: 'Sila lengkapkan maklumat wajib ejen (Nama Ejen, No. Ejen, No. IC, No. Telefon).' });
       return;
     }
 
     const record = await prisma.agentRegistration.create({
       data: {
         date: date ? new Date(date) : new Date(),
-        agentNo,
-        agentName,
-        icNumber,
-        race: race || '',
-        religion: religion || '',
-        address: address || '',
-        phoneNumber,
-        bankAccountName: bankAccountName || agentName,
-        bankName: bankName || '',
-        bankAccountNumber,
+        agentNo: sAgentNo,
+        agentName: sAgentName,
+        icNumber: sIC,
+        race: s(race, 'Melayu'),
+        religion: s(religion, 'Islam'),
+        address: s(address),
+        phoneNumber: sPhone,
+        bankAccountName: s(bankAccountName, sAgentName),
+        bankName: s(bankName),
+        bankAccountNumber: s(bankAccountNumber),
         registeredMerchants: typeof registeredMerchants === 'string' ? registeredMerchants : JSON.stringify(registeredMerchants || []),
-        prospectSource: prospectSource || 'Rujukan',
-        prospectSourceOther: prospectSourceOther || '',
-        approachedByOtherAgents: approachedByOtherAgents || 'Tidak',
-        confidenceLevel: confidenceLevel || 'Tinggi',
-        estimatedDuration: estimatedDuration || '',
-        agentSignature: agentSignature || '',
+        prospectSource: s(prospectSource, 'Rujukan'),
+        prospectSourceOther: s(prospectSourceOther),
+        approachedByOtherAgents: s(approachedByOtherAgents, 'Tidak'),
+        confidenceLevel: s(confidenceLevel, 'Tinggi'),
+        estimatedDuration: s(estimatedDuration, '1-3 Hari'),
+        agentSignature: s(agentSignature || agentName, sAgentName),
         agentSignatureDate: new Date(),
-        supervisorSignature: supervisorSignature || '',
-        supervisorName: supervisorName || '',
+        supervisorSignature: s(supervisorSignature || supervisorName),
+        supervisorName: s(supervisorName),
         supervisorDate: supervisorDate ? new Date(supervisorDate) : null,
       },
     });
