@@ -1,23 +1,23 @@
-import { PrismaClient } from '@prisma/client';
-import { PrismaLibSql } from '@prisma/adapter-libsql';
-
-const adapter = new PrismaLibSql({
-  url: 'file:dev.db',
-});
-const prisma = new PrismaClient({ adapter });
+import { prisma } from '../src/prisma';
 
 async function main() {
-  console.log('Seeding local SQLite database...');
+  console.log('Seeding database...');
 
-  // 1. Create a local Vendor
-  const vendor = await prisma.vendor.create({
-    data: {
-      name: 'Wai Yan',
-      businessName: 'Legacy Cuisine',
-      contactEmail: 'waiyan.erasb@gmail.com',
-      status: 'ACTIVE',
-    },
+  // 1. Create a Vendor (or find existing)
+  let vendor = await prisma.vendor.findFirst({
+    where: { contactEmail: 'waiyan.erasb@gmail.com' },
   });
+
+  if (!vendor) {
+    vendor = await prisma.vendor.create({
+      data: {
+        name: 'Wai Yan',
+        businessName: 'Legacy Cuisine',
+        contactEmail: 'waiyan.erasb@gmail.com',
+        status: 'ACTIVE',
+      },
+    });
+  }
 
   // 2. Create storefront mappings using upsert
   const storefronts = [

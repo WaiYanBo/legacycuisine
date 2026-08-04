@@ -68,6 +68,8 @@ model ProductMaster {
 
   @@unique([storefrontId, sku])
   @@index([storefrontId])
+  @@index([needsReview])
+  @@index([storefrontId, needsReview])
   @@map("product_masters")
 }
 
@@ -92,6 +94,7 @@ model GrabOrder {
 
   @@index([storefrontId])
   @@index([orderDate])
+  @@index([storefrontId, orderDate])
   @@map("grab_orders")
 }
 
@@ -131,6 +134,8 @@ model ReconciliationLog {
 
   @@index([status])
   @@index([invoiceId])
+  @@index([createdAt])
+  @@index([status, createdAt])
   @@map("reconciliation_logs")
 }
 
@@ -158,6 +163,8 @@ model Invoice {
   @@index([vendorId])
   @@index([status])
   @@index([billingDate])
+  @@index([vendorId, billingDate])
+  @@index([status, billingDate])
   @@map("invoices")
 }
 
@@ -168,3 +175,57 @@ enum InvoiceStatus {
   OVERDUE
   VOIDED
 }
+
+/// VendorChecklist stores submissions of the Vendor Recruitment & Registration Checklist.
+model VendorChecklist {
+  id                 String   @id @default(uuid()) @db.Uuid
+  agentName          String   @map("agent_name")
+  date               DateTime @map("date")
+  vendor             String   @map("vendor")
+  personInCharge     String   @map("person_in_charge")
+  mobileNumber       String   @map("mobile_number")
+  emailAddress       String   @map("email_address")
+  outletAddress      String   @map("outlet_address")
+  numberOfOutlets    Int      @default(1) @map("number_of_outlets")
+  businessType       String   @map("business_type")
+  targetPlatform     String   @map("target_platform")
+  leadStatus         String   @map("lead_status")
+  language           String   @default("EN")
+
+  agentSelfCheck     String   @map("agent_self_check") @db.Text
+  agentNotes         String?  @map("agent_notes") @db.Text
+
+  qualificationCheck String   @map("qualification_check") @db.Text
+  yesScore           Int      @default(0) @map("yes_score")
+  noScore            Int      @default(0) @map("no_score")
+  naScore            Int      @default(0) @map("na_score")
+  totalChecked       Int      @default(0) @map("total_checked")
+
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  @@index([emailAddress])
+  @@index([createdAt])
+  @@map("vendor_checklists")
+}
+
+/// BusinessRegistration stores seller onboarding business details and shop photos.
+model BusinessRegistration {
+  id             String   @id @default(uuid()) @db.Uuid
+  businessName   String   @map("business_name")
+  personInCharge String   @map("person_in_charge")
+  typeOfFood     String   @map("type_of_food")
+  emailAddress   String   @map("email_address")
+  contactNumber  String   @map("contact_number")
+  storeAddress   String   @map("store_address") @db.Text
+  shopPhotoUrl   String?  @map("shop_photo_url") @db.Text
+  language       String   @default("EN")
+
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@index([emailAddress])
+  @@index([createdAt])
+  @@map("business_registrations")
+}
+

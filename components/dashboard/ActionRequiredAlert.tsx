@@ -145,7 +145,7 @@ export const ActionRequiredAlert: React.FC<ActionRequiredAlertProps> = ({ onReco
               <p className="font-bold text-slate-850 dark:text-slate-100 mt-1">{item.name}</p>
               <p className="text-xs text-slate-500 dark:text-slate-400">
                 Grab expected price: {item.grabExpectedPrice !== null && item.grabExpectedPrice !== undefined
-                  ? `$${parseFloat(item.grabExpectedPrice.toString()).toFixed(2)}`
+                  ? `RM ${parseFloat(item.grabExpectedPrice.toString()).toFixed(2)}`
                   : 'N/A'}
               </p>
             </div>
@@ -153,7 +153,7 @@ export const ActionRequiredAlert: React.FC<ActionRequiredAlertProps> = ({ onReco
             <div className="flex items-center gap-3 w-full sm:w-auto">
               <div className="relative rounded-md shadow-sm w-36">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <span className="text-slate-500 dark:text-slate-450 sm:text-sm">$</span>
+                  <span className="text-slate-500 dark:text-slate-450 sm:text-sm">RM</span>
                 </div>
                 <input
                   type="number"
