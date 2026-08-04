@@ -27,7 +27,7 @@ export class ReceiptService {
    * Runs in an ACID database transaction.
    */
   static async ingestGrabReceipt(data: GrabReceiptInput) {
-    return await prisma.$transaction(async (tx) => {
+    return await prisma.$transaction(async (tx: any) => {
       // 1. Resolve Storefront by email or name
       const storefront = await tx.storefront.findFirst({
         where: {

@@ -4,7 +4,8 @@
   "description": "Enterprise food delivery aggregator reconciliation backend API",
   "main": "dist/server.js",
   "scripts": {
-    "build": "tsc -p tsconfig.server.json",
+    "postinstall": "prisma generate",
+    "build": "prisma generate && tsc -p tsconfig.server.json && next build",
     "start": "node dist/server.js",
     "dev": "ts-node -P tsconfig.server.json src/server.ts",
     "dev:frontend": "next dev -p 3001",
