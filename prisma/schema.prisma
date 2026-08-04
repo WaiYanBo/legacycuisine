@@ -209,23 +209,122 @@ model VendorChecklist {
   @@map("vendor_checklists")
 }
 
-/// BusinessRegistration stores seller onboarding business details and shop photos.
+/// BusinessRegistration stores official Merchant Registration forms (Borang Peniaga).
 model BusinessRegistration {
-  id             String   @id @default(uuid()) @db.Uuid
-  businessName   String   @map("business_name")
-  personInCharge String   @map("person_in_charge")
-  typeOfFood     String   @map("type_of_food")
-  emailAddress   String   @map("email_address")
-  contactNumber  String   @map("contact_number")
-  storeAddress   String   @map("store_address") @db.Text
-  shopPhotoUrl   String?  @map("shop_photo_url") @db.Text
-  language       String   @default("EN")
+  id             String    @id @default(uuid()) @db.Uuid
+  date           DateTime? @map("date")
+  memberNo       String?   @map("member_no")
 
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @updatedAt @map("updated_at")
+  // 1. Maklumat Peniaga
+  fullName       String?   @map("full_name")
+  mailingAddress String?   @map("mailing_address") @db.Text
+  storeAddress   String    @map("store_address") @db.Text
+  businessName   String    @map("business_name")
+  registrationNo String?   @map("registration_no")
+  icPassportNo   String?   @map("ic_passport_no")
+  dateOfBirth    String?   @map("date_of_birth")
+  age            String?   @map("age")
+  religion       String?   @map("religion")
+  race           String?   @map("race")
+  nationality    String?   @map("nationality")
+  contactNumber  String    @map("contact_number")
+  emailAddress   String    @map("email_address")
+  gender         String?   @map("gender")
+
+  // Fields maintained for backwards compatibility
+  personInCharge String?   @map("person_in_charge")
+  typeOfFood     String?   @map("type_of_food")
+
+  // 2. Maklumat Operasi
+  operatingDays  String?   @map("operating_days") @db.Text
+  operatingHours String?   @map("operating_hours")
+
+  // 3. Maklumat Akaun Bank
+  bankName          String? @map("bank_name")
+  bankAccountName   String? @map("bank_account_name")
+  bankAccountNumber String? @map("bank_account_number")
+
+  // 4. Senarai Semak Dokumen
+  documentsChecklist String? @map("documents_checklist") @db.Text
+  shopPhotoUrl       String? @map("shop_photo_url") @db.Text
+
+  // 5. Bahagian Kegunaan Pejabat/Ejen
+  receivedDate      DateTime? @map("received_date")
+  processingOfficer String?   @map("processing_officer")
+  status            String?   @default("Dalam Proses") @map("status")
+  rejectionReason   String?   @map("rejection_reason") @db.Text
+  activationDate    DateTime? @map("activation_date")
+
+  // 6. Penafian & Terma Perkhidmatan
+  agreedToTerms Boolean @default(true) @map("agreed_to_terms")
+
+  // 7. Pengesahan & Tandatangan
+  merchantSignature     String?   @map("merchant_signature") @db.Text
+  merchantSignatureName String?   @map("merchant_signature_name")
+  merchantSignatureIc   String?   @map("merchant_signature_ic")
+  merchantSignatureDate DateTime? @map("merchant_signature_date")
+
+  agentSignature     String?   @map("agent_signature") @db.Text
+  agentSignatureName String?   @map("agent_signature_name")
+  agentSignatureId   String?   @map("agent_signature_id")
+  agentSignatureDate DateTime? @map("agent_signature_date")
+
+  reviewerSignature String?   @map("reviewer_signature") @db.Text
+  reviewerName      String?   @map("reviewer_name")
+  reviewerRole      String?   @map("reviewer_role")
+  reviewerDate      DateTime? @map("reviewer_date")
+
+  approverSignature String?   @map("approver_signature") @db.Text
+  approverName      String?   @map("approver_name")
+  approverRole      String?   @map("approver_role")
+  approverDate      DateTime? @map("approver_date")
+
+  language  String   @default("EN")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@index([emailAddress])
   @@index([createdAt])
   @@map("business_registrations")
+}
+
+/// AgentRegistration stores official Agent Recruitment & Merchant Registration Audit forms (Borang Ejen).
+model AgentRegistration {
+  id                      String    @id @default(uuid()) @db.Uuid
+  date                    DateTime  @map("date")
+  agentNo                 String    @map("agent_no")
+  agentName               String    @map("agent_name")
+  icNumber                String    @map("ic_number")
+  race                    String    @map("race")
+  religion                String    @map("religion")
+  address                 String    @map("address") @db.Text
+  phoneNumber             String    @map("phone_number")
+
+  bankAccountName         String    @map("bank_account_name")
+  bankName                String    @map("bank_name")
+  bankAccountNumber       String    @map("bank_account_number")
+
+  registeredMerchants     String    @map("registered_merchants") @db.Text
+
+  prospectSource          String    @map("prospect_source")
+  prospectSourceOther     String?   @map("prospect_source_other")
+  approachedByOtherAgents String    @map("approached_by_other_agents")
+  confidenceLevel         String    @map("confidence_level")
+  estimatedDuration       String    @map("estimated_duration")
+
+  agentSignature          String?   @map("agent_signature") @db.Text
+  agentSignatureDate      DateTime  @default(now()) @map("agent_signature_date")
+
+  supervisorSignature     String?   @map("supervisor_signature") @db.Text
+  supervisorName          String?   @map("supervisor_name")
+  supervisorDate          DateTime? @map("supervisor_date")
+
+  createdAt               DateTime  @default(now()) @map("created_at")
+  updatedAt               DateTime  @updatedAt @map("updated_at")
+
+  @@index([agentNo])
+  @@index([icNumber])
+  @@index([createdAt])
+  @@map("agent_registrations")
 }
 
