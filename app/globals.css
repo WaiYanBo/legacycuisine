@@ -4,48 +4,48 @@
 
 @layer base {
   :root {
-    --background: 210 40% 98%; /* slate-50 */
-    --foreground: 222 47% 11%; /* slate-950 */
-    --card: 0 0% 100%; /* white */
-    --card-foreground: 222 47% 11%;
+    --background: 0 0% 100%; /* #ffffff White */
+    --foreground: 0 0% 0%; /* #000000 Black */
+    --card: 0 0% 100%; /* #ffffff White */
+    --card-foreground: 0 0% 0%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
-    --primary: 142 76% 36%; /* Grab green HSL */
-    --primary-foreground: 355.7 100% 97.3%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222 47% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222 47% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 89%;
-    --ring: 142 76% 36%;
+    --popover-foreground: 0 0% 0%;
+    --primary: 360 94% 34%; /* #aa0505 Vivid Red */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 32 59% 43%; /* #b0712d Grey Yellow */
+    --secondary-foreground: 0 0% 100%;
+    --muted: 0 0% 0%;
+    --muted-foreground: 0 0% 100%;
+    --accent: 32 59% 43%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 360 94% 34%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 32 59% 43%;
+    --input: 32 59% 43%;
+    --ring: 360 94% 34%;
     --radius: 0.75rem;
   }
 
   .dark {
-    --background: 222 47% 6%; /* dark midnight background */
-    --foreground: 210 40% 98%; /* light gray text */
-    --card: 222 47% 9%; /* dark slate card */
-    --card-foreground: 210 40% 98%;
-    --popover: 222 47% 9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 142 76% 45%; /* vibrant Grab green */
-    --primary-foreground: 355.7 100% 97.3%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 22%;
-    --input: 217.2 32.6% 22%;
-    --ring: 142 76% 45%;
+    --background: 0 0% 0%; /* #000000 Black */
+    --foreground: 0 0% 100%; /* #ffffff White */
+    --card: 0 0% 0%;
+    --card-foreground: 0 0% 100%;
+    --popover: 0 0% 0%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 360 94% 34%; /* #aa0505 Vivid Red */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 32 59% 43%; /* #b0712d Grey Yellow */
+    --secondary-foreground: 0 0% 100%;
+    --muted: 0 0% 0%;
+    --muted-foreground: 0 0% 100%;
+    --accent: 32 59% 43%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 360 94% 34%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 32 59% 43%;
+    --input: 32 59% 43%;
+    --ring: 360 94% 34%;
   }
 }
 
@@ -122,7 +122,7 @@
 }
 
 .shimmer-gold {
-  background: linear-gradient(90deg, rgba(217, 119, 6, 0) 0%, rgba(251, 191, 36, 0.4) 50%, rgba(217, 119, 6, 0) 100%);
+  background: linear-gradient(90deg, rgba(176, 113, 45, 0) 0%, rgba(170, 5, 5, 0.6) 50%, rgba(176, 113, 45, 0) 100%);
   background-size: 200% 100%;
   animation: shimmerGold 4s infinite;
 }
@@ -133,12 +133,12 @@
 }
 
 .clip-door-left {
-  clip-path: polygon(0% 0%, 50.2% 0%, 50.2% 100%, 0% 100%);
+  clip-path: inset(0 50% 0 0);
   transform-origin: left center;
 }
 
 .clip-door-right {
-  clip-path: polygon(49.8% 0%, 100% 0%, 100% 100%, 49.8% 100%);
+  clip-path: inset(0 0 0 50%);
   transform-origin: right center;
 }
 

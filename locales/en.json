@@ -16,7 +16,7 @@
     "fields": {
       "agentName": "Agent Name *",
       "agentNamePlaceholder": "e.g. John Doe",
-      "date": "Date *",
+      "date": "Date (DD/MM/YYYY) *",
       "vendor": "Vendor / Business Name *",
       "vendorPlaceholder": "e.g. Legacy Cuisine Enterprise",
       "personInCharge": "Person In Charge *",

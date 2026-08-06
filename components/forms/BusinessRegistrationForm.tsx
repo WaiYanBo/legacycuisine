@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { Locale } from '../../lib/i18n';
+import { formatDateToDDMMYYYY } from '../../lib/dateUtils';
 
 interface BusinessRegistrationFormProps {
   lang?: Locale;
@@ -224,21 +225,21 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
     : ['Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu', 'Ahad'];
 
   return (
-    <div className="max-w-4xl mx-auto bg-white dark:bg-[#0d1117] text-slate-900 dark:text-slate-100 p-6 sm:p-10 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800">
+    <div className="max-w-4xl mx-auto bg-white dark:bg-black text-black dark:text-white p-6 sm:p-10 rounded-3xl shadow-xl border border-[#b0712d]">
       
       {/* 📄 DOCUMENT HEADER */}
-      <div className="border-b-2 border-slate-900 dark:border-amber-500/50 pb-6 mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="border-b-2 border-[#b0712d] pb-6 mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
-          <div className="inline-block px-3 py-1 bg-slate-950 text-amber-400 font-extrabold text-xs tracking-widest rounded-md uppercase mb-2">
+          <div className="inline-block px-3 py-1 bg-[#aa0505] text-white font-extrabold text-xs tracking-widest rounded-md uppercase mb-2">
             {isEn ? 'MERCHANT FORM' : 'BORANG PENIAGA'}
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-slate-100">
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-black dark:text-white">
             {isEn ? 'MERCHANT RECRUITMENT & REGISTRATION CHECKLIST' : 'SENARAI SEMAK PEREKRUTAN & PENDAFTARAN PENIAGA'}
           </h1>
-          <p className="text-sm font-bold text-amber-600 dark:text-amber-400 mt-1">
+          <p className="text-sm font-bold text-[#b0712d] mt-1">
             Foodpanda, GrabFood and ShopeeFood — Malaysia
           </p>
-          <p className="text-xs text-slate-500 dark:text-slate-400 italic mt-2 max-w-2xl leading-relaxed">
+          <p className="text-xs text-[#b0712d] italic mt-2 max-w-2xl leading-relaxed">
             {isEn
               ? 'This form is used to register and assess individuals or companies applying to become merchants.'
               : 'Borang ini digunakan untuk pendaftaran dan penilaian individu atau syarikat yang memohon menjadi peniaga.'}
@@ -246,12 +247,12 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
         </div>
 
         <div className="flex flex-col items-end gap-2 shrink-0">
-          <div className="w-16 h-16 rounded-2xl bg-slate-900 p-2 flex items-center justify-center border border-amber-500/30">
+          <div className="w-16 h-16 rounded-2xl bg-white p-2 flex items-center justify-center border border-[#b0712d]">
             <Image src="/logo.png" alt="Legacy Cuisine Logo" width={80} height={80} className="object-contain" />
           </div>
           <div className="flex gap-2 text-xs">
-            <div className="bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded border border-slate-300 dark:border-slate-800">
-              <span className="font-semibold text-slate-500">{isEn ? 'Date:' : 'Tarikh:'}</span> {date}
+            <div className="bg-white dark:bg-black px-2 py-1 rounded border border-[#b0712d]">
+              <span className="font-semibold text-[#b0712d]">{isEn ? 'Date (DD/MM/YYYY):' : 'Tarikh (DD/MM/YYYY):'}</span> {formatDateToDDMMYYYY(date)}
             </div>
           </div>
         </div>
@@ -259,12 +260,12 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
 
       {/* Alert Messages */}
       {successMsg && (
-        <div className="mb-6 p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-sm font-semibold rounded-2xl animate-fadeIn">
+        <div className="mb-6 p-4 bg-white dark:bg-black border border-[#b0712d] text-black dark:text-white text-sm font-semibold rounded-2xl animate-fadeIn">
           ✅ {successMsg}
         </div>
       )}
       {errorMsg && (
-        <div className="mb-6 p-4 bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-800 text-rose-800 dark:text-rose-300 text-sm font-semibold rounded-2xl animate-fadeIn">
+        <div className="mb-6 p-4 bg-[#aa0505]/15 border border-[#aa0505] text-[#aa0505] text-sm font-semibold rounded-2xl animate-fadeIn">
           ⚠️ {errorMsg}
         </div>
       )}
@@ -274,22 +275,24 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
         {/* ------------------------------------------------------------- */}
         {/* HEADER META ROW: DATE & MEMBER NO */}
         {/* ------------------------------------------------------------- */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-200 dark:border-slate-850">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white dark:bg-black p-4 rounded-2xl border border-[#b0712d]">
           <div>
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
-              {isEn ? 'Date *' : 'Tarikh Permohonan *'}
+            <label className="block text-xs font-bold text-[#b0712d] uppercase tracking-wider mb-1">
+              {isEn ? 'Date (DD/MM/YYYY) *' : 'Tarikh Permohonan (DD/MM/YYYY) *'}
             </label>
             <input
               type="date"
+              lang="en-GB"
+              placeholder="dd/mm/yyyy"
               required
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"
+              className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-black border border-[#b0712d] text-black dark:text-white text-sm focus:outline-none focus:border-[#aa0505] transition-all"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
+            <label className="block text-xs font-bold text-[#b0712d] uppercase tracking-wider mb-1">
               {isEn ? 'Member No.' : 'No. Ahli / ID Peniaga'}
             </label>
             <input
@@ -297,7 +300,7 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
               placeholder={isEn ? 'e.g. MCH-9941' : 'Contoh: MCH-9941'}
               value={memberNo}
               onChange={(e) => setMemberNo(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"
+              className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-black border border-[#b0712d] text-black dark:text-white text-sm focus:outline-none focus:border-[#aa0505] transition-all"
             />
           </div>
         </div>
@@ -305,13 +308,13 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
         {/* ------------------------------------------------------------- */}
         {/* SECTION 1: MERCHANT INFORMATION */}
         {/* ------------------------------------------------------------- */}
-        <div className="bg-slate-900 text-white p-3 rounded-xl font-extrabold text-sm uppercase tracking-wider shadow-sm">
+        <div className="bg-[#aa0505] text-white p-3 rounded-xl font-extrabold text-sm uppercase tracking-wider shadow-sm">
           {isEn ? '1. MERCHANT INFORMATION' : '1. MAKLUMAT PENIAGA'}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="md:col-span-2">
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
+            <label className="block text-xs font-bold text-[#b0712d] uppercase tracking-wider mb-1">
               {isEn ? 'Full Name *' : 'Nama Penuh *'}
             </label>
             <input
@@ -320,12 +323,12 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
               placeholder={isEn ? 'Full name as per Identity Card / Passport' : 'Nama penuh seperti dalam Kad Pengenalan / Pasport'}
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"
+              className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-black border border-[#b0712d] text-black dark:text-white text-sm focus:outline-none focus:border-[#aa0505] transition-all"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
+            <label className="block text-xs font-bold text-[#b0712d] uppercase tracking-wider mb-1">
               {isEn ? 'Company Name *' : 'Nama Syarikat / Kedai *'}
             </label>
             <input
@@ -334,7 +337,7 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
               placeholder={isEn ? 'Registered business / store name' : 'Nama pendaftaran perniagaan / kedai'}
               value={businessName}
               onChange={(e) => setBusinessName(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"
+              className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-black border border-[#b0712d] text-black dark:text-white text-sm focus:outline-none focus:border-[#aa0505] transition-all"
             />
           </div>
 
@@ -388,10 +391,12 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
 
           <div>
             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
-              {isEn ? 'Date of Birth' : 'Tarikh Lahir'}
+              {isEn ? 'Date of Birth (DD/MM/YYYY)' : 'Tarikh Lahir (DD/MM/YYYY)'}
             </label>
             <input
               type="date"
+              lang="en-GB"
+              placeholder="dd/mm/yyyy"
               value={dateOfBirth}
               onChange={(e) => setDateOfBirth(e.target.value)}
               className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"
@@ -724,10 +729,12 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 dark:bg-slate-950 p-5 rounded-2xl border border-slate-200 dark:border-slate-850">
           <div>
             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
-              {isEn ? 'Date received:' : 'Tarikh Diterima'}
+              {isEn ? 'Date received (DD/MM/YYYY):' : 'Tarikh Diterima (DD/MM/YYYY):'}
             </label>
             <input
               type="date"
+              lang="en-GB"
+              placeholder="dd/mm/yyyy"
               value={receivedDate}
               onChange={(e) => setReceivedDate(e.target.value)}
               className="w-full px-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs"
@@ -765,10 +772,12 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
 
           <div>
             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
-              {isEn ? 'Account activation date:' : 'Tarikh Akaun Diaktifkan'}
+              {isEn ? 'Account activation date (DD/MM/YYYY):' : 'Tarikh Akaun Diaktifkan (DD/MM/YYYY):'}
             </label>
             <input
               type="date"
+              lang="en-GB"
+              placeholder="dd/mm/yyyy"
               value={activationDate}
               onChange={(e) => setActivationDate(e.target.value)}
               className="w-full px-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs"
@@ -897,9 +906,11 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-slate-500 mb-1">{isEn ? 'Date:' : 'Tarikh:'}</label>
+                <label className="block text-[11px] font-semibold text-slate-500 mb-1">{isEn ? 'Date (DD/MM/YYYY):' : 'Tarikh (DD/MM/YYYY):'}</label>
                 <input
                   type="date"
+                  lang="en-GB"
+                  placeholder="dd/mm/yyyy"
                   required
                   value={merchantSignatureDate}
                   onChange={(e) => setMerchantSignatureDate(e.target.value)}
@@ -937,9 +948,11 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-slate-500 mb-1">{isEn ? 'Date:' : 'Tarikh:'}</label>
+                <label className="block text-[11px] font-semibold text-slate-500 mb-1">{isEn ? 'Date (DD/MM/YYYY):' : 'Tarikh (DD/MM/YYYY):'}</label>
                 <input
                   type="date"
+                  lang="en-GB"
+                  placeholder="dd/mm/yyyy"
                   value={agentSignatureDate}
                   onChange={(e) => setAgentSignatureDate(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs"
@@ -975,9 +988,11 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-slate-500 mb-1">{isEn ? 'Date:' : 'Tarikh:'}</label>
+                <label className="block text-[11px] font-semibold text-slate-500 mb-1">{isEn ? 'Date (DD/MM/YYYY):' : 'Tarikh (DD/MM/YYYY):'}</label>
                 <input
                   type="date"
+                  lang="en-GB"
+                  placeholder="dd/mm/yyyy"
                   value={reviewerDate}
                   onChange={(e) => setReviewerDate(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs"
@@ -1013,9 +1028,11 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-slate-500 mb-1">{isEn ? 'Date:' : 'Tarikh:'}</label>
+                <label className="block text-[11px] font-semibold text-slate-500 mb-1">{isEn ? 'Date (DD/MM/YYYY):' : 'Tarikh (DD/MM/YYYY):'}</label>
                 <input
                   type="date"
+                  lang="en-GB"
+                  placeholder="dd/mm/yyyy"
                   value={approverDate}
                   onChange={(e) => setApproverDate(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs"

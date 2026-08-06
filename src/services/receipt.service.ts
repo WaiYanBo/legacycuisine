@@ -150,4 +150,40 @@ export class ReceiptService {
       };
     });
   }
+
+  /**
+   * Ingests a batch of Grab orders, returning detailed results for each order.
+   */
+  static async ingestBatchGrabReceipts(orders: GrabReceiptInput[]) {
+    const results: Array<{ grabOrderId: string; success: boolean; error?: string; orderId?: string }> = [];
+    let succeeded = 0;
+    let failed = 0;
+
+    for (const orderData of orders) {
+      try {
+        const result = await this.ingestGrabReceipt(orderData);
+        results.push({
+          grabOrderId: orderData.grabOrderId,
+          success: true,
+          orderId: result.orderId
+        });
+        succeeded++;
+      } catch (err: any) {
+        results.push({
+          grabOrderId: orderData.grabOrderId,
+          success: false,
+          error: err.message || 'Processing failed'
+        });
+        failed++;
+      }
+    }
+
+    return {
+      total: orders.length,
+      succeeded,
+      failed,
+      results
+    };
+  }
 }
+

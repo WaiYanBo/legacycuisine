@@ -7,7 +7,6 @@ import { useRouter } from 'next/navigation';
 export default function TripleClickDoorGatePage() {
   const router = useRouter();
   const [clickCount, setClickCount] = useState(0);
-  const [isShaking, setIsShaking] = useState(false);
   const [isDoorOpen, setIsDoorOpen] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [username, setUsername] = useState('');
@@ -21,10 +20,6 @@ export default function TripleClickDoorGatePage() {
 
     const newCount = clickCount + 1;
     setClickCount(newCount);
-
-    // Micro feedback shake animation on click
-    setIsShaking(true);
-    setTimeout(() => setIsShaking(false), 220);
 
     // Reset click count if not clicked within 1.2s
     if (timerRef.current) clearTimeout(timerRef.current);
@@ -60,74 +55,84 @@ export default function TripleClickDoorGatePage() {
   };
 
   return (
-    <main className="min-h-screen bg-white flex flex-col items-center justify-center p-4 relative overflow-hidden select-none">
+    <main className="min-h-screen w-full bg-black flex flex-col items-center justify-center relative overflow-hidden select-none">
       {/* 🚪 3D Door Perspective Container */}
-      <div className="relative w-80 h-80 sm:w-[420px] sm:h-[420px] flex items-center justify-center perspective-container">
+      <div className="relative w-full h-screen flex items-center justify-center perspective-container overflow-hidden">
         
         {/* Logo Double Door (Shown until doors open fully) */}
         {!showForm && (
           <div 
             onClick={handleLogoClick}
-            className={`absolute inset-0 cursor-pointer flex items-center justify-center transition-all z-10 ${
-              isShaking ? 'animate-micro-shake' : ''
-            } ${isDoorOpen ? 'pointer-events-none' : ''}`}
+            className={`absolute inset-0 cursor-pointer flex items-center justify-center z-10 ${
+              isDoorOpen ? 'pointer-events-none' : ''
+            }`}
             title="Secret Access Gate"
           >
-            {/* Left Door Leaf */}
-            <div 
-              className={`absolute inset-0 flex items-center justify-center clip-door-left transition-all ${
-                isDoorOpen 
-                  ? 'animate-door-open-left' 
-                  : 'animate-float-slow hover:brightness-105'
-              }`}
-            >
-              <Image
-                src="/logo.png"
-                alt="Legacy Cuisine Logo"
-                width={1254}
-                height={1254}
-                priority
-                className="object-contain w-full h-full pointer-events-none"
-              />
-            </div>
+            {!isDoorOpen ? (
+              /* Single Full Image filling 100% full screen edge-to-edge with ZERO white borders */
+              <div className="absolute inset-0 w-full h-full flex items-center justify-center bg-white">
+                <Image
+                  src="/logo.png"
+                  alt="Legacy Cuisine Logo"
+                  fill
+                  priority
+                  className="object-cover w-full h-full pointer-events-none"
+                />
+              </div>
+            ) : (
+              /* Split Doors during opening 3D animation */
+              <>
+                {/* Left Door Leaf */}
+                <div className="absolute inset-0 flex items-center justify-center clip-door-left transition-all animate-door-open-left bg-white">
+                  <Image
+                    src="/logo.png"
+                    alt="Legacy Cuisine Logo"
+                    fill
+                    priority
+                    className="object-cover w-full h-full pointer-events-none"
+                  />
+                </div>
 
-            {/* Right Door Leaf */}
-            <div 
-              className={`absolute inset-0 flex items-center justify-center clip-door-right transition-all ${
-                isDoorOpen 
-                  ? 'animate-door-open-right' 
-                  : 'animate-float-slow hover:brightness-105'
-              }`}
-            >
-              <Image
-                src="/logo.png"
-                alt="Legacy Cuisine Logo"
-                width={1254}
-                height={1254}
-                priority
-                className="object-contain w-full h-full pointer-events-none"
-              />
+                {/* Right Door Leaf */}
+                <div className="absolute inset-0 flex items-center justify-center clip-door-right transition-all animate-door-open-right bg-white">
+                  <Image
+                    src="/logo.png"
+                    alt="Legacy Cuisine Logo"
+                    fill
+                    priority
+                    className="object-cover w-full h-full pointer-events-none"
+                  />
+                </div>
+              </>
+            )}
+
+            {/* ⚠️ Maintenance Notice floating badge over bottom of image */}
+            <div className="absolute bottom-6 sm:bottom-10 left-1/2 -translate-x-1/2 z-20 pointer-events-none px-4 w-full max-w-lg">
+              <div className="bg-black/90 backdrop-blur-md border border-[#b0712d] text-white text-xs sm:text-sm font-semibold px-6 py-3 rounded-2xl shadow-2xl tracking-wide text-center flex items-center justify-center gap-2.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#aa0505] animate-pulse shrink-0" />
+                <span>The Website is under Maintenance and will live again shortly</span>
+              </div>
             </div>
           </div>
         )}
 
         {/* 🔐 Login Section (Emerges inside the opened door portal) */}
         {showForm && (
-          <div className="relative z-20 w-full bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-2xl animate-in fade-in zoom-in-90 duration-500">
+          <div className="relative z-20 w-full max-w-md mx-4 bg-black p-6 sm:p-8 rounded-3xl border border-[#b0712d] shadow-2xl animate-in fade-in zoom-in-90 duration-500">
             <div className="text-center mb-5">
-              <h2 className="text-lg font-bold tracking-wider text-slate-900 uppercase">Administrator Portal</h2>
-              <p className="text-xs text-amber-600 font-medium mt-1">Authorized Access Verified</p>
+              <h2 className="text-lg font-bold tracking-wider text-white uppercase">Administrator Portal</h2>
+              <p className="text-xs text-[#b0712d] font-medium mt-1">Authorized Access Verified</p>
             </div>
 
             <form onSubmit={handleLogin} className="space-y-4">
               {error && (
-                <div className="bg-rose-50 border border-rose-200 text-rose-600 text-xs py-2 px-3 rounded-xl text-center font-medium animate-bounce">
+                <div className="bg-[#aa0505]/20 border border-[#aa0505] text-white text-xs py-2 px-3 rounded-xl text-center font-medium animate-bounce">
                   {error}
                 </div>
               )}
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-semibold text-white uppercase tracking-wider mb-1">
                   Username
                 </label>
                 <input
@@ -136,12 +141,12 @@ export default function TripleClickDoorGatePage() {
                   placeholder="Enter Username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-amber-500 focus:bg-white transition-all"
+                  className="w-full px-4 py-2.5 rounded-xl bg-black border border-[#b0712d] text-white placeholder-slate-400 text-sm focus:outline-none focus:border-[#aa0505] transition-all"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-semibold text-white uppercase tracking-wider mb-1">
                   Password
                 </label>
                 <input
@@ -150,14 +155,14 @@ export default function TripleClickDoorGatePage() {
                   placeholder="••••••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-amber-500 focus:bg-white transition-all"
+                  className="w-full px-4 py-2.5 rounded-xl bg-black border border-[#b0712d] text-white placeholder-slate-400 text-sm focus:outline-none focus:border-[#aa0505] transition-all"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3 px-4 bg-slate-950 hover:bg-amber-600 text-white font-bold text-sm rounded-xl shadow-lg transition-all transform active:scale-98 disabled:opacity-50 mt-1 flex items-center justify-center gap-2"
+                className="w-full py-3 px-4 bg-[#aa0505] hover:bg-[#b0712d] text-white font-bold text-sm rounded-xl shadow-lg transition-all transform active:scale-98 disabled:opacity-50 mt-1 flex items-center justify-center gap-2"
               >
                 {isLoading ? (
                   <>
@@ -175,13 +180,6 @@ export default function TripleClickDoorGatePage() {
           </div>
         )}
       </div>
-
-      {/* ⚠️ Maintenance Notice */}
-      {!showForm && (
-        <p className="mt-8 text-xs sm:text-sm font-medium text-slate-500 tracking-wide text-center max-w-sm px-4">
-          The Website is under Maintenance and will live again shortly
-        </p>
-      )}
     </main>
   );
 }
