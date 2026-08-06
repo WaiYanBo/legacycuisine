@@ -81,4 +81,24 @@ export class WebhookController {
       res.status(500).json({ error: 'Internal Database Server Error', details: message });
     }
   }
+
+  /**
+   * Controller for processing batch order ingestions from Excel/CSV uploads.
+   */
+  static async handleBatchGrabReceipts(req: Request, res: Response): Promise<void> {
+    try {
+      const { orders } = req.body;
+
+      if (!Array.isArray(orders) || orders.length === 0) {
+        res.status(400).json({ error: 'Missing or invalid non-empty array: "orders"' });
+        return;
+      }
+
+      const batchSummary = await ReceiptService.ingestBatchGrabReceipts(orders);
+      res.status(201).json(batchSummary);
+    } catch (error: any) {
+      res.status(500).json({ error: 'Batch Ingestion Failed', details: error.message });
+    }
+  }
 }
+

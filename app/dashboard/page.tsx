@@ -7,6 +7,7 @@ import { InvoiceTrigger } from '../../components/dashboard/InvoiceTrigger';
 import { AnalyticsView } from '../../components/dashboard/AnalyticsView';
 import { VendorsView } from '../../components/dashboard/VendorsView';
 import { RegistrationFormsView } from '../../components/dashboard/RegistrationFormsView';
+import { ManualOrderModal } from '../../components/dashboard/ManualOrderModal';
 import { DashboardMetrics } from '../../types/dashboard';
 
 type TimeRange = 'daily' | 'weekly' | 'monthly' | 'yearly' | 'all';
@@ -18,6 +19,8 @@ export default function DashboardOverviewPage() {
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [isManualModalOpen, setIsManualModalOpen] = useState<boolean>(false);
+
 
   // Light/Dark Theme state
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
@@ -67,21 +70,21 @@ export default function DashboardOverviewPage() {
   }, [timeRange]);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-[#07090e] text-slate-800 dark:text-slate-100 transition-colors duration-200">
+    <div className="flex h-screen overflow-hidden bg-white dark:bg-black text-black dark:text-white transition-colors duration-200">
       
       {/* 1. LEFT SIDEBAR NAVIGATION */}
-      <aside className="w-64 h-full bg-white dark:bg-[#0d1117] border-r border-slate-200 dark:border-slate-850 flex flex-col justify-between shrink-0 shadow-sm z-10">
+      <aside className="w-64 h-full bg-white dark:bg-black border-r border-[#b0712d] flex flex-col justify-between shrink-0 shadow-sm z-10">
         <div>
           {/* Logo Brand Header */}
-          <div className="p-6 border-b border-slate-100 dark:border-slate-850/50 flex items-center gap-2">
-            <div className="bg-emerald-600 rounded-lg p-1.5 text-white">
+          <div className="p-6 border-b border-[#b0712d] flex items-center gap-2">
+            <div className="bg-[#aa0505] rounded-lg p-1.5 text-white">
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z" />
               </svg>
             </div>
             <div>
-              <span className="text-base font-black tracking-tight text-slate-800 dark:text-slate-100">Legacy Cuisine</span>
-              <span className="block text-[10px] text-emerald-600 dark:text-emerald-450 font-bold uppercase tracking-wider">Reconciliations</span>
+              <span className="text-base font-black tracking-tight text-black dark:text-white">Legacy Cuisine</span>
+              <span className="block text-[10px] text-[#b0712d] font-bold uppercase tracking-wider">Reconciliations</span>
             </div>
           </div>
 
@@ -91,8 +94,8 @@ export default function DashboardOverviewPage() {
               onClick={() => setActiveTab('dashboard')}
               className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all ${
                 activeTab === 'dashboard'
-                  ? 'bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-450 border border-emerald-100/50 dark:border-emerald-900/30'
-                  : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'
+                  ? 'bg-[#aa0505] text-white border border-[#b0712d]'
+                  : 'text-black dark:text-white hover:bg-[#b0712d]/15 hover:text-[#b0712d]'
               }`}
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -105,8 +108,8 @@ export default function DashboardOverviewPage() {
               onClick={() => setActiveTab('analytics')}
               className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all ${
                 activeTab === 'analytics'
-                  ? 'bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-450 border border-emerald-100/50 dark:border-emerald-900/30'
-                  : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'
+                  ? 'bg-[#aa0505] text-white border border-[#b0712d]'
+                  : 'text-black dark:text-white hover:bg-[#b0712d]/15 hover:text-[#b0712d]'
               }`}
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -119,8 +122,8 @@ export default function DashboardOverviewPage() {
               onClick={() => setActiveTab('vendors')}
               className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all ${
                 activeTab === 'vendors'
-                  ? 'bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-450 border border-emerald-100/50 dark:border-emerald-900/30'
-                  : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'
+                  ? 'bg-[#aa0505] text-white border border-[#b0712d]'
+                  : 'text-black dark:text-white hover:bg-[#b0712d]/15 hover:text-[#b0712d]'
               }`}
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -133,8 +136,8 @@ export default function DashboardOverviewPage() {
               onClick={() => setActiveTab('registration')}
               className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all ${
                 activeTab === 'registration'
-                  ? 'bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-450 border border-emerald-100/50 dark:border-emerald-900/30'
-                  : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'
+                  ? 'bg-[#aa0505] text-white border border-[#b0712d]'
+                  : 'text-black dark:text-white hover:bg-[#b0712d]/15 hover:text-[#b0712d]'
               }`}
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -146,18 +149,18 @@ export default function DashboardOverviewPage() {
         </div>
 
         {/* Footer Theme Toggle */}
-        <div className="p-4 border-t border-slate-100 dark:border-slate-850/50">
+        <div className="p-4 border-t border-[#b0712d]">
           <button
             onClick={toggleTheme}
-            className="w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-semibold border border-slate-200 dark:border-slate-850 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all text-slate-650 dark:text-slate-300"
+            className="w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-semibold border border-[#b0712d] hover:bg-[#b0712d]/10 transition-all text-black dark:text-white"
           >
             <span className="capitalize">{theme} Mode</span>
             {theme === 'light' ? (
-              <svg className="w-5 h-5 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="w-5 h-5 text-[#b0712d]" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 100 2h1z" />
               </svg>
             ) : (
-              <svg className="w-5 h-5 text-indigo-400" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="w-5 h-5 text-[#b0712d]" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
               </svg>
             )}
@@ -166,20 +169,50 @@ export default function DashboardOverviewPage() {
       </aside>
 
       {/* 2. MAIN CONTENT AREA */}
-      <main className="flex-1 p-6 sm:p-10 space-y-8 overflow-y-auto h-full w-full">
+      <main className="flex-1 p-6 sm:p-10 space-y-8 overflow-y-auto h-full w-full bg-white dark:bg-black text-black dark:text-white">
         
         {/* VIEW 1: DASHBOARD OVERVIEW */}
         {activeTab === 'dashboard' && (
           <div className="space-y-8 animate-fadeIn">
             {/* Header info */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-850/50 pb-5">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#b0712d] pb-5">
               <div>
-                <h1 className="text-3xl font-black tracking-tight text-slate-850 dark:text-slate-100">Storefront Reconciliation</h1>
-                <p className="text-sm text-slate-400 mt-1">
+                <h1 className="text-3xl font-black tracking-tight text-black dark:text-white">Storefront Reconciliation</h1>
+                <p className="text-sm text-[#b0712d] mt-1">
                   Aggregate storefront invoicing ledger, margin metrics, and base-price adjustments.
                 </p>
               </div>
+
+              {/* Data Ingestion Mode Status & Manual Entry Trigger */}
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="flex items-center gap-2 bg-white dark:bg-black border border-[#b0712d] text-black dark:text-white text-xs px-3 py-1.5 rounded-xl">
+                  <span className="relative flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#aa0505] opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#aa0505]"></span>
+                  </span>
+                  <span className="font-semibold text-black dark:text-white">n8n Webhook: Online</span>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setIsManualModalOpen(true)}
+                  className="bg-[#aa0505] hover:bg-[#b0712d] text-white font-bold text-xs px-4 py-2 rounded-xl shadow-sm transition-all flex items-center gap-2"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  <span>n8n Down? Manual Data Input</span>
+                </button>
+              </div>
             </div>
+
+            {/* Manual Data Entry Modal */}
+            <ManualOrderModal
+              isOpen={isManualModalOpen}
+              onClose={() => setIsManualModalOpen(false)}
+              onSuccess={fetchDashboardMetrics}
+            />
+
 
             {/* Ingestion Alerts Banner */}
             <section aria-label="Urgent Action Items" className="w-full">
@@ -188,21 +221,21 @@ export default function DashboardOverviewPage() {
 
             {/* Financial metrics Section */}
             <section aria-label="Financial Metrics Overview" className="space-y-4">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white dark:bg-[#0d1117] p-4 border border-slate-200 dark:border-slate-850 rounded-xl shadow-sm">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white dark:bg-black p-4 border border-[#b0712d] rounded-xl shadow-sm">
                 <div>
-                  <h3 className="font-bold text-slate-800 dark:text-slate-200 text-sm">Key Performance Indicators</h3>
-                  <p className="text-xs text-slate-400">Summarized gross revenue, base payouts, and agency commissions.</p>
+                  <h3 className="font-bold text-black dark:text-white text-sm">Key Performance Indicators</h3>
+                  <p className="text-xs text-[#b0712d]">Summarized gross revenue, base payouts, and agency commissions.</p>
                 </div>
 
-                <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-950 p-1 rounded-lg border border-slate-200 dark:border-slate-850">
+                <div className="flex items-center gap-1 bg-white dark:bg-black p-1 rounded-lg border border-[#b0712d]">
                   {(['all', 'daily', 'weekly', 'monthly', 'yearly'] as TimeRange[]).map((range) => (
                     <button
                       key={range}
                       onClick={() => setTimeRange(range)}
                       className={`text-[11px] font-bold px-2.5 py-1 rounded-md capitalize transition-all ${
                         timeRange === range
-                          ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 shadow-sm border border-slate-200/50 dark:border-slate-850'
-                          : 'text-slate-500 hover:text-slate-900 dark:hover:text-slate-200'
+                          ? 'bg-[#aa0505] text-white shadow-sm border border-[#b0712d]'
+                          : 'text-black dark:text-white hover:text-[#b0712d]'
                       }`}
                     >
                       {range === 'all' ? 'All-Time' : range}
@@ -214,11 +247,11 @@ export default function DashboardOverviewPage() {
               {loading && !metrics ? (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full animate-pulse">
                   {[1, 2, 3].map((n) => (
-                    <div key={n} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-850 rounded-xl p-6 h-32"></div>
+                    <div key={n} className="bg-white dark:bg-black border border-[#b0712d] rounded-xl p-6 h-32"></div>
                   ))}
                 </div>
               ) : error ? (
-                <div className="bg-rose-50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/30 text-rose-800 dark:text-rose-450 p-4 rounded-xl text-center text-sm font-medium">
+                <div className="bg-[#aa0505]/10 border border-[#aa0505] text-black dark:text-white p-4 rounded-xl text-center text-sm font-medium">
                   {error}
                 </div>
               ) : (
@@ -240,23 +273,23 @@ export default function DashboardOverviewPage() {
         {/* VIEW 2: ANALYTICS OVERVIEW */}
         {activeTab === 'analytics' && (
           <div className="space-y-8 animate-fadeIn">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-850/50 pb-5">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#b0712d] pb-5">
               <div>
-                <h1 className="text-3xl font-black tracking-tight text-slate-850 dark:text-slate-100">Financial Analytics</h1>
-                <p className="text-sm text-slate-400 mt-1">
+                <h1 className="text-3xl font-black tracking-tight text-black dark:text-white">Financial Analytics</h1>
+                <p className="text-sm text-[#b0712d] mt-1">
                   Track markup margins, commission ratios, and storefront payouts over time.
                 </p>
               </div>
 
-              <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-950 p-1 rounded-lg border border-slate-200 dark:border-slate-850">
+              <div className="flex items-center gap-1 bg-white dark:bg-black p-1 rounded-lg border border-[#b0712d]">
                 {(['all', 'daily', 'weekly', 'monthly', 'yearly'] as TimeRange[]).map((range) => (
                   <button
                     key={range}
                     onClick={() => setTimeRange(range)}
                     className={`text-[11px] font-bold px-2.5 py-1 rounded-md capitalize transition-all ${
                       timeRange === range
-                        ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 shadow-sm border border-slate-200/50 dark:border-slate-850'
-                        : 'text-slate-500 hover:text-slate-900 dark:hover:text-slate-200'
+                        ? 'bg-[#aa0505] text-white shadow-sm border border-[#b0712d]'
+                        : 'text-black dark:text-white hover:text-[#b0712d]'
                     }`}
                   >
                     {range === 'all' ? 'All-Time' : range}
@@ -274,9 +307,9 @@ export default function DashboardOverviewPage() {
         {/* VIEW 3: VENDORS REGISTRY */}
         {activeTab === 'vendors' && (
           <div className="space-y-8 animate-fadeIn">
-            <div className="border-b border-slate-100 dark:border-slate-850/50 pb-5">
-              <h1 className="text-3xl font-black tracking-tight text-slate-850 dark:text-slate-100">Vendors Registry</h1>
-              <p className="text-sm text-slate-400 mt-1">
+            <div className="border-b border-[#b0712d] pb-5">
+              <h1 className="text-3xl font-black tracking-tight text-black dark:text-white">Vendors Registry</h1>
+              <p className="text-sm text-[#b0712d] mt-1">
                 Register new restaurant accounts and associate them with storefront Grab email addresses.
               </p>
             </div>

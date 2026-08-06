@@ -16,7 +16,7 @@
     "fields": {
       "agentName": "Nama Ejen *",
       "agentNamePlaceholder": "cth. Ahmad Razak",
-      "date": "Tarikh *",
+      "date": "Tarikh (DD/MM/YYYY) *",
       "vendor": "Vendor / Nama Perniagaan *",
       "vendorPlaceholder": "cth. Legacy Cuisine Enterprise",
       "personInCharge": "Orang Yang Bertanggungjawab *",

@@ -159,6 +159,8 @@ export default function VendorChecklistForm({ lang = 'en' }: VendorChecklistForm
               </label>
               <input
                 type="date"
+                lang="en-GB"
+                placeholder="dd/mm/yyyy"
                 name="date"
                 value={formData.date}
                 onChange={handleHeaderChange}
@@ -288,7 +290,7 @@ export default function VendorChecklistForm({ lang = 'en' }: VendorChecklistForm
                 name="leadStatus"
                 value={formData.leadStatus}
                 onChange={handleHeaderChange}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-slate-100 focus:outline-none focus:border-amber-500 transition-colors"
+                className="w-full bg-white dark:bg-black border border-[#b0712d] rounded-xl px-4 py-2.5 text-black dark:text-white focus:outline-none focus:border-[#aa0505] transition-colors"
               >
                 <option value={lang === 'ms' ? 'Berminat' : 'Interested'}>{lang === 'ms' ? 'Berminat' : 'Interested'}</option>
                 <option value={lang === 'ms' ? 'Dalam Pertimbangan' : 'Keep In View'}>{lang === 'ms' ? 'Dalam Pertimbangan' : 'Keep In View'}</option>
@@ -299,11 +301,11 @@ export default function VendorChecklistForm({ lang = 'en' }: VendorChecklistForm
         </div>
 
         {/* Section 1: Agent Self-Check */}
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-md">
-          <h2 className="text-xl font-bold text-amber-400 mb-2">
+        <div className="bg-white dark:bg-black border border-[#b0712d] rounded-2xl p-6 sm:p-8 shadow-md text-black dark:text-white">
+          <h2 className="text-xl font-bold text-[#b0712d] mb-2">
             {dict.section1Title}
           </h2>
-          <p className="text-xs text-slate-400 mb-6">
+          <p className="text-xs text-[#b0712d] mb-6">
             {dict.section1Subtitle}
           </p>
 
@@ -311,13 +313,13 @@ export default function VendorChecklistForm({ lang = 'en' }: VendorChecklistForm
             {dict.selfCheckItems.map((item, idx) => (
               <div
                 key={item.id}
-                className="bg-slate-950/60 border border-slate-800/80 rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-slate-700 transition-colors"
+                className="bg-white dark:bg-black border border-[#b0712d] rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 transition-colors"
               >
                 <div className="flex-1">
-                  <div className="text-sm font-semibold text-slate-200">
+                  <div className="text-sm font-semibold text-black dark:text-white">
                     {idx + 1}. {item.title}
                   </div>
-                  <div className="text-xs text-slate-400 mt-1">{item.desc}</div>
+                  <div className="text-xs text-[#b0712d] mt-1">{item.desc}</div>
                 </div>
                 <div className="flex items-center gap-3">
                   {(['YES', 'NO', 'NA'] as const).map((opt) => (
@@ -326,11 +328,11 @@ export default function VendorChecklistForm({ lang = 'en' }: VendorChecklistForm
                       className={`cursor-pointer px-3.5 py-1.5 rounded-lg text-xs font-bold border transition-all ${
                         selfCheck[item.id] === opt
                           ? opt === 'YES'
-                            ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400'
+                            ? 'bg-[#aa0505] border-[#aa0505] text-white'
                             : opt === 'NO'
-                            ? 'bg-rose-500/20 border-rose-500 text-rose-400'
-                            : 'bg-amber-500/20 border-amber-500 text-amber-400'
-                          : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200'
+                            ? 'bg-[#aa0505]/20 border-[#aa0505] text-[#aa0505]'
+                            : 'bg-[#b0712d] border-[#b0712d] text-white'
+                          : 'bg-white dark:bg-black border-[#b0712d] text-black dark:text-white hover:bg-[#b0712d]/10'
                       }`}
                     >
                       <input
@@ -350,7 +352,7 @@ export default function VendorChecklistForm({ lang = 'en' }: VendorChecklistForm
           </div>
 
           <div className="mt-6">
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-semibold text-[#b0712d] uppercase tracking-wider mb-2">
               {dict.agentNotesLabel}
             </label>
             <textarea
@@ -358,28 +360,28 @@ export default function VendorChecklistForm({ lang = 'en' }: VendorChecklistForm
               value={agentNotes}
               onChange={(e) => setAgentNotes(e.target.value)}
               placeholder={dict.agentNotesPlaceholder}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-100 text-sm focus:outline-none focus:border-amber-500 transition-colors"
+              className="w-full bg-white dark:bg-black border border-[#b0712d] rounded-xl p-3 text-black dark:text-white text-sm focus:outline-none focus:border-[#aa0505] transition-colors"
             />
           </div>
         </div>
 
         {/* Section 2: Vendor Qualification Interview */}
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-md">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 border-b border-slate-800 pb-4">
+        <div className="bg-white dark:bg-black border border-[#b0712d] rounded-2xl p-6 sm:p-8 shadow-md text-black dark:text-white">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 border-b border-[#b0712d] pb-4">
             <div>
-              <h2 className="text-xl font-bold text-amber-400">
+              <h2 className="text-xl font-bold text-[#b0712d]">
                 {dict.section2Title}
               </h2>
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-[#b0712d] mt-1">
                 {dict.section2Subtitle}
               </p>
             </div>
 
             {/* Score Counter */}
-            <div className="flex items-center gap-3 bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-xs font-semibold">
-              <span className="text-emerald-400">{dict.yesScore}: {yesScore} / 20</span>
-              <span className="text-rose-400">{dict.noScore}: {noScore}</span>
-              <span className="text-amber-400">{dict.naScore}: {naScore}</span>
+            <div className="flex items-center gap-3 bg-white dark:bg-black border border-[#b0712d] rounded-xl px-4 py-2 text-xs font-semibold">
+              <span className="text-[#aa0505] font-bold">{dict.yesScore}: {yesScore} / 20</span>
+              <span className="text-[#aa0505]">{dict.noScore}: {noScore}</span>
+              <span className="text-[#b0712d]">{dict.naScore}: {naScore}</span>
             </div>
           </div>
 
@@ -387,13 +389,13 @@ export default function VendorChecklistForm({ lang = 'en' }: VendorChecklistForm
             {dict.qualificationItems.map((item, idx) => (
               <div
                 key={item.id}
-                className="bg-slate-950/60 border border-slate-800/80 rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-slate-700 transition-colors"
+                className="bg-white dark:bg-black border border-[#b0712d] rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 transition-colors"
               >
                 <div className="flex-1">
-                  <div className="text-sm font-semibold text-slate-200">
+                  <div className="text-sm font-semibold text-black dark:text-white">
                     {idx + 1}. {item.title}
                   </div>
-                  <div className="text-xs text-slate-400 mt-1">{item.desc}</div>
+                  <div className="text-xs text-[#b0712d] mt-1">{item.desc}</div>
                 </div>
                 <div className="flex items-center gap-3">
                   {(['YES', 'NO', 'NA'] as const).map((opt) => (
@@ -402,11 +404,11 @@ export default function VendorChecklistForm({ lang = 'en' }: VendorChecklistForm
                       className={`cursor-pointer px-3.5 py-1.5 rounded-lg text-xs font-bold border transition-all ${
                         qualification[item.id] === opt
                           ? opt === 'YES'
-                            ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400'
+                            ? 'bg-[#aa0505] border-[#aa0505] text-white'
                             : opt === 'NO'
-                            ? 'bg-rose-500/20 border-rose-500 text-rose-400'
-                            : 'bg-amber-500/20 border-amber-500 text-amber-400'
-                          : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200'
+                            ? 'bg-[#aa0505]/20 border-[#aa0505] text-[#aa0505]'
+                            : 'bg-[#b0712d] border-[#b0712d] text-white'
+                          : 'bg-white dark:bg-black border-[#b0712d] text-black dark:text-white hover:bg-[#b0712d]/10'
                       }`}
                     >
                       <input
@@ -426,29 +428,29 @@ export default function VendorChecklistForm({ lang = 'en' }: VendorChecklistForm
           </div>
 
           {/* Final Score Banner */}
-          <div className="mt-8 bg-slate-950 border border-slate-800 rounded-xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="mt-8 bg-white dark:bg-black border border-[#b0712d] rounded-xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div>
-              <div className="text-sm font-bold text-slate-200 uppercase tracking-wider">
+              <div className="text-sm font-bold text-black dark:text-white uppercase tracking-wider">
                 {dict.scoreCountTitle}
               </div>
-              <div className="text-xs text-slate-400">
+              <div className="text-xs text-[#b0712d]">
                 {totalChecked} {dict.scoreCountSubtitle}
               </div>
             </div>
             <div className="flex items-center gap-6 text-center">
               <div>
-                <div className="text-2xl font-black text-emerald-400">{yesScore} / 20</div>
-                <div className="text-[10px] uppercase font-bold text-slate-400">{dict.yesScore}</div>
+                <div className="text-2xl font-black text-[#aa0505]">{yesScore} / 20</div>
+                <div className="text-[10px] uppercase font-bold text-[#b0712d]">{dict.yesScore}</div>
               </div>
-              <div className="w-px h-8 bg-slate-800" />
+              <div className="w-px h-8 bg-[#b0712d]" />
               <div>
-                <div className="text-2xl font-black text-rose-400">{noScore}</div>
-                <div className="text-[10px] uppercase font-bold text-slate-400">{dict.noScore}</div>
+                <div className="text-2xl font-black text-[#aa0505]">{noScore}</div>
+                <div className="text-[10px] uppercase font-bold text-[#b0712d]">{dict.noScore}</div>
               </div>
-              <div className="w-px h-8 bg-slate-800" />
+              <div className="w-px h-8 bg-[#b0712d]" />
               <div>
-                <div className="text-2xl font-black text-amber-400">{naScore}</div>
-                <div className="text-[10px] uppercase font-bold text-slate-400">{dict.naScore}</div>
+                <div className="text-2xl font-black text-[#b0712d]">{naScore}</div>
+                <div className="text-[10px] uppercase font-bold text-[#b0712d]">{dict.naScore}</div>
               </div>
             </div>
           </div>
@@ -459,7 +461,7 @@ export default function VendorChecklistForm({ lang = 'en' }: VendorChecklistForm
           <button
             type="submit"
             disabled={submitting}
-            className="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-sm rounded-xl shadow-lg shadow-amber-500/20 transition-all transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50"
+            className="w-full sm:w-auto px-8 py-3.5 bg-[#aa0505] hover:bg-[#b0712d] text-white font-bold text-sm rounded-xl shadow-lg transition-all transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50"
           >
             {submitting ? dict.submittingBtn : dict.submitBtn}
           </button>
