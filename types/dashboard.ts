@@ -29,7 +29,7 @@ export interface ReconciliationLog {
   id: string;
   grabOrderId: string;
   totalGrabAmount: number;
-  totalVendorPayout: number;
+  totalMerchantPayout: number;
   clientGrossProfit: number;
   adjustmentAmount: number;
   adjustmentNote: string | null;
@@ -58,6 +58,6 @@ export interface StorefrontPerformance {
 
 export interface ChartDataPoint {
   date: string; // YYYY-MM-DD
-  vendorPayouts: number;
+  merchantPayouts: number;
   clientProfit: number;
 }

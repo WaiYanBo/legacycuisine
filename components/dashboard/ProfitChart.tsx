@@ -89,8 +89,8 @@ export const ProfitChart: React.FC<ProfitChartProps> = ({ data = [] }) => {
                 wrapperStyle={{ fontSize: '12px', color: '#b0712d' }}
               />
               <Bar 
-                name="Vendor Payout" 
-                dataKey="vendorPayouts" 
+                name="Merchant Payout" 
+                dataKey="merchantPayouts" 
                 fill="#b0712d" 
                 radius={[4, 4, 0, 0]} 
                 maxBarSize={40}

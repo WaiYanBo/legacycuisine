@@ -96,7 +96,7 @@ export default function SubmissionsViewer({ lang = 'en' }: SubmissionsViewerProp
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#b0712d]/50 pb-4 mb-4">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-lg font-bold text-black dark:text-white">{c.vendor}</span>
+                      <span className="text-lg font-bold text-black dark:text-white">{c.merchant || c.vendor}</span>
                       <span className="px-2.5 py-0.5 rounded-full bg-[#b0712d]/15 text-[#b0712d] border border-[#b0712d] text-[10px] font-bold uppercase">
                         {c.language}
                       </span>

@@ -39,8 +39,8 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
   const [activeTab, setActiveTab] = useState<'single' | 'excel'>('single');
 
   // Single Order State
-  const [vendors, setVendors] = useState<any[]>([]);
-  const [selectedVendorEmail, setSelectedVendorEmail] = useState<string>('');
+  const [merchants, setMerchants] = useState<any[]>([]);
+  const [selectedMerchantEmail, setSelectedMerchantEmail] = useState<string>('');
   const [customStoreIdentifier, setCustomStoreIdentifier] = useState<string>('');
   
   const [grabOrderId, setGrabOrderId] = useState<string>('');
@@ -65,7 +65,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState<string>('');
 
-  // Fetch registered vendors to easily pick store email
+  // Fetch registered merchants to easily pick store email
   useEffect(() => {
     if (!isOpen) return;
 
@@ -80,22 +80,22 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
     const randomNum = Math.floor(100000 + Math.random() * 900000);
     setGrabOrderId(`MANUAL-GF-${randomNum}`);
 
-    const fetchVendors = async () => {
+    const fetchMerchants = async () => {
       try {
-        const res = await fetch('/api/vendors');
+        const res = await fetch('/api/merchants');
         if (res.ok) {
           const data = await res.json();
-          setVendors(data);
+          setMerchants(data);
           if (data.length > 0 && data[0].storefronts?.length > 0) {
-            setSelectedVendorEmail(data[0].storefronts[0].grabEmail);
+            setSelectedMerchantEmail(data[0].storefronts[0].grabEmail);
           }
         }
       } catch (err) {
-        console.error('Failed to load vendors for manual entry', err);
+        console.error('Failed to load merchants for manual entry', err);
       }
     };
 
-    fetchVendors();
+    fetchMerchants();
   }, [isOpen]);
 
   // Recalculate subtotal from line items when line items change
@@ -135,8 +135,8 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
   };
 
   const handleFillSample = () => {
-    if (vendors.length > 0 && vendors[0].storefronts?.length > 0) {
-      setSelectedVendorEmail(vendors[0].storefronts[0].grabEmail);
+    if (merchants.length > 0 && merchants[0].storefronts?.length > 0) {
+      setSelectedMerchantEmail(merchants[0].storefronts[0].grabEmail);
     }
     const sampleId = `MANUAL-GF-${Math.floor(100000 + Math.random() * 900000)}`;
     setGrabOrderId(sampleId);
@@ -159,7 +159,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
     setStatus('loading');
     setErrorMessage('');
 
-    const storeIdentifier = selectedVendorEmail || customStoreIdentifier;
+    const storeIdentifier = selectedMerchantEmail || customStoreIdentifier;
 
     if (!storeIdentifier) {
       setStatus('error');
@@ -230,7 +230,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
   const handleDownloadTemplate = () => {
     const templateData = [
       {
-        'Store Identifier': vendors[0]?.storefronts[0]?.grabEmail || 'legacy.kl@grabfood.com',
+        'Store Identifier': merchants[0]?.storefronts[0]?.grabEmail || 'legacy.kl@grabfood.com',
         'Grab Order ID': 'GF-BATCH-001',
         'Order Date': '2026-08-05 12:30:00',
         'Item Name': 'Legacy Nasi Lemak Special',
@@ -244,7 +244,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
         'Voucher Code': 'PROMO-KL'
       },
       {
-        'Store Identifier': vendors[0]?.storefronts[0]?.grabEmail || 'legacy.kl@grabfood.com',
+        'Store Identifier': merchants[0]?.storefronts[0]?.grabEmail || 'legacy.kl@grabfood.com',
         'Grab Order ID': 'GF-BATCH-001',
         'Order Date': '2026-08-05 12:30:00',
         'Item Name': 'Iced Teh Tarik Kaw',
@@ -258,7 +258,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
         'Voucher Code': 'PROMO-KL'
       },
       {
-        'Store Identifier': vendors[0]?.storefronts[0]?.grabEmail || 'legacy.kl@grabfood.com',
+        'Store Identifier': merchants[0]?.storefronts[0]?.grabEmail || 'legacy.kl@grabfood.com',
         'Grab Order ID': 'GF-BATCH-002',
         'Order Date': '2026-08-05 13:15:00',
         'Item Name': 'Hainanese Chicken Rice Bowl',
@@ -309,9 +309,9 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
       };
 
       const storeIdentifier = String(
-        getVal(['storeidentifier', 'storeemail', 'store', 'vendor', 'email']) ||
-        selectedVendorEmail ||
-        vendors[0]?.storefronts[0]?.grabEmail ||
+        getVal(['storeidentifier', 'storeemail', 'store', 'merchant', 'vendor', 'email']) ||
+        selectedMerchantEmail ||
+        merchants[0]?.storefronts[0]?.grabEmail ||
         ''
       ).trim();
 
@@ -535,22 +535,22 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
                     Select Registered Storefront
                   </label>
                   <select
-                    value={selectedVendorEmail}
-                    onChange={(e) => setSelectedVendorEmail(e.target.value)}
+                    value={selectedMerchantEmail}
+                    onChange={(e) => setSelectedMerchantEmail(e.target.value)}
                     className="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
                   >
                     <option value="">-- Custom Identifier --</option>
-                    {vendors.flatMap((v) =>
-                      (v.storefronts || []).map((sf: any) => (
+                    {merchants.flatMap((m) =>
+                      (m.storefronts || []).map((sf: any) => (
                         <option key={sf.id} value={sf.grabEmail}>
-                          {sf.name} ({sf.grabEmail}) - {v.businessName}
+                          {sf.name} ({sf.grabEmail}) - {m.businessName}
                         </option>
                       ))
                     )}
                   </select>
                 </div>
 
-                {!selectedVendorEmail && (
+                {!selectedMerchantEmail && (
                   <div>
                     <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase mb-1">
                       Custom Store Identifier / Email

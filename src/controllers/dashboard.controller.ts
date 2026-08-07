@@ -60,14 +60,15 @@ export class DashboardController {
 
   /**
    * POST /api/dashboard/invoices/generate
-   * Generates statements based on vendorId and a billingDate.
+   * Generates statements based on merchantId and a billingDate.
    */
   static async generateInvoices(req: Request, res: Response): Promise<void> {
     try {
-      const { vendorId, billingDate } = req.body;
+      const { merchantId: reqMerchantId, vendorId, billingDate } = req.body;
+      const merchantId = reqMerchantId || vendorId;
 
-      if (!vendorId || typeof vendorId !== 'string') {
-        res.status(400).json({ error: 'Missing or invalid string: "vendorId"' });
+      if (!merchantId || typeof merchantId !== 'string') {
+        res.status(400).json({ error: 'Missing or invalid string: "merchantId"' });
         return;
       }
       if (!billingDate || typeof billingDate !== 'string') {
@@ -78,13 +79,13 @@ export class DashboardController {
       const end = new Date(billingDate);
       end.setHours(23, 59, 59, 999);
 
-      // Find all outstanding Reconciled logs for this vendor on or before the billing date
+      // Find all outstanding Reconciled logs for this merchant on or before the billing date
       const logs = await prisma.reconciliationLog.findMany({
         where: {
           status: 'RECONCILED',
           grabOrder: {
             storefront: {
-              vendorId: vendorId,
+              merchantId: merchantId,
             },
             orderDate: {
               lte: end,
@@ -94,15 +95,15 @@ export class DashboardController {
       });
 
       if (logs.length === 0) {
-        res.status(404).json({ error: 'No outstanding reconciled orders found for this vendor on or before the selected date. Ensure you verify base prices first!' });
+        res.status(404).json({ error: 'No outstanding reconciled orders found for this merchant on or before the selected date. Ensure you verify base prices first!' });
         return;
       }
 
-      // Create a single consolidated Invoice for the vendor
+      // Create a single consolidated Invoice for the merchant
       const invoiceNum = `INV-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
       const invoice = await prisma.invoice.create({
         data: {
-          vendorId,
+          merchantId,
           invoiceNumber: invoiceNum,
           billingDate: new Date(billingDate),
           status: 'DRAFT',

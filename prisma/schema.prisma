@@ -9,25 +9,25 @@ datasource db {
   provider = "postgresql"
 }
 
-/// Vendor represents the local restaurant owner/seller.
-model Vendor {
-  id           String       @id @default(uuid()) @db.Uuid
+/// Merchant represents the local restaurant owner/seller.
+model Merchant {
+  id           String         @id @default(uuid()) @db.Uuid
   name         String
-  businessName String       @map("business_name")
-  contactEmail String       @map("contact_email")
-  contactPhone String?      @map("contact_phone")
-  status       VendorStatus @default(ACTIVE)
-  createdAt    DateTime     @default(now()) @map("created_at")
-  updatedAt    DateTime     @updatedAt @map("updated_at")
+  businessName String         @map("business_name")
+  contactEmail String         @map("contact_email")
+  contactPhone String?        @map("contact_phone")
+  status       MerchantStatus @default(ACTIVE)
+  createdAt    DateTime       @default(now()) @map("created_at")
+  updatedAt    DateTime       @updatedAt @map("updated_at")
 
   storefronts Storefront[]
   invoices    Invoice[]
 
   @@index([status])
-  @@map("vendors")
+  @@map("merchants")
 }
 
-enum VendorStatus {
+enum MerchantStatus {
   ACTIVE
   INACTIVE
   SUSPENDED
@@ -36,8 +36,8 @@ enum VendorStatus {
 /// Storefront represents the Grab Account link mapping to a unique Grab email/domain.
 model Storefront {
   id        String   @id @default(uuid()) @db.Uuid
-  vendorId  String   @map("vendor_id") @db.Uuid
-  vendor    Vendor   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  merchantId String  @map("merchant_id") @db.Uuid
+  merchant  Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
   grabEmail String   @unique @map("grab_email")
   name      String
   isActive  Boolean  @default(true) @map("is_active")
@@ -47,7 +47,7 @@ model Storefront {
   productMasters ProductMaster[]
   grabOrders     GrabOrder[]
 
-  @@index([vendorId])
+  @@index([merchantId])
   @@map("storefronts")
 }
 
@@ -118,19 +118,19 @@ model OrderLineItem {
 
 /// ReconciliationLog tracks calculated margins, payout totals, and status.
 model ReconciliationLog {
-  id                String               @id @default(uuid()) @db.Uuid
-  grabOrderId       String               @unique @map("grab_order_id") @db.Uuid
-  grabOrder         GrabOrder            @relation(fields: [grabOrderId], references: [id], onDelete: Cascade)
-  totalGrabAmount   Decimal              @map("total_grab_amount") @db.Decimal(12, 2)
-  totalVendorPayout Decimal              @map("total_vendor_payout") @db.Decimal(12, 2)
-  clientGrossProfit Decimal              @map("client_gross_profit") @db.Decimal(12, 2)
-  adjustmentAmount  Decimal              @default(0.00) @map("adjustment_amount") @db.Decimal(12, 2)
-  adjustmentNote    String?              @map("adjustment_note")
-  status            ReconciliationStatus @default(PENDING)
-  invoiceId         String?              @map("invoice_id") @db.Uuid
-  invoice           Invoice?             @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
-  createdAt         DateTime             @default(now()) @map("created_at")
-  updatedAt         DateTime             @updatedAt @map("updated_at")
+  id                  String               @id @default(uuid()) @db.Uuid
+  grabOrderId         String               @unique @map("grab_order_id") @db.Uuid
+  grabOrder           GrabOrder            @relation(fields: [grabOrderId], references: [id], onDelete: Cascade)
+  totalGrabAmount     Decimal              @map("total_grab_amount") @db.Decimal(12, 2)
+  totalMerchantPayout Decimal              @map("total_merchant_payout") @db.Decimal(12, 2)
+  clientGrossProfit   Decimal              @map("client_gross_profit") @db.Decimal(12, 2)
+  adjustmentAmount    Decimal              @default(0.00) @map("adjustment_amount") @db.Decimal(12, 2)
+  adjustmentNote      String?              @map("adjustment_note")
+  status              ReconciliationStatus @default(PENDING)
+  invoiceId           String?              @map("invoice_id") @db.Uuid
+  invoice             Invoice?             @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+  createdAt           DateTime             @default(now()) @map("created_at")
+  updatedAt           DateTime             @updatedAt @map("updated_at")
 
   @@index([status])
   @@index([invoiceId])
@@ -149,8 +149,8 @@ enum ReconciliationStatus {
 /// Invoice tracks statements generated for local sellers.
 model Invoice {
   id            String        @id @default(uuid()) @db.Uuid
-  vendorId      String        @map("vendor_id") @db.Uuid
-  vendor        Vendor        @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  merchantId    String        @map("merchant_id") @db.Uuid
+  merchant      Merchant      @relation(fields: [merchantId], references: [id], onDelete: Cascade)
   invoiceNumber String        @unique @map("invoice_number")
   pdfPath       String?       @map("pdf_path")
   billingDate   DateTime      @map("billing_date")
@@ -160,10 +160,10 @@ model Invoice {
 
   reconciliationLogs ReconciliationLog[]
 
-  @@index([vendorId])
+  @@index([merchantId])
   @@index([status])
   @@index([billingDate])
-  @@index([vendorId, billingDate])
+  @@index([merchantId, billingDate])
   @@index([status, billingDate])
   @@map("invoices")
 }
@@ -176,12 +176,12 @@ enum InvoiceStatus {
   VOIDED
 }
 
-/// VendorChecklist stores submissions of the Vendor Recruitment & Registration Checklist.
-model VendorChecklist {
+/// MerchantChecklist stores submissions of the Merchant Recruitment & Registration Checklist.
+model MerchantChecklist {
   id                 String   @id @default(uuid()) @db.Uuid
   agentName          String   @map("agent_name")
   date               DateTime @map("date")
-  vendor             String   @map("vendor")
+  merchant           String   @map("merchant")
   personInCharge     String   @map("person_in_charge")
   mobileNumber       String   @map("mobile_number")
   emailAddress       String   @map("email_address")
@@ -206,7 +206,7 @@ model VendorChecklist {
 
   @@index([emailAddress])
   @@index([createdAt])
-  @@map("vendor_checklists")
+  @@map("merchant_checklists")
 }
 
 /// BusinessRegistration stores official Merchant Registration forms (Borang Peniaga).
