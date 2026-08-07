@@ -5,13 +5,13 @@ import { ActionRequiredAlert } from '../../components/dashboard/ActionRequiredAl
 import { MetricsGrid } from '../../components/dashboard/MetricsGrid';
 import { InvoiceTrigger } from '../../components/dashboard/InvoiceTrigger';
 import { AnalyticsView } from '../../components/dashboard/AnalyticsView';
-import { VendorsView } from '../../components/dashboard/VendorsView';
+import { MerchantsView } from '../../components/dashboard/MerchantsView';
 import { RegistrationFormsView } from '../../components/dashboard/RegistrationFormsView';
 import { ManualOrderModal } from '../../components/dashboard/ManualOrderModal';
 import { DashboardMetrics } from '../../types/dashboard';
 
 type TimeRange = 'daily' | 'weekly' | 'monthly' | 'yearly' | 'all';
-type TabName = 'dashboard' | 'analytics' | 'vendors' | 'registration';
+type TabName = 'dashboard' | 'analytics' | 'merchants' | 'registration';
 
 export default function DashboardOverviewPage() {
   const [activeTab, setActiveTab] = useState<TabName>('dashboard');
@@ -119,9 +119,9 @@ export default function DashboardOverviewPage() {
             </button>
 
             <button
-              onClick={() => setActiveTab('vendors')}
+              onClick={() => setActiveTab('merchants')}
               className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all ${
-                activeTab === 'vendors'
+                activeTab === 'merchants'
                   ? 'bg-[#aa0505] text-white border border-[#b0712d]'
                   : 'text-black dark:text-white hover:bg-[#b0712d]/15 hover:text-[#b0712d]'
               }`}
@@ -129,7 +129,7 @@ export default function DashboardOverviewPage() {
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
               </svg>
-              Vendors Registry
+              Merchants Registry
             </button>
 
             <button
@@ -304,18 +304,18 @@ export default function DashboardOverviewPage() {
           </div>
         )}
 
-        {/* VIEW 3: VENDORS REGISTRY */}
-        {activeTab === 'vendors' && (
+        {/* VIEW 3: MERCHANTS REGISTRY */}
+        {activeTab === 'merchants' && (
           <div className="space-y-8 animate-fadeIn">
             <div className="border-b border-[#b0712d] pb-5">
-              <h1 className="text-3xl font-black tracking-tight text-black dark:text-white">Vendors Registry</h1>
+              <h1 className="text-3xl font-black tracking-tight text-black dark:text-white">Merchants Registry</h1>
               <p className="text-sm text-[#b0712d] mt-1">
                 Register new restaurant accounts and associate them with storefront Grab email addresses.
               </p>
             </div>
 
             <section className="w-full">
-              <VendorsView />
+              <MerchantsView />
             </section>
           </div>
         )}

@@ -50,21 +50,21 @@ export class DashboardService {
     let totalPayouts = new Prisma.Decimal(0.00);
     let netProfit = new Prisma.Decimal(0.00);
 
-    const groups: Record<string, { vendorPayouts: number; clientProfit: number }> = {};
+    const groups: Record<string, { merchantPayouts: number; clientProfit: number }> = {};
     const storefrontGroups: Record<string, { name: string; email: string; revenue: number; payout: number; profit: number; count: number }> = {};
 
     for (const log of logs) {
       // Metrics totals
       totalRevenue = totalRevenue.add(log.totalGrabAmount);
-      totalPayouts = totalPayouts.add(log.totalVendorPayout);
+      totalPayouts = totalPayouts.add(log.totalMerchantPayout);
       netProfit = netProfit.add(log.clientGrossProfit);
 
       // Group chart data points by order date (YYYY-MM-DD)
       const dateStr = log.grabOrder.orderDate.toISOString().split('T')[0];
       if (!groups[dateStr]) {
-        groups[dateStr] = { vendorPayouts: 0.00, clientProfit: 0.00 };
+        groups[dateStr] = { merchantPayouts: 0.00, clientProfit: 0.00 };
       }
-      groups[dateStr].vendorPayouts += log.totalVendorPayout.toNumber();
+      groups[dateStr].merchantPayouts += log.totalMerchantPayout.toNumber();
       groups[dateStr].clientProfit += log.clientGrossProfit.toNumber();
 
       // Group by storefront performance
@@ -81,7 +81,7 @@ export class DashboardService {
           };
         }
         storefrontGroups[sf.id].revenue += log.totalGrabAmount.toNumber();
-        storefrontGroups[sf.id].payout += log.totalVendorPayout.toNumber();
+        storefrontGroups[sf.id].payout += log.totalMerchantPayout.toNumber();
         storefrontGroups[sf.id].profit += log.clientGrossProfit.toNumber();
         storefrontGroups[sf.id].count += 1;
       }
@@ -89,7 +89,7 @@ export class DashboardService {
 
     const chartData = Object.entries(groups).map(([date, vals]) => ({
       date,
-      vendorPayouts: Number(vals.vendorPayouts.toFixed(2)),
+      merchantPayouts: Number(vals.merchantPayouts.toFixed(2)),
       clientProfit: Number(vals.clientProfit.toFixed(2)),
     })).sort((a, b) => a.date.localeCompare(b.date));
 
@@ -180,7 +180,7 @@ export class DashboardService {
           include: { productMaster: true },
         });
 
-        let totalVendorPayoutSum = new Prisma.Decimal(0.00);
+        let totalMerchantPayoutSum = new Prisma.Decimal(0.00);
         let orderStillNeedsReview = false;
 
         for (const item of lineItems) {
@@ -189,7 +189,7 @@ export class DashboardService {
             ? new Prisma.Decimal(basePrice)
             : item.restaurantUnitPriceAtTimeOfSale;
 
-          totalVendorPayoutSum = totalVendorPayoutSum.add(itemPrice.mul(item.quantity));
+          totalMerchantPayoutSum = totalMerchantPayoutSum.add(itemPrice.mul(item.quantity));
 
           // If the order contains other products that still need base price review
           if (item.productMasterId !== product.id && item.productMaster.needsReview) {
@@ -198,14 +198,14 @@ export class DashboardService {
         }
 
         const totalGrabAmount = log.totalGrabAmount;
-        const clientGrossProfit = totalGrabAmount.sub(totalVendorPayoutSum);
+        const clientGrossProfit = totalGrabAmount.sub(totalMerchantPayoutSum);
         const newStatus = orderStillNeedsReview ? 'PENDING' : 'RECONCILED';
 
         // Update the transaction log
         await tx.reconciliationLog.update({
           where: { id: log.id },
           data: {
-            totalVendorPayout: totalVendorPayoutSum,
+            totalMerchantPayout: totalMerchantPayoutSum,
             clientGrossProfit,
             status: newStatus,
           },

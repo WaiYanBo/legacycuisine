@@ -99,7 +99,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ metrics, loading }
                   <th className="py-3 px-4">Storefront Details</th>
                   <th className="py-3 px-4 text-right">Orders</th>
                   <th className="py-3 px-4 text-right">Gross Revenue</th>
-                  <th className="py-3 px-4 text-right">Vendor Payout</th>
+                  <th className="py-3 px-4 text-right">Merchant Payout</th>
                   <th className="py-3 px-4 text-right">Net Markup Margin</th>
                   <th className="py-3 px-4 text-right">Margin Rate</th>
                 </tr>

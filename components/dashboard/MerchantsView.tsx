@@ -10,7 +10,7 @@ interface Storefront {
   };
 }
 
-interface Vendor {
+interface Merchant {
   id: string;
   name: string;
   businessName: string;
@@ -20,57 +20,57 @@ interface Vendor {
   storefronts: Storefront[];
 }
 
-export const VendorsView: React.FC = () => {
-  const [vendors, setVendors] = useState<Vendor[]>([]);
+export const MerchantsView: React.FC = () => {
+  const [merchants, setMerchants] = useState<Merchant[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   // Modal State
-  const [showVendorModal, setShowVendorModal] = useState<boolean>(false);
+  const [showMerchantModal, setShowMerchantModal] = useState<boolean>(false);
   const [showStorefrontModal, setShowStorefrontModal] = useState<boolean>(false);
 
   // Form State
-  const [vendorForm, setVendorForm] = useState({ name: '', businessName: '', contactEmail: '', contactPhone: '' });
-  const [storefrontForm, setStorefrontForm] = useState({ vendorId: '', name: '', grabEmail: '' });
-  
+  const [merchantForm, setMerchantForm] = useState({ name: '', businessName: '', contactEmail: '', contactPhone: '' });
+  const [storefrontForm, setStorefrontForm] = useState({ merchantId: '', name: '', grabEmail: '' });
+
   const [submitting, setSubmitting] = useState<boolean>(false);
 
-  const fetchVendors = async () => {
+  const fetchMerchants = async () => {
     try {
       setLoading(true);
-      const res = await fetch('/api/vendors');
-      if (!res.ok) throw new Error('Failed to retrieve vendors');
+      const res = await fetch('/api/merchants');
+      if (!res.ok) throw new Error('Failed to retrieve merchants');
       const data = await res.json();
-      setVendors(data);
+      setMerchants(data);
     } catch (err: any) {
-      setError(err.message || 'Error loading vendors list');
+      setError(err.message || 'Error loading merchants list');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchVendors();
+    fetchMerchants();
   }, []);
 
-  const handleVendorSubmit = async (e: React.FormEvent) => {
+  const handleMerchantSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       setSubmitting(true);
-      const res = await fetch('/api/vendors', {
+      const res = await fetch('/api/merchants', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(vendorForm),
+        body: JSON.stringify(merchantForm),
       });
 
       if (!res.ok) {
         const err = await res.json();
-        throw new Error(err.error || 'Failed to register vendor.');
+        throw new Error(err.error || 'Failed to register merchant.');
       }
 
-      setVendorForm({ name: '', businessName: '', contactEmail: '', contactPhone: '' });
-      setShowVendorModal(false);
-      fetchVendors();
+      setMerchantForm({ name: '', businessName: '', contactEmail: '', contactPhone: '' });
+      setShowMerchantModal(false);
+      fetchMerchants();
     } catch (err: any) {
       alert(err.message);
     } finally {
@@ -82,7 +82,7 @@ export const VendorsView: React.FC = () => {
     e.preventDefault();
     try {
       setSubmitting(true);
-      const res = await fetch('/api/vendors/storefronts', {
+      const res = await fetch('/api/merchants/storefronts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(storefrontForm),
@@ -93,9 +93,9 @@ export const VendorsView: React.FC = () => {
         throw new Error(err.error || 'Failed to map storefront.');
       }
 
-      setStorefrontForm({ vendorId: '', name: '', grabEmail: '' });
+      setStorefrontForm({ merchantId: '', name: '', grabEmail: '' });
       setShowStorefrontModal(false);
-      fetchVendors();
+      fetchMerchants();
     } catch (err: any) {
       alert(err.message);
     } finally {
@@ -124,16 +124,16 @@ export const VendorsView: React.FC = () => {
       {/* Header and Controls */}
       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 bg-white dark:bg-black p-6 border border-[#b0712d] rounded-xl shadow-sm text-black dark:text-white">
         <div>
-          <h3 className="text-lg font-bold text-black dark:text-white">Restaurant Vendors Registry</h3>
+          <h3 className="text-lg font-bold text-black dark:text-white">Restaurant Merchants Registry</h3>
           <p className="text-xs text-[#b0712d]">Manage client restaurant contracts and map Grab storefront accounts.</p>
         </div>
 
         <div className="flex items-center gap-3">
           <button
-            onClick={() => setShowVendorModal(true)}
+            onClick={() => setShowMerchantModal(true)}
             className="bg-[#aa0505] hover:bg-[#b0712d] text-white text-xs font-bold px-4 py-2.5 rounded-lg transition-all"
           >
-            + Add Vendor
+            + Add Merchant
           </button>
           <button
             onClick={() => setShowStorefrontModal(true)}
@@ -144,39 +144,39 @@ export const VendorsView: React.FC = () => {
         </div>
       </div>
 
-      {/* Vendors List Cards */}
-      {vendors.length === 0 ? (
+      {/* Merchants List Cards */}
+      {merchants.length === 0 ? (
         <div className="text-center py-20 text-[#b0712d] border border-dashed border-[#b0712d] rounded-xl bg-white dark:bg-black">
-          No registered vendors found. Get started by clicking "+ Add Vendor"!
+          No registered merchants found. Get started by clicking "+ Add Merchant"!
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {vendors.map((vendor) => (
-            <div key={vendor.id} className="bg-white dark:bg-black border border-[#b0712d] rounded-xl p-6 shadow-sm flex flex-col justify-between text-black dark:text-white">
+          {merchants.map((merchant) => (
+            <div key={merchant.id} className="bg-white dark:bg-black border border-[#b0712d] rounded-xl p-6 shadow-sm flex flex-col justify-between text-black dark:text-white">
               <div>
                 <div className="flex justify-between items-start gap-2">
                   <div>
-                    <h4 className="text-lg font-bold text-black dark:text-white">{vendor.businessName}</h4>
-                    <span className="text-xs font-semibold text-[#b0712d]">Owned by: {vendor.name}</span>
+                    <h4 className="text-lg font-bold text-black dark:text-white">{merchant.businessName}</h4>
+                    <span className="text-xs font-semibold text-[#b0712d]">Owned by: {merchant.name}</span>
                   </div>
                   <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${
-                    vendor.status === 'ACTIVE'
+                    merchant.status === 'ACTIVE'
                       ? 'bg-[#b0712d]/15 text-black dark:text-white border-[#b0712d]'
                       : 'bg-[#aa0505]/15 text-[#aa0505] border-[#aa0505]'
                   }`}>
-                    {vendor.status}
+                    {merchant.status}
                   </span>
                 </div>
 
                 <div className="mt-4 space-y-1.5 text-xs text-[#b0712d] border-t border-[#b0712d] pt-3">
                   <div className="flex justify-between">
                     <span className="text-[#b0712d]">Contact Email:</span>
-                    <span className="font-semibold text-black dark:text-white">{vendor.contactEmail}</span>
+                    <span className="font-semibold text-black dark:text-white">{merchant.contactEmail}</span>
                   </div>
-                  {vendor.contactPhone && (
+                  {merchant.contactPhone && (
                     <div className="flex justify-between">
                       <span className="text-[#b0712d]">Contact Phone:</span>
-                      <span className="font-semibold text-black dark:text-white">{vendor.contactPhone}</span>
+                      <span className="font-semibold text-black dark:text-white">{merchant.contactPhone}</span>
                     </div>
                   )}
                 </div>
@@ -185,12 +185,12 @@ export const VendorsView: React.FC = () => {
               {/* Linked Storefronts Section */}
               <div className="mt-5 bg-white dark:bg-black border border-[#b0712d] rounded-lg p-4">
                 <h5 className="text-xs font-bold uppercase tracking-wider text-[#b0712d] mb-3">Linked Grab Storefronts</h5>
-                
-                {vendor.storefronts.length === 0 ? (
+
+                {merchant.storefronts.length === 0 ? (
                   <div className="text-[11px] text-[#b0712d] italic">No storefront emails linked yet. Map one below.</div>
                 ) : (
                   <div className="space-y-3">
-                    {vendor.storefronts.map((sf) => (
+                    {merchant.storefronts.map((sf) => (
                       <div key={sf.id} className="flex items-center justify-between text-xs border-b border-[#b0712d]/40 pb-2 last:border-b-0 last:pb-0">
                         <div>
                           <div className="font-semibold text-black dark:text-white">{sf.name}</div>
@@ -210,20 +210,20 @@ export const VendorsView: React.FC = () => {
         </div>
       )}
 
-      {/* MODAL 1: ADD VENDOR */}
-      {showVendorModal && (
+      {/* MODAL 1: ADD MERCHANT */}
+      {showMerchantModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-black border border-[#b0712d] rounded-xl shadow-xl w-full max-w-md p-6 text-black dark:text-white">
-            <h4 className="text-lg font-bold text-black dark:text-white mb-4">Register New Vendor</h4>
-            
-            <form onSubmit={handleVendorSubmit} className="space-y-4 text-xs">
+            <h4 className="text-lg font-bold text-black dark:text-white mb-4">Register New Merchant</h4>
+
+            <form onSubmit={handleMerchantSubmit} className="space-y-4 text-xs">
               <div>
                 <label className="block font-semibold text-[#b0712d] mb-1">Owner Name</label>
                 <input
                   type="text"
                   required
-                  value={vendorForm.name}
-                  onChange={(e) => setVendorForm({ ...vendorForm, name: e.target.value })}
+                  value={merchantForm.name}
+                  onChange={(e) => setMerchantForm({ ...merchantForm, name: e.target.value })}
                   className="w-full px-3 py-2 text-sm border border-[#b0712d] bg-white dark:bg-black rounded-md text-black dark:text-white focus:outline-none focus:border-[#aa0505]"
                   placeholder="e.g., John Doe"
                 />
@@ -234,8 +234,8 @@ export const VendorsView: React.FC = () => {
                 <input
                   type="text"
                   required
-                  value={vendorForm.businessName}
-                  onChange={(e) => setVendorForm({ ...vendorForm, businessName: e.target.value })}
+                  value={merchantForm.businessName}
+                  onChange={(e) => setMerchantForm({ ...merchantForm, businessName: e.target.value })}
                   className="w-full px-3 py-2 text-sm border border-[#b0712d] bg-white dark:bg-black rounded-md text-black dark:text-white focus:outline-none focus:border-[#aa0505]"
                   placeholder="e.g., Legacy Cuisine Central"
                 />
@@ -246,8 +246,8 @@ export const VendorsView: React.FC = () => {
                 <input
                   type="email"
                   required
-                  value={vendorForm.contactEmail}
-                  onChange={(e) => setVendorForm({ ...vendorForm, contactEmail: e.target.value })}
+                  value={merchantForm.contactEmail}
+                  onChange={(e) => setMerchantForm({ ...merchantForm, contactEmail: e.target.value })}
                   className="w-full px-3 py-2 text-sm border border-[#b0712d] bg-white dark:bg-black rounded-md text-black dark:text-white focus:outline-none focus:border-[#aa0505]"
                   placeholder="e.g., contact@restaurant.com"
                 />
@@ -257,8 +257,8 @@ export const VendorsView: React.FC = () => {
                 <label className="block font-semibold text-[#b0712d] mb-1">Contact Phone (Optional)</label>
                 <input
                   type="text"
-                  value={vendorForm.contactPhone}
-                  onChange={(e) => setVendorForm({ ...vendorForm, contactPhone: e.target.value })}
+                  value={merchantForm.contactPhone}
+                  onChange={(e) => setMerchantForm({ ...merchantForm, contactPhone: e.target.value })}
                   className="w-full px-3 py-2 text-sm border border-[#b0712d] bg-white dark:bg-black rounded-md text-black dark:text-white focus:outline-none focus:border-[#aa0505]"
                   placeholder="e.g., +60123456789"
                 />
@@ -267,7 +267,7 @@ export const VendorsView: React.FC = () => {
               <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#b0712d]">
                 <button
                   type="button"
-                  onClick={() => setShowVendorModal(false)}
+                  onClick={() => setShowMerchantModal(false)}
                   className="px-4 py-2 border border-[#b0712d] rounded-md hover:bg-[#b0712d]/10 font-semibold text-black dark:text-white"
                 >
                   Cancel
@@ -277,7 +277,7 @@ export const VendorsView: React.FC = () => {
                   disabled={submitting}
                   className="px-4 py-2 bg-[#aa0505] hover:bg-[#b0712d] text-white rounded-md font-semibold"
                 >
-                  {submitting ? 'Registering...' : 'Save Vendor'}
+                  {submitting ? 'Registering...' : 'Save Merchant'}
                 </button>
               </div>
             </form>
@@ -290,19 +290,19 @@ export const VendorsView: React.FC = () => {
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-black border border-[#b0712d] rounded-xl shadow-xl w-full max-w-md p-6 text-black dark:text-white">
             <h4 className="text-lg font-bold text-black dark:text-white mb-4">Link Grab Storefront Account</h4>
-            
+
             <form onSubmit={handleStorefrontSubmit} className="space-y-4 text-xs">
               <div>
-                <label className="block font-semibold text-[#b0712d] mb-1">Select Restaurant Vendor</label>
+                <label className="block font-semibold text-[#b0712d] mb-1">Select Restaurant Merchant</label>
                 <select
                   required
-                  value={storefrontForm.vendorId}
-                  onChange={(e) => setStorefrontForm({ ...storefrontForm, vendorId: e.target.value })}
+                  value={storefrontForm.merchantId}
+                  onChange={(e) => setStorefrontForm({ ...storefrontForm, merchantId: e.target.value })}
                   className="w-full px-3 py-2 text-sm border border-[#b0712d] bg-white dark:bg-black rounded-md text-black dark:text-white focus:outline-none focus:border-[#aa0505]"
                 >
-                  <option value="">-- Choose Vendor --</option>
-                  {vendors.map(v => (
-                    <option key={v.id} value={v.id}>{v.businessName} ({v.name})</option>
+                  <option value="">-- Choose Merchant --</option>
+                  {merchants.map(m => (
+                    <option key={m.id} value={m.id}>{m.businessName} ({m.name})</option>
                   ))}
                 </select>
               </div>

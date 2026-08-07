@@ -11,13 +11,14 @@ function s(val: any, fallback: string = '-'): string {
 }
 
 /**
- * Controller for handling Vendor Recruitment & Registration Checklist submissions.
+ * Controller for handling Merchant Recruitment & Registration Checklist submissions.
  */
 export async function createChecklist(req: Request, res: Response): Promise<void> {
   try {
     const {
       agentName,
       date,
+      merchant,
       vendor,
       personInCharge,
       mobileNumber,
@@ -38,20 +39,20 @@ export async function createChecklist(req: Request, res: Response): Promise<void
     } = req.body;
 
     const sAgentName = s(agentName);
-    const sVendor = s(vendor);
+    const sMerchant = s(merchant || vendor);
     const sPIC = s(personInCharge);
     const sEmail = s(emailAddress);
 
-    if (sAgentName === '-' || sVendor === '-' || sPIC === '-' || sEmail === '-') {
+    if (sAgentName === '-' || sMerchant === '-' || sPIC === '-' || sEmail === '-') {
       res.status(400).json({ error: 'Sila lengkapkan maklumat wajib (Nama Ejen, Syarikat, PIC, E-mel).' });
       return;
     }
 
-    const record = await prisma.vendorChecklist.create({
+    const record = await prisma.merchantChecklist.create({
       data: {
         agentName: sAgentName,
         date: date ? new Date(date) : new Date(),
-        vendor: sVendor,
+        merchant: sMerchant,
         personInCharge: sPIC,
         mobileNumber: s(mobileNumber),
         emailAddress: sEmail,
@@ -73,7 +74,7 @@ export async function createChecklist(req: Request, res: Response): Promise<void
 
     res.status(201).json({
       success: true,
-      message: 'Vendor Recruitment Checklist saved successfully to Supabase.',
+      message: 'Merchant Recruitment Checklist saved successfully to Supabase.',
       data: record,
     });
   } catch (error: any) {
@@ -83,11 +84,11 @@ export async function createChecklist(req: Request, res: Response): Promise<void
 }
 
 /**
- * Controller for retrieving all Vendor Checklist submissions.
+ * Controller for retrieving all Merchant Checklist submissions.
  */
 export async function getChecklists(req: Request, res: Response): Promise<void> {
   try {
-    const lists = await prisma.vendorChecklist.findMany({
+    const lists = await prisma.merchantChecklist.findMany({
       orderBy: { createdAt: 'desc' },
     });
     res.json({ success: true, data: lists });

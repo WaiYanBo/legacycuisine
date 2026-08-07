@@ -72,7 +72,7 @@ export class ReceiptService {
         }
       });
 
-      let totalVendorPayoutSum = new Prisma.Decimal(0.00);
+      let totalMerchantPayoutSum = new Prisma.Decimal(0.00);
 
       // 5. Process Line Items and resolve ProductMaster reference
       for (const item of data.orderLineItems) {
@@ -105,7 +105,7 @@ export class ReceiptService {
 
         // Add to total payout sum: base price * quantity
         const itemPayout = product.restaurantBasePrice.mul(item.quantity);
-        totalVendorPayoutSum = totalVendorPayoutSum.add(itemPayout);
+        totalMerchantPayoutSum = totalMerchantPayoutSum.add(itemPayout);
 
         // Record individual line item
         await tx.orderLineItem.create({
@@ -120,16 +120,16 @@ export class ReceiptService {
       }
 
       // 6. Calculate Reconciliation Margins
-      // Client Profit = Grab Receipt Price (Subtotal) - Restaurant Base Price (totalVendorPayoutSum)
+      // Client Profit = Grab Receipt Price (Subtotal) - Restaurant Base Price (totalMerchantPayoutSum)
       const totalGrabAmount = new Prisma.Decimal(data.rawSubtotal);
-      const clientGrossProfit = totalGrabAmount.sub(totalVendorPayoutSum);
+      const clientGrossProfit = totalGrabAmount.sub(totalMerchantPayoutSum);
 
       // Save reconciliation log record
       const reconciliationLog = await tx.reconciliationLog.create({
         data: {
           grabOrderId: grabOrder.id,
           totalGrabAmount,
-          totalVendorPayout: totalVendorPayoutSum,
+          totalMerchantPayout: totalMerchantPayoutSum,
           clientGrossProfit,
           adjustmentAmount: new Prisma.Decimal(0.00),
           adjustmentNote: data.voucherBarcode ? `Voucher/Promo Barcode: ${data.voucherBarcode}` : null,
@@ -144,7 +144,7 @@ export class ReceiptService {
         reconciliationLogId: reconciliationLog.id,
         totals: {
           subtotal: totalGrabAmount.toNumber(),
-          vendorPayout: totalVendorPayoutSum.toNumber(),
+          merchantPayout: totalMerchantPayoutSum.toNumber(),
           clientProfit: clientGrossProfit.toNumber()
         }
       };

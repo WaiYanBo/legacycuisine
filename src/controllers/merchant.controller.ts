@@ -1,14 +1,14 @@
 import { Request, Response } from 'express';
 import { prisma } from '../prisma';
 
-export class VendorController {
+export class MerchantController {
   /**
-   * GET /api/vendors
-   * Lists all vendors with storefronts and order counts.
+   * GET /api/merchants
+   * Lists all merchants with storefronts and order counts.
    */
-  static async getVendors(req: Request, res: Response): Promise<void> {
+  static async getMerchants(req: Request, res: Response): Promise<void> {
     try {
-      const vendors = await prisma.vendor.findMany({
+      const merchants = await prisma.merchant.findMany({
         include: {
           storefronts: {
             include: {
@@ -21,17 +21,17 @@ export class VendorController {
         orderBy: { createdAt: 'desc' },
       });
 
-      res.status(200).json(vendors);
+      res.status(200).json(merchants);
     } catch (error: any) {
-      res.status(500).json({ error: 'Failed to retrieve vendors list.', details: error.message });
+      res.status(500).json({ error: 'Failed to retrieve merchants list.', details: error.message });
     }
   }
 
   /**
-   * POST /api/vendors
-   * Registers a new vendor/restaurant partner.
+   * POST /api/merchants
+   * Registers a new merchant/restaurant partner.
    */
-  static async createVendor(req: Request, res: Response): Promise<void> {
+  static async createMerchant(req: Request, res: Response): Promise<void> {
     try {
       const { name, businessName, contactEmail, contactPhone } = req.body;
 
@@ -48,7 +48,7 @@ export class VendorController {
         return;
       }
 
-      const vendor = await prisma.vendor.create({
+      const merchant = await prisma.merchant.create({
         data: {
           name,
           businessName,
@@ -58,22 +58,22 @@ export class VendorController {
         },
       });
 
-      res.status(201).json({ message: 'Vendor registered successfully.', vendor });
+      res.status(201).json({ message: 'Merchant registered successfully.', merchant });
     } catch (error: any) {
-      res.status(500).json({ error: 'Failed to register vendor.', details: error.message });
+      res.status(500).json({ error: 'Failed to register merchant.', details: error.message });
     }
   }
 
   /**
-   * POST /api/vendors/storefronts
-   * Maps a new Grab storefront account linked to a vendor.
+   * POST /api/merchants/storefronts
+   * Maps a new Grab storefront account linked to a merchant.
    */
   static async createStorefront(req: Request, res: Response): Promise<void> {
     try {
-      const { vendorId, name, grabEmail } = req.body;
+      const { merchantId, name, grabEmail } = req.body;
 
-      if (!vendorId || typeof vendorId !== 'string') {
-        res.status(400).json({ error: 'Missing or invalid string: "vendorId"' });
+      if (!merchantId || typeof merchantId !== 'string') {
+        res.status(400).json({ error: 'Missing or invalid string: "merchantId"' });
         return;
       }
       if (!name || typeof name !== 'string') {
@@ -85,10 +85,10 @@ export class VendorController {
         return;
       }
 
-      // Check if vendor exists
-      const vendor = await prisma.vendor.findUnique({ where: { id: vendorId } });
-      if (!vendor) {
-        res.status(404).json({ error: `Vendor with ID "${vendorId}" not found.` });
+      // Check if merchant exists
+      const merchant = await prisma.merchant.findUnique({ where: { id: merchantId } });
+      if (!merchant) {
+        res.status(404).json({ error: `Merchant with ID "${merchantId}" not found.` });
         return;
       }
 
@@ -101,14 +101,14 @@ export class VendorController {
 
       const storefront = await prisma.storefront.create({
         data: {
-          vendorId,
+          merchantId,
           name,
           grabEmail,
           isActive: true,
         },
       });
 
-      res.status(201).json({ message: 'Storefront mapped to vendor successfully.', storefront });
+      res.status(201).json({ message: 'Storefront mapped to merchant successfully.', storefront });
     } catch (error: any) {
       res.status(500).json({ error: 'Failed to create storefront link.', details: error.message });
     }

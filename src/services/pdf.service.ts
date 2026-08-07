@@ -82,11 +82,11 @@ export class PdfService {
    * invokes Puppeteer to print it, saves to local storage, and updates the db paths.
    */
   static async generateInvoicePdf(invoiceId: string): Promise<string> {
-    // 1. Fetch Invoice with Vendor and Reconciliation Logs
+    // 1. Fetch Invoice with Merchant and Reconciliation Logs
     const invoice = await prisma.invoice.findUnique({
       where: { id: invoiceId },
       include: {
-        vendor: true,
+        merchant: true,
         reconciliationLogs: {
           include: {
             grabOrder: true
@@ -111,7 +111,7 @@ export class PdfService {
     const transactionRows = invoice.reconciliationLogs.map((log: any) => {
       const grabOrder = log.grabOrder;
       const subtotal = grabOrder.rawSubtotal.toNumber();
-      const basePayout = log.totalVendorPayout.toNumber();
+      const basePayout = log.totalMerchantPayout.toNumber();
       const adjustment = log.adjustmentAmount.toNumber();
       const finalPayout = basePayout + adjustment;
 
@@ -120,12 +120,6 @@ export class PdfService {
 
       // Extract the first available voucher barcode for the barcode print section
       if (barcodeValue === 'NONE' && grabOrder.grabEmail && log.grabOrderId) {
-        // Find if voucherBarcode was captured
-        // We look for a barcode parsed during receipt scan, stored on the log or raw order.
-        // We will default to a fallback if none exists, or lookup if order has promo details.
-        // Let's check adjustment note or mock some barcode logic if the barcode field itself isn't stored.
-        // The voucher barcode can be fetched from the webhook body or adjustment text.
-        // We will mock one based on the order ID if no barcode was captured.
         barcodeValue = invoice.invoiceNumber;
       }
 
@@ -312,12 +306,12 @@ export class PdfService {
 
   <div class="metadata-section">
     <div class="meta-col">
-      <div class="meta-title">Prepared For Vendor</div>
+      <div class="meta-title">Prepared For Merchant</div>
       <div class="meta-content">
-        <span class="meta-name">${invoice.vendor.businessName}</span><br>
-        Merchant Representative: ${invoice.vendor.name}<br>
-        Contact Email: ${invoice.vendor.contactEmail}<br>
-        Status: ${invoice.vendor.status}
+        <span class="meta-name">${invoice.merchant.businessName}</span><br>
+        Merchant Representative: ${invoice.merchant.name}<br>
+        Contact Email: ${invoice.merchant.contactEmail}<br>
+        Status: ${invoice.merchant.status}
       </div>
     </div>
     <div class="meta-col text-right">
@@ -337,7 +331,7 @@ export class PdfService {
           <th>Grab Order ID</th>
           <th>Order Date</th>
           <th class="text-right">Grab Subtotal</th>
-          <th class="text-right">Vendor Base Price</th>
+          <th class="text-right">Merchant Base Price</th>
           <th class="text-right">Adjustment</th>
           <th class="text-right">Final Payout</th>
         </tr>
@@ -355,7 +349,7 @@ export class PdfService {
         `).join('')}
         
         <tr class="totals-row">
-          <td colspan="4">Total Vendor Settlement Payout Summary</td>
+          <td colspan="4">Total Merchant Settlement Payout Summary</td>
           <td class="text-right">Total:</td>
           <td class="text-right">
             <strong>RM ${grandTotalPayout.toFixed(2)}</strong>
@@ -444,11 +438,11 @@ export class PdfService {
   }
 
   /**
-   * Takes a list of ReconciliationLog IDs, groups them by Vendor, creates invoices,
+   * Takes a list of ReconciliationLog IDs, groups them by Merchant, creates invoices,
    * and runs Puppeteer to render a consolidated statement PDF for each.
    */
   static async generateBatchInvoices(logIds: string[]): Promise<any[]> {
-    // 1. Fetch matching logs including storefront vendor info
+    // 1. Fetch matching logs including storefront merchant info
     const logs = await prisma.reconciliationLog.findMany({
       where: { id: { in: logIds } },
       include: {
@@ -464,25 +458,25 @@ export class PdfService {
       throw new Error('No reconciliation logs found for the provided IDs.');
     }
 
-    // 2. Group logs by Vendor ID
-    const vendorLogsMap: Record<string, typeof logs> = {};
+    // 2. Group logs by Merchant ID
+    const merchantLogsMap: Record<string, typeof logs> = {};
     for (const log of logs) {
-      const vendorId = log.grabOrder.storefront.vendorId;
-      if (!vendorLogsMap[vendorId]) {
-        vendorLogsMap[vendorId] = [];
+      const merchantId = log.grabOrder.storefront.merchantId;
+      if (!merchantLogsMap[merchantId]) {
+        merchantLogsMap[merchantId] = [];
       }
-      vendorLogsMap[vendorId].push(log);
+      merchantLogsMap[merchantId].push(log);
     }
 
     const results = [];
 
-    // 3. For each vendor, create an Invoice and compile the PDF
-    for (const [vendorId, vendorLogs] of Object.entries(vendorLogsMap)) {
+    // 3. For each merchant, create an Invoice and compile the PDF
+    for (const [merchantId, merchantLogs] of Object.entries(merchantLogsMap)) {
       const invoiceNum = `INV-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
       
       const invoice = await prisma.invoice.create({
         data: {
-          vendorId,
+          merchantId,
           invoiceNumber: invoiceNum,
           billingDate: new Date(),
           status: 'DRAFT'
@@ -491,7 +485,7 @@ export class PdfService {
 
       // Link logs to this invoice and update their status to INVOICED
       await prisma.reconciliationLog.updateMany({
-        where: { id: { in: vendorLogs.map((l: any) => l.id) } },
+        where: { id: { in: merchantLogs.map((l: any) => l.id) } },
         data: {
           invoiceId: invoice.id,
           status: 'INVOICED'
@@ -504,9 +498,9 @@ export class PdfService {
       results.push({
         invoiceId: invoice.id,
         invoiceNumber: invoiceNum,
-        vendorId,
+        merchantId,
         pdfPath,
-        logsLinked: vendorLogs.length
+        logsLinked: merchantLogs.length
       });
     }
 

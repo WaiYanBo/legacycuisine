@@ -1,34 +1,34 @@
 import React, { useState, useEffect } from 'react';
 
 export const InvoiceTrigger: React.FC = () => {
-  const [vendors, setVendors] = useState<any[]>([]);
-  const [selectedVendorId, setSelectedVendorId] = useState<string>('');
+  const [merchants, setMerchants] = useState<any[]>([]);
+  const [selectedMerchantId, setSelectedMerchantId] = useState<string>('');
   const [billingDate, setBillingDate] = useState<string>('');
   
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState<string>('');
 
   useEffect(() => {
-    const fetchVendorsList = async () => {
+    const fetchMerchantsList = async () => {
       try {
-        const res = await fetch('/api/vendors');
+        const res = await fetch('/api/merchants');
         if (res.ok) {
           const data = await res.json();
-          setVendors(data);
+          setMerchants(data);
         }
       } catch (err) {
-        console.error('Failed to load vendors list', err);
+        console.error('Failed to load merchants list', err);
       }
     };
-    fetchVendorsList();
+    fetchMerchantsList();
   }, []);
 
   const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!selectedVendorId) {
+    if (!selectedMerchantId) {
       setStatus('error');
-      setMessage('Please select a restaurant vendor.');
+      setMessage('Please select a restaurant merchant.');
       return;
     }
 
@@ -42,12 +42,12 @@ export const InvoiceTrigger: React.FC = () => {
       setStatus('loading');
       setMessage('');
       
-      const res = await fetch('/api/invoices/generate', {
+      const res = await fetch('/api/dashboard/invoices/generate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ vendorId: selectedVendorId, billingDate }),
+        body: JSON.stringify({ merchantId: selectedMerchantId, billingDate }),
       });
 
       const result = await res.json();
@@ -58,7 +58,7 @@ export const InvoiceTrigger: React.FC = () => {
 
       setStatus('success');
       setMessage(result.message || `Successfully generated invoice statements.`);
-      setSelectedVendorId('');
+      setSelectedMerchantId('');
       setBillingDate('');
     } catch (err: any) {
       setStatus('error');
@@ -70,24 +70,24 @@ export const InvoiceTrigger: React.FC = () => {
     <div className="w-full bg-white dark:bg-black border border-[#b0712d] rounded-xl p-6 shadow-sm text-black dark:text-white">
       <div>
         <h3 className="text-lg font-bold text-black dark:text-white">Statement Generation</h3>
-        <p className="text-xs text-[#b0712d]">Select a vendor to compile all outstanding reconciled orders into a corporate statement invoice.</p>
+        <p className="text-xs text-[#b0712d]">Select a merchant to compile all outstanding reconciled orders into a corporate statement invoice.</p>
       </div>
 
       <form onSubmit={handleGenerate} className="mt-5 space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="vendor-select" className="block text-xs font-semibold text-[#b0712d] uppercase mb-1">Select Vendor</label>
+            <label htmlFor="vendor-select" className="block text-xs font-semibold text-[#b0712d] uppercase mb-1">Select Merchant</label>
             <select
               id="vendor-select"
-              value={selectedVendorId}
-              onChange={(e) => setSelectedVendorId(e.target.value)}
+              value={selectedMerchantId}
+              onChange={(e) => setSelectedMerchantId(e.target.value)}
               disabled={status === 'loading'}
               className="w-full px-3 py-2 text-sm bg-white dark:bg-black border border-[#b0712d] rounded-md focus:outline-none focus:border-[#aa0505] text-black dark:text-white"
             >
-              <option value="">-- Choose Vendor Restaurant --</option>
-              {vendors.map((v) => (
-                <option key={v.id} value={v.id}>
-                  {v.businessName} ({v.name})
+              <option value="">-- Choose Merchant Restaurant --</option>
+              {merchants.map((m) => (
+                <option key={m.id} value={m.id}>
+                  {m.businessName} ({m.name})
                 </option>
               ))}
             </select>

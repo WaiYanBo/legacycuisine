@@ -10,7 +10,7 @@ import webhookRoutes from './routes/webhook.routes';
 import dashboardRoutes from './routes/dashboard.routes';
 import productRoutes from './routes/product.routes';
 import invoiceRoutes from './routes/invoice.routes';
-import vendorRoutes from './routes/vendor.routes';
+import merchantRoutes from './routes/merchant.routes';
 import formRoutes from './routes/form.routes';
 
 const app = express();
@@ -73,7 +73,8 @@ app.use('/api/webhooks', webhookRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/invoices', invoiceRoutes);
-app.use('/api/vendors', vendorRoutes);
+app.use('/api/merchants', merchantRoutes);
+app.use('/api/vendors', merchantRoutes);
 app.use('/api/forms', formRoutes);
 
 // Global health check & sanitized root endpoint

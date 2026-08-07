@@ -3,13 +3,13 @@ import { prisma } from '../src/prisma';
 async function main() {
   console.log('Seeding database...');
 
-  // 1. Create a Vendor (or find existing)
-  let vendor = await prisma.vendor.findFirst({
+  // 1. Create a Merchant (or find existing)
+  let merchant = await prisma.merchant.findFirst({
     where: { contactEmail: 'waiyan.erasb@gmail.com' },
   });
 
-  if (!vendor) {
-    vendor = await prisma.vendor.create({
+  if (!merchant) {
+    merchant = await prisma.merchant.create({
       data: {
         name: 'Wai Yan',
         businessName: 'Legacy Cuisine',
@@ -30,7 +30,7 @@ async function main() {
       where: { grabEmail: sf.grabEmail },
       update: { name: sf.name },
       create: {
-        vendorId: vendor.id,
+        merchantId: merchant.id,
         grabEmail: sf.grabEmail,
         name: sf.name,
         isActive: true,
