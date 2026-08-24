@@ -1,6 +1,6 @@
 {
   "nav": {
-    "brandSubtitle": "Portal Pendaftaran Vendor",
+    "brandSubtitle": "Portal Pendaftaran Merchant",
     "recruitmentChecklist": "Senarai Semak Perekrutan",
     "businessRegistration": "Pendaftaran Perniagaan",
     "viewSubmissions": "Lihat Rekod",
@@ -17,6 +17,8 @@
       "agentName": "Nama Ejen *",
       "agentNamePlaceholder": "cth. Ahmad Razak",
       "date": "Tarikh (DD/MM/YYYY) *",
+      "merchant": "Merchant / Nama Perniagaan *",
+      "merchantPlaceholder": "cth. Legacy Cuisine Enterprise",
       "vendor": "Merchant / Nama Perniagaan *",
       "vendorPlaceholder": "cth. Legacy Cuisine Enterprise",
       "personInCharge": "Orang Yang Bertanggungjawab *",
@@ -57,7 +59,7 @@
       { "id": "s1_no_duplicate", "title": "Tiada risiko penghantaran pendua", "desc": "Adakah saya telah menyemak sama ada merchant, premis atau entiti perniagaan sudah mempunyai permohonan atau akaun aktif?" },
       { "id": "s1_timeline", "title": "Garis masa realistik ditetapkan", "desc": "Adakah saya telah menjelaskan bahawa pengesahan mungkin mengambil beberapa hari bekerja dan maklumat yang tidak lengkap akan melambatkan kelulusan?" },
       { "id": "s1_followup_plan", "title": "Pelan tindakan susulan dipersetujui", "desc": "Adakah saya menetapkan tindakan seterusnya, pihak bertanggungjawab dan tarikh bagi setiap perkara yang belum lengkap?" },
-      { "id": "s1_vendor_capacity", "title": "Merchant mampu mengurus pesanan penghantaran", "desc": "Bolehkah premis menyediakan, membungkus, menerima dan menyerahkan pesanan penghantaran secara konsisten sepanjang waktu operasi?" },
+      { "id": "s1_merchant_capacity", "title": "Merchant mampu mengurus pesanan penghantaran", "desc": "Bolehkah premis menyediakan, membungkus, menerima dan menyerahkan pesanan penghantaran secara konsisten sepanjang waktu operasi?" },
       { "id": "s1_professional_record", "title": "Rekod profesional diwujudkan", "desc": "Adakah saya telah merekodkan sumber prospek, catatan, platform yang dipilih dan status dokumen?" }
     ],
     "qualificationItems": [
@@ -116,13 +118,108 @@
     "successMsg": "🎉 Borang Pendaftaran Perniagaan berjaya dihantar dan disimpan ke Supabase!"
   },
   "submissions": {
-    "title": "REKOD PENYERAHAN (SUPABASE)",
-    "subtitle": "Penyerahan masa nyata yang disimpan terus dalam pangkalan data Supabase anda.",
-    "refreshBtn": "🔄 Muat Semula Rekod",
-    "checklistsTab": "Senarai Semak Merchant",
-    "registrationsTab": "Pendaftaran Perniagaan",
-    "loading": "Memuatkan rekod dari Supabase...",
-    "emptyChecklists": "Tiada penyerahan senarai semak ditemui di Supabase setakat ini.",
-    "emptyRegistrations": "Tiada pendaftaran perniagaan ditemui di Supabase setakat ini."
+    "title": "PORTAL REKOD PENDAFTARAN & SUBMISI",
+    "subtitle": "Rekod rasmi masa nyata pendaftaran ejen, peniaga, dan senarai semak kelayakan.",
+    "refreshBtn": "Muat Semula Rekod",
+    "agentsTab": "Pendaftaran Ejen",
+    "registrationsTab": "Pendaftaran Peniaga",
+    "checklistsTab": "Senarai Semak Peniaga",
+    "loading": "Memuatkan rekod masa nyata...",
+    "emptyAgents": "Tiada rekod pendaftaran ejen ditemui setakat ini.",
+    "emptyChecklists": "Tiada penyerahan senarai semak ditemui setakat ini.",
+    "emptyRegistrations": "Tiada pendaftaran peniaga ditemui setakat ini."
+  },
+  "settings": {
+    "title": "Tetapan & Kawalan Akses",
+    "subtitle": "Urus kelayakan anda, keselamatan sistem, dan Kawalan Akses Berasaskan Peranan (RBAC) staf.",
+    "profileBadge": "Profil Semasa",
+    "changePassword": {
+      "title": "Ubah Kata Laluan",
+      "subtitle": "Kemaskini Keselamatan Kendiri",
+      "currentPassword": "Kata Laluan Semasa *",
+      "currentPasswordPlaceholder": "Masukkan kata laluan semasa",
+      "newPassword": "Kata Laluan Baharu *",
+      "newPasswordPlaceholder": "Sekurang-kurangnya 8 aksara",
+      "confirmPassword": "Sahkan Kata Laluan Baharu *",
+      "confirmPasswordPlaceholder": "Ulangi kata laluan baharu",
+      "strengthWeak": "Lemah",
+      "strengthModerate": "Sederhana",
+      "strengthStrong": "Kuat & Selamat",
+      "submitBtn": "Simpan Kata Laluan Baharu",
+      "submittingBtn": "Mengemaskini...",
+      "successMsg": "Kata laluan berjaya dikemaskini!",
+      "mismatchError": "Kata laluan baharu dan pengesahan tidak sepadan.",
+      "lengthError": "Kata laluan baharu mesti sekurang-kurangnya 8 aksara."
+    },
+    "rbacMatrix": {
+      "title": "Peranan & Hak Akses (RBAC)",
+      "superAdmin": "SUPER_ADMIN: Akses penuh tanpa had kepada Lejar Kewangan, Penetapan Harga, Invois, Borang, dan Pengurusan Staf.",
+      "manager": "MANAGER: Akses kepada Rekonsiliasi, Analitik Margin, Penjanaan Invois, dan Submisi Borang.",
+      "staff": "STAFF / OPERATOR: Akses kepada Portal Pendaftaran & Borang, Semakan Submisi, dan Input Pesanan Manual.",
+      "agent": "AGENT: Akses kepada Borang Pendaftaran Ejen & Senarai Semak Peniaga."
+    },
+    "staffManagement": {
+      "title": "Kawalan Akses Staf",
+      "subtitle": "Urus akaun pekerja, peranan akses, kebenaran sistem, dan set semula kata laluan.",
+      "addStaffBtn": "Tambah Staf Baharu",
+      "loading": "Memuatkan senarai staf...",
+      "empty": "Tiada rekod staf ditemui.",
+      "table": {
+        "staffName": "Nama Staf & Pengguna",
+        "role": "Peranan / Role",
+        "status": "Status",
+        "lastLogin": "Log Masuk Terakhir",
+        "actions": "Tindakan",
+        "never": "Belum Pernah"
+      },
+      "statusActive": "Aktif",
+      "statusInactive": "Nyahaktif",
+      "actions": {
+        "edit": "Edit",
+        "resetPass": "Reset Pass",
+        "delete": "Padam"
+      },
+      "deleteConfirm": "Adakah anda pasti ingin memadamkan akaun staf \"{name}\"? Tindakan ini tidak boleh diundur.",
+      "deleteSelfError": "Anda tidak boleh memadamkan akaun anda sendiri."
+    },
+    "modals": {
+      "addStaff": {
+        "title": "Tambah Staf Baharu",
+        "fullName": "Nama Penuh *",
+        "fullNamePlaceholder": "Contoh: Ahmad Razak",
+        "username": "Nama Pengguna / Username *",
+        "usernamePlaceholder": "Contoh: ahmad_razak",
+        "email": "Emel (Pilihan)",
+        "emailPlaceholder": "ahmad@legacycuisine.com",
+        "initialPassword": "Kata Laluan Awal *",
+        "initialPasswordPlaceholder": "Sekurang-kurangnya 8 aksara",
+        "role": "Peranan Akses *",
+        "cancelBtn": "Batal",
+        "submitBtn": "Daftar Staf",
+        "submittingBtn": "Mendaftar..."
+      },
+      "editStaff": {
+        "title": "Kemaskini Maklumat Staf",
+        "fullName": "Nama Penuh *",
+        "email": "Emel",
+        "role": "Peranan Akses",
+        "accountStatus": "Status Akaun",
+        "active": "Aktif",
+        "inactive": "Nyahaktif",
+        "cancelBtn": "Batal",
+        "submitBtn": "Simpan Kemaskini",
+        "submittingBtn": "Menyimpan..."
+      },
+      "resetPassword": {
+        "title": "Set Semula Kata Laluan",
+        "forUser": "Untuk: {name} (@{username})",
+        "newPassword": "Kata Laluan Baharu *",
+        "newPasswordPlaceholder": "Sekurang-kurangnya 8 aksara",
+        "cancelBtn": "Batal",
+        "submitBtn": "Set Semula",
+        "submittingBtn": "Menyimpan...",
+        "successMsg": "Kata laluan untuk \"{name}\" telah berjaya diset semula."
+      }
+    }
   }
 }

@@ -3,10 +3,10 @@ import { WebhookController } from '../controllers/webhook.controller';
 
 const router = Router();
 
-// Endpoint for receiving webhook payload from n8n automation
+// Endpoint for receiving webhook payload from automated ingestion
 router.post('/grab-receipts', WebhookController.handleGrabReceipt);
 
-// Endpoint for manual data input fallback when n8n is offline or bypassed
+// Endpoint for manual data input fallback
 router.post('/manual-order', WebhookController.handleGrabReceipt);
 
 // Endpoint for batch Excel / CSV order import

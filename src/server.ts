@@ -12,6 +12,8 @@ import productRoutes from './routes/product.routes';
 import invoiceRoutes from './routes/invoice.routes';
 import merchantRoutes from './routes/merchant.routes';
 import formRoutes from './routes/form.routes';
+import authRoutes from './routes/auth.routes';
+import { ensureUsersTableAndSeed } from './utils/init_db';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -46,7 +48,7 @@ app.use(express.json({ limit: '10mb' }));
 // Security Hardening: Rate limiting to mitigate DoS & brute-force attacks
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per 15 minutes
+  max: 200, // Limit each IP to 200 requests per 15 minutes
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Too many requests from this IP, please try again later.' }
@@ -54,14 +56,23 @@ const apiLimiter = rateLimit({
 
 const strictLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 30, // Limit form submissions & webhooks to 30 requests per 15 minutes
+  max: 60, // Limit form submissions & webhooks to 60 requests per 15 minutes
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Submission limit reached, please try again later.' }
 });
 
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 15, // Limit login attempts to 15 per 15 minutes to prevent brute-force
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: 'Terlalu banyak percubaan log masuk gagal. Sila cuba lagi selepas 15 minit.' }
+});
+
 // Apply rate limiters
 app.use('/api/', apiLimiter);
+app.use('/api/auth/login', loginLimiter);
 app.use('/api/forms', strictLimiter);
 app.use('/api/webhooks', strictLimiter);
 
@@ -69,6 +80,7 @@ app.use('/api/webhooks', strictLimiter);
 app.use('/storage', express.static(path.join(process.cwd(), 'storage')));
 
 // Register API routes
+app.use('/api/auth', authRoutes);
 app.use('/api/webhooks', webhookRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/products', productRoutes);
@@ -100,6 +112,7 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 });
 
 // Boot the application
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`[Reconciliation API] Running on port ${PORT}`);
+  await ensureUsersTableAndSeed();
 });

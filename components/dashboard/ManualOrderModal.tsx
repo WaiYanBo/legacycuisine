@@ -444,14 +444,14 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
         {/* Modal Header */}
         <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-slate-50/50 dark:bg-slate-950/50">
           <div className="flex items-center gap-3">
-            <div className="bg-amber-500/10 text-amber-600 dark:text-amber-400 p-2 rounded-xl border border-amber-500/20">
+            <div className="bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 p-2 rounded-xl border border-red-200 dark:border-red-900/40">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
               </svg>
             </div>
             <div>
-              <h2 className="text-lg font-bold">Manual Order Entry (n8n Offline Fallback)</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Directly ingest Grab receipts when n8n automation is down or unreachable.</p>
+              <h2 className="text-lg font-bold">Manual Order Ingestion</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Directly ingest Grab receipts and update reconciliation records.</p>
             </div>
           </div>
 
@@ -460,7 +460,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
               <button
                 type="button"
                 onClick={handleFillSample}
-                className="text-xs font-semibold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 hover:bg-amber-100 dark:hover:bg-amber-900/40 border border-amber-200 dark:border-amber-900/40 px-3 py-1.5 rounded-lg transition-all"
+                className="text-xs font-semibold text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-900/40 border border-red-200 dark:border-red-900/40 px-3 py-1.5 rounded-lg transition-all"
               >
                 ⚡ Fill Sample Order
               </button>
@@ -482,7 +482,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
             onClick={() => setActiveTab('single')}
             className={`px-4 py-2.5 text-xs font-bold rounded-t-xl transition-all border-t border-x ${
               activeTab === 'single'
-                ? 'bg-white dark:bg-slate-900 text-amber-600 dark:text-amber-400 border-slate-200 dark:border-slate-800 border-b-transparent shadow-sm'
+                ? 'bg-white dark:bg-slate-900 text-red-600 dark:text-red-400 border-slate-200 dark:border-slate-800 border-b-transparent shadow-sm'
                 : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 border-transparent'
             }`}
           >
@@ -537,7 +537,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
                   <select
                     value={selectedMerchantEmail}
                     onChange={(e) => setSelectedMerchantEmail(e.target.value)}
-                    className="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    className="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600"
                   >
                     <option value="">-- Custom Identifier --</option>
                     {merchants.flatMap((m) =>
@@ -561,7 +561,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
                       placeholder="e.g. store@grabfood.com"
                       value={customStoreIdentifier}
                       onChange={(e) => setCustomStoreIdentifier(e.target.value)}
-                      className="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                      className="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600"
                     />
                   </div>
                 )}
@@ -576,7 +576,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
                     placeholder="e.g. GF-998271"
                     value={grabOrderId}
                     onChange={(e) => setGrabOrderId(e.target.value)}
-                    className="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 font-mono"
+                    className="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 font-mono"
                   />
                 </div>
 
@@ -593,7 +593,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
                     onChange={(e) => setOrderDate(e.target.value)}
                     onFocus={(e) => e.currentTarget.showPicker()}
                     onClick={(e) => e.currentTarget.showPicker()}
-                    className="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    className="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600"
                   />
                 </div>
               </div>
@@ -606,7 +606,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
                 <button
                   type="button"
                   onClick={handleAddLineItem}
-                  className="text-xs font-bold text-amber-600 dark:text-amber-400 hover:underline flex items-center gap-1"
+                  className="text-xs font-bold text-red-600 dark:text-red-400 hover:underline flex items-center gap-1"
                 >
                   + Add Item
                 </button>
@@ -621,7 +621,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
                         placeholder="Item Name (e.g. Nasi Lemak)"
                         value={item.itemName}
                         onChange={(e) => handleLineItemChange(index, 'itemName', e.target.value)}
-                        className="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-md focus:outline-none focus:ring-1 focus:ring-amber-500"
+                        className="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-md focus:outline-none focus:ring-1 focus:ring-red-600"
                       />
                     </div>
 
@@ -632,7 +632,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
                         placeholder="Qty"
                         value={item.quantity}
                         onChange={(e) => handleLineItemChange(index, 'quantity', e.target.value)}
-                        className="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-md focus:outline-none focus:ring-1 focus:ring-amber-500 text-center"
+                        className="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-md focus:outline-none focus:ring-1 focus:ring-red-600 text-center"
                       />
                     </div>
 
@@ -644,7 +644,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
                         placeholder="Unit Price"
                         value={item.unitPrice}
                         onChange={(e) => handleLineItemChange(index, 'unitPrice', e.target.value)}
-                        className="w-full pl-9 pr-2 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-md focus:outline-none focus:ring-1 focus:ring-amber-500"
+                        className="w-full pl-9 pr-2 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-md focus:outline-none focus:ring-1 focus:ring-red-600"
                       />
                     </div>
 
@@ -688,7 +688,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
                     required
                     value={rawSubtotal}
                     onChange={(e) => setRawSubtotal(e.target.value)}
-                    className="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    className="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600"
                   />
                 </div>
 
@@ -699,7 +699,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
                     step="0.01"
                     value={rawDeliveryFee}
                     onChange={(e) => setRawDeliveryFee(e.target.value)}
-                    className="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    className="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600"
                   />
                 </div>
 
@@ -710,7 +710,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
                     step="0.01"
                     value={rawTax}
                     onChange={(e) => setRawTax(e.target.value)}
-                    className="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    className="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600"
                   />
                 </div>
 
@@ -721,7 +721,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
                     step="0.01"
                     value={rawGrabCommission}
                     onChange={(e) => setRawGrabCommission(e.target.value)}
-                    className="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    className="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600"
                   />
                 </div>
 
@@ -745,7 +745,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
                   placeholder="e.g. BARCODE-PROMO-50"
                   value={voucherBarcode}
                   onChange={(e) => setVoucherBarcode(e.target.value)}
-                  className="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 font-mono"
+                  className="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 font-mono"
                 />
               </div>
             </div>
@@ -763,7 +763,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
               <button
                 type="submit"
                 disabled={status === 'loading'}
-                className="bg-amber-600 hover:bg-amber-700 text-white font-bold text-sm px-6 py-2 rounded-lg shadow-md hover:shadow-lg transition-all flex items-center justify-center min-w-[140px]"
+                className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold text-sm px-6 py-2 rounded-lg shadow-md shadow-red-600/25 transition-all flex items-center justify-center min-w-[140px]"
               >
                 {status === 'loading' ? (
                   <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>

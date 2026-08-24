@@ -10,7 +10,7 @@ import {
 
 const router = Router();
 
-// Vendor Checklist Endpoints
+// Merchant Checklist Endpoints
 router.post('/checklist', createChecklist);
 router.get('/checklist', getChecklists);
 

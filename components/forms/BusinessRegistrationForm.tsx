@@ -225,34 +225,44 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
     : ['Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu', 'Ahad'];
 
   return (
-    <div className="max-w-4xl mx-auto bg-white dark:bg-black text-black dark:text-white p-6 sm:p-10 rounded-3xl shadow-xl border border-[#b0712d]">
+    <div className="max-w-4xl mx-auto bg-white dark:bg-[#0d1117] text-slate-900 dark:text-slate-100 p-6 sm:p-10 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800 print:border-none print:shadow-none print:p-0 printable-card">
       
       {/* 📄 DOCUMENT HEADER */}
-      <div className="border-b-2 border-[#b0712d] pb-6 mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="border-b-2 border-red-600 pb-6 mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 print-doc-header">
         <div>
-          <div className="inline-block px-3 py-1 bg-[#aa0505] text-white font-extrabold text-xs tracking-widest rounded-md uppercase mb-2">
-            {isEn ? 'MERCHANT FORM' : 'BORANG PENIAGA'}
+          <div className="flex items-center gap-3 mb-2">
+            <div className="inline-block px-3 py-1 bg-red-600 text-white font-extrabold text-xs tracking-widest rounded-md uppercase">
+              {isEn ? 'MERCHANT FORM' : 'BORANG PENIAGA'}
+            </div>
+            <button
+              type="button"
+              onClick={() => window.print()}
+              className="px-3 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-red-50 dark:hover:bg-red-950/40 text-slate-700 dark:text-slate-200 hover:text-red-600 dark:hover:text-red-400 rounded-lg text-xs font-bold border border-slate-300 dark:border-slate-700 hover:border-red-300 transition-all flex items-center gap-1.5 shadow-sm print:hidden"
+            >
+              <span>🖨️</span>
+              <span>{isEn ? 'Print Form' : 'Cetak Borang'}</span>
+            </button>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-black dark:text-white">
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">
             {isEn ? 'MERCHANT RECRUITMENT & REGISTRATION CHECKLIST' : 'SENARAI SEMAK PEREKRUTAN & PENDAFTARAN PENIAGA'}
           </h1>
-          <p className="text-sm font-bold text-[#b0712d] mt-1">
+          <p className="text-sm font-bold text-red-600 dark:text-red-400 mt-1">
             Foodpanda, GrabFood and ShopeeFood — Malaysia
           </p>
-          <p className="text-xs text-[#b0712d] italic mt-2 max-w-2xl leading-relaxed">
+          <p className="text-xs text-slate-500 dark:text-slate-400 italic mt-2 max-w-2xl leading-relaxed">
             {isEn
               ? 'This form is used to register and assess individuals or companies applying to become merchants.'
               : 'Borang ini digunakan untuk pendaftaran dan penilaian individu atau syarikat yang memohon menjadi peniaga.'}
           </p>
         </div>
 
-        <div className="flex flex-col items-end gap-2 shrink-0">
-          <div className="w-16 h-16 rounded-2xl bg-white p-2 flex items-center justify-center border border-[#b0712d]">
-            <Image src="/logo.png" alt="Legacy Cuisine Logo" width={80} height={80} className="object-contain" />
+        <div className="flex flex-col items-center md:items-end gap-2.5 shrink-0">
+          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-white p-2.5 flex items-center justify-center border-2 border-red-600 shadow-md ring-4 ring-red-600/15 transition-transform hover:scale-105 print-logo-container">
+            <Image src="/logo-circle.png" alt="Legacy Cuisine Logo" width={96} height={96} className="object-contain w-full h-full" priority />
           </div>
-          <div className="flex gap-2 text-xs">
-            <div className="bg-white dark:bg-black px-2 py-1 rounded border border-[#b0712d]">
-              <span className="font-semibold text-[#b0712d]">{isEn ? 'Date (DD/MM/YYYY):' : 'Tarikh (DD/MM/YYYY):'}</span> {formatDateToDDMMYYYY(date)}
+          <div className="flex gap-2 text-xs print:hidden">
+            <div className="bg-slate-50 dark:bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm">
+              <span className="font-semibold text-slate-500 dark:text-slate-400">{isEn ? 'Date (DD/MM/YYYY):' : 'Tarikh (DD/MM/YYYY):'}</span> <span className="font-bold text-slate-900 dark:text-white">{formatDateToDDMMYYYY(date)}</span>
             </div>
           </div>
         </div>
@@ -260,12 +270,12 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
 
       {/* Alert Messages */}
       {successMsg && (
-        <div className="mb-6 p-4 bg-white dark:bg-black border border-[#b0712d] text-black dark:text-white text-sm font-semibold rounded-2xl animate-fadeIn">
+        <div className="mb-6 p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-sm font-semibold rounded-2xl animate-fadeIn print:hidden">
           ✅ {successMsg}
         </div>
       )}
       {errorMsg && (
-        <div className="mb-6 p-4 bg-[#aa0505]/15 border border-[#aa0505] text-[#aa0505] text-sm font-semibold rounded-2xl animate-fadeIn">
+        <div className="mb-6 p-4 bg-red-50 dark:bg-red-950/40 border border-red-300 dark:border-red-800 text-red-800 dark:text-red-300 text-sm font-semibold rounded-2xl animate-fadeIn print:hidden">
           ⚠️ {errorMsg}
         </div>
       )}
@@ -275,9 +285,9 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
         {/* ------------------------------------------------------------- */}
         {/* HEADER META ROW: DATE & MEMBER NO */}
         {/* ------------------------------------------------------------- */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white dark:bg-black p-4 rounded-2xl border border-[#b0712d]">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 dark:bg-slate-950/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-800">
           <div>
-            <label className="block text-xs font-bold text-[#b0712d] uppercase tracking-wider mb-1">
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
               {isEn ? 'Date (DD/MM/YYYY) *' : 'Tarikh Permohonan (DD/MM/YYYY) *'}
             </label>
             <input
@@ -287,12 +297,12 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
               required
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-black border border-[#b0712d] text-black dark:text-white text-sm focus:outline-none focus:border-[#aa0505] transition-all"
+              className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600 transition-all"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-[#b0712d] uppercase tracking-wider mb-1">
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
               {isEn ? 'Member No.' : 'No. Ahli / ID Peniaga'}
             </label>
             <input
@@ -300,7 +310,7 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
               placeholder={isEn ? 'e.g. MCH-9941' : 'Contoh: MCH-9941'}
               value={memberNo}
               onChange={(e) => setMemberNo(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-black border border-[#b0712d] text-black dark:text-white text-sm focus:outline-none focus:border-[#aa0505] transition-all"
+              className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600 transition-all"
             />
           </div>
         </div>
@@ -308,13 +318,13 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
         {/* ------------------------------------------------------------- */}
         {/* SECTION 1: MERCHANT INFORMATION */}
         {/* ------------------------------------------------------------- */}
-        <div className="bg-[#aa0505] text-white p-3 rounded-xl font-extrabold text-sm uppercase tracking-wider shadow-sm">
+        <div className="bg-gradient-to-r from-red-600 to-red-700 text-white p-3 rounded-xl font-extrabold text-sm uppercase tracking-wider shadow-sm">
           {isEn ? '1. MERCHANT INFORMATION' : '1. MAKLUMAT PENIAGA'}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="md:col-span-2">
-            <label className="block text-xs font-bold text-[#b0712d] uppercase tracking-wider mb-1">
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
               {isEn ? 'Full Name *' : 'Nama Penuh *'}
             </label>
             <input
@@ -323,12 +333,12 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
               placeholder={isEn ? 'Full name as per Identity Card / Passport' : 'Nama penuh seperti dalam Kad Pengenalan / Pasport'}
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-black border border-[#b0712d] text-black dark:text-white text-sm focus:outline-none focus:border-[#aa0505] transition-all"
+              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600 transition-all"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-[#b0712d] uppercase tracking-wider mb-1">
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
               {isEn ? 'Company Name *' : 'Nama Syarikat / Kedai *'}
             </label>
             <input
@@ -337,7 +347,7 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
               placeholder={isEn ? 'Registered business / store name' : 'Nama pendaftaran perniagaan / kedai'}
               value={businessName}
               onChange={(e) => setBusinessName(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-black border border-[#b0712d] text-black dark:text-white text-sm focus:outline-none focus:border-[#aa0505] transition-all"
+              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600 transition-all"
             />
           </div>
 
@@ -350,7 +360,7 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
               placeholder={isEn ? 'e.g. 202301099882 (150992-X)' : 'Contoh: 202301099882 (150992-X)'}
               value={registrationNo}
               onChange={(e) => setRegistrationNo(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"
+              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600 transition-all"
             />
           </div>
 
@@ -364,7 +374,7 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
               placeholder={isEn ? 'e.g. 881024-08-6631' : 'Contoh: 881024-08-6631'}
               value={icPassportNo}
               onChange={(e) => setIcPassportNo(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"
+              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600 transition-all"
             />
           </div>
 
@@ -381,7 +391,7 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
                     value={g}
                     checked={gender === g}
                     onChange={(e) => setGender(e.target.value)}
-                    className="accent-amber-500"
+                    className="accent-red-600"
                   />
                   <span>{g}</span>
                 </label>
@@ -399,7 +409,7 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
               placeholder="dd/mm/yyyy"
               value={dateOfBirth}
               onChange={(e) => setDateOfBirth(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"
+              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600 transition-all"
             />
           </div>
 
@@ -412,7 +422,7 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
               placeholder={isEn ? 'e.g. 35 Years Old' : 'Contoh: 35 Tahun'}
               value={age}
               onChange={(e) => setAge(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"
+              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600 transition-all"
             />
           </div>
 
@@ -425,7 +435,7 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
               placeholder={isEn ? 'Islam / Buddhism / Hinduism / Christianity' : 'Islam / Buddha / Hindu / Kristian'}
               value={religion}
               onChange={(e) => setReligion(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"
+              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600 transition-all"
             />
           </div>
 
@@ -438,7 +448,7 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
               placeholder={isEn ? 'Malay / Chinese / Indian / Others' : 'Melayu / Cina / India / Lain-lain'}
               value={race}
               onChange={(e) => setRace(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"
+              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600 transition-all"
             />
           </div>
 
@@ -451,7 +461,7 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
               placeholder={isEn ? 'Malaysian' : 'Warganegara Malaysia'}
               value={nationality}
               onChange={(e) => setNationality(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"
+              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600 transition-all"
             />
           </div>
 
@@ -465,7 +475,7 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
               placeholder={isEn ? 'e.g. 012-3456789' : 'Contoh: 012-3456789'}
               value={contactNumber}
               onChange={(e) => setContactNumber(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"
+              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600 transition-all"
             />
           </div>
 
@@ -479,7 +489,7 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
               placeholder="name@domain.com"
               value={emailAddress}
               onChange={(e) => setEmailAddress(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"
+              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600 transition-all"
             />
           </div>
 
@@ -493,7 +503,7 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
               placeholder={isEn ? 'Full residential or mailing address' : 'Alamat kediaman / surat-menyurat penuh'}
               value={mailingAddress}
               onChange={(e) => setMailingAddress(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"
+              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600 transition-all"
             />
           </div>
 
@@ -507,7 +517,7 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
               placeholder={isEn ? 'Full physical store/premises address' : 'Alamat kedai / premis fizikal perniagaan'}
               value={storeAddress}
               onChange={(e) => setStoreAddress(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"
+              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600 transition-all"
             />
           </div>
         </div>
@@ -515,31 +525,31 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
         {/* ------------------------------------------------------------- */}
         {/* SECTION 2: OPERATING INFORMATION */}
         {/* ------------------------------------------------------------- */}
-        <div className="bg-slate-900 text-white p-3 rounded-xl font-extrabold text-sm uppercase tracking-wider shadow-sm mt-8">
+        <div className="bg-gradient-to-r from-red-600 to-red-700 text-white p-3 rounded-xl font-extrabold text-sm uppercase tracking-wider shadow-sm mt-6">
           {isEn ? '2. OPERATING INFORMATION' : '2. MAKLUMAT OPERASI'}
         </div>
 
-        <div className="space-y-4 bg-slate-50 dark:bg-slate-950 p-5 rounded-2xl border border-slate-200 dark:border-slate-850">
+        <div className="space-y-3 bg-slate-50 dark:bg-slate-950/60 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 print:bg-transparent print:p-0 print:border-none print:shadow-none">
           <div>
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
               {isEn ? 'Operating Days:' : 'Hari Operasi:'}
             </label>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5 print:gap-2">
               {daysList.map((day) => {
                 const isSelected = operatingDays.includes(day);
                 return (
-                  <button
-                    type="button"
+                  <span
                     key={day}
                     onClick={() => toggleOperatingDay(day)}
-                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${
+                    className={`cursor-pointer px-3 py-1 rounded-lg text-xs font-bold transition-all border inline-flex items-center gap-1.5 select-none ${
                       isSelected
-                        ? 'bg-amber-500 text-slate-950 border-amber-500 shadow-md'
-                        : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-300 dark:border-slate-800'
+                        ? 'bg-red-600 text-white border-red-600 shadow-sm print:bg-transparent print:text-black print:border-black'
+                        : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-300 dark:border-slate-800 print:bg-transparent print:text-slate-400 print:border-slate-300'
                     }`}
                   >
-                    {isSelected ? '✓ ' : ''}{day}
-                  </button>
+                    <span className="font-mono text-xs">{isSelected ? '☑' : '☐'}</span>
+                    <span>{day}</span>
+                  </span>
                 );
               })}
             </div>
@@ -554,7 +564,7 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
               placeholder={isEn ? 'e.g. 8:00 AM - 10:00 PM' : 'Contoh: 8:00 AM - 10:00 PM'}
               value={operatingHours}
               onChange={(e) => setOperatingHours(e.target.value)}
-              className="w-full max-w-md px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"
+              className="w-full max-w-md px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600 transition-all"
             />
           </div>
         </div>
@@ -562,7 +572,7 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
         {/* ------------------------------------------------------------- */}
         {/* SECTION 3: BANK ACCOUNT INFORMATION */}
         {/* ------------------------------------------------------------- */}
-        <div className="bg-slate-900 text-white p-3 rounded-xl font-extrabold text-sm uppercase tracking-wider shadow-sm mt-8">
+        <div className="bg-gradient-to-r from-red-600 to-red-700 text-white p-3 rounded-xl font-extrabold text-sm uppercase tracking-wider shadow-sm mt-6">
           {isEn ? '3. BANK ACCOUNT INFORMATION' : '3. MAKLUMAT AKAUN BANK'}
         </div>
 
@@ -577,7 +587,7 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
               placeholder="Maybank / CIMB / RHB / Public Bank"
               value={bankName}
               onChange={(e) => setBankName(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"
+              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600 transition-all"
             />
           </div>
 
@@ -591,7 +601,7 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
               placeholder={isEn ? 'Must match IC / Company Name' : 'Mesti sama dengan IC / Nama Syarikat'}
               value={bankAccountName}
               onChange={(e) => setBankAccountName(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"
+              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600 transition-all"
             />
           </div>
 
@@ -605,22 +615,24 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
               placeholder={isEn ? 'Bank Account Number' : 'Nombor Akaun Bank'}
               value={bankAccountNumber}
               onChange={(e) => setBankAccountNumber(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"
+              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600 transition-all"
             />
           </div>
         </div>
 
         {/* ------------------------------------------------------------- */}
-        {/* SECTION 4: DOCUMENT CHECKLIST */}
+        {/* SECTION 4: DOCUMENT CHECKLIST (PAGE 2 START) */}
         {/* ------------------------------------------------------------- */}
-        <div className="bg-slate-900 text-white p-3 rounded-xl font-extrabold text-sm uppercase tracking-wider shadow-sm mt-8">
-          {isEn ? '4. DOCUMENT CHECKLIST' : '4. SENARAI SEMAK DOKUMEN & PREMIS'}
+        <div className="print-break-before">
+          <div className="bg-gradient-to-r from-red-600 to-red-700 text-white p-3 rounded-xl font-extrabold text-sm uppercase tracking-wider shadow-sm mt-8">
+            {isEn ? '4. DOCUMENT CHECKLIST' : '4. SENARAI SEMAK DOKUMEN & PREMIS'}
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Document Checklist Table */}
-          <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800">
-            <table className="w-full text-left text-xs text-slate-800 dark:text-slate-200">
+          <div className="overflow-x-auto print:overflow-visible rounded-2xl border border-slate-200 dark:border-slate-800 print:border-slate-300">
+            <table className="w-full text-left text-xs text-slate-800 dark:text-slate-200 print:text-black">
               <thead className="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-white font-bold uppercase tracking-wider border-b border-slate-200 dark:border-slate-800">
                 <tr>
                   <th className="py-3 px-4">{isEn ? 'Document' : 'Dokumen'}</th>
@@ -656,7 +668,7 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
                           onClick={() => toggleDocChecklist(item.id, isEn ? 'Not Received' : 'Belum')}
                           className={`px-3 py-1 rounded-lg font-extrabold transition-all border ${
                             !isReceived
-                              ? 'bg-amber-500/20 text-amber-500 border-amber-500/50'
+                              ? 'bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 border-red-300 dark:border-red-800'
                               : 'bg-slate-100 dark:bg-slate-900 text-slate-400 border-slate-300 dark:border-slate-800'
                           }`}
                         >
@@ -677,12 +689,12 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
                 {isEn ? 'Upload Business Premises Photo *' : 'Muat Naik Gambar Premis Perniagaan *'}
               </label>
 
-              <div className="relative border-2 border-dashed border-slate-300 dark:border-slate-800 rounded-2xl p-6 text-center bg-slate-50 dark:bg-slate-950/60 hover:border-amber-500/50 transition-colors flex flex-col items-center justify-center min-h-[220px]">
+              <div className="relative border-2 border-dashed border-slate-300 dark:border-slate-800 rounded-2xl p-6 text-center bg-slate-50 dark:bg-slate-950/60 hover:border-red-400 transition-colors flex flex-col items-center justify-center min-h-[220px]">
                 {shopPhotoUrl ? (
                   <div className="relative w-full h-48 rounded-xl overflow-hidden group">
                     <img src={shopPhotoUrl} alt="Premises Photo" className="w-full h-full object-cover rounded-xl" />
                     <div className="absolute inset-0 bg-slate-950/70 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <label className="cursor-pointer bg-amber-500 text-slate-950 px-4 py-2 rounded-lg font-bold text-xs">
+                      <label className="cursor-pointer bg-red-600 text-white px-4 py-2 rounded-lg font-bold text-xs shadow-md">
                         {isEn ? 'Change Photo' : 'Tukar Gambar Premis'}
                         <input type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
                       </label>
@@ -690,7 +702,7 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
                   </div>
                 ) : (
                   <label className="cursor-pointer w-full flex flex-col items-center justify-center">
-                    <div className="w-12 h-12 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center mb-3 text-2xl font-bold">
+                    <div className="w-12 h-12 rounded-full bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 flex items-center justify-center mb-3 text-2xl font-bold">
                       📷
                     </div>
                     <div className="text-sm font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wide">
@@ -705,8 +717,8 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
               </div>
             </div>
 
-            <div className="bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-4 flex gap-3 items-start">
-              <div className="w-6 h-6 rounded-full bg-amber-500/20 text-amber-500 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+            <div className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-4 flex gap-3 items-start">
+              <div className="w-6 h-6 rounded-full bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5 border border-red-200 dark:border-red-900">
                 i
               </div>
               <div className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -722,11 +734,11 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
         {/* ------------------------------------------------------------- */}
         {/* SECTION 5: FOR OFFICE/AGENT USE */}
         {/* ------------------------------------------------------------- */}
-        <div className="bg-slate-900 text-white p-3 rounded-xl font-extrabold text-sm uppercase tracking-wider shadow-sm mt-8">
+        <div className="bg-gradient-to-r from-red-600 to-red-700 text-white p-3 rounded-xl font-extrabold text-sm uppercase tracking-wider shadow-sm mt-8">
           {isEn ? '5. FOR OFFICE/AGENT USE' : '5. BAHAGIAN KEGUNAAN PEJABAT / EJEN'}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 dark:bg-slate-950 p-5 rounded-2xl border border-slate-200 dark:border-slate-850">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 dark:bg-slate-950 p-5 rounded-2xl border border-slate-200 dark:border-slate-800">
           <div>
             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
               {isEn ? 'Date received (DD/MM/YYYY):' : 'Tarikh Diterima (DD/MM/YYYY):'}
@@ -737,7 +749,7 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
               placeholder="dd/mm/yyyy"
               value={receivedDate}
               onChange={(e) => setReceivedDate(e.target.value)}
-              className="w-full px-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs"
+              className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs focus:ring-1 focus:ring-red-600"
             />
           </div>
 
@@ -750,7 +762,7 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
               placeholder={isEn ? 'Processing Officer Name' : 'Nama Pegawai / Ejen Audit'}
               value={processingOfficer}
               onChange={(e) => setProcessingOfficer(e.target.value)}
-              className="w-full px-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs"
+              className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs focus:ring-1 focus:ring-red-600"
             />
           </div>
 
@@ -761,7 +773,7 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value as any)}
-              className="w-full px-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs font-bold"
+              className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs font-bold focus:ring-1 focus:ring-red-600"
             >
               <option value={isEn ? 'In Process' : 'Dalam Proses'}>{isEn ? 'In Process' : 'Dalam Proses'}</option>
               <option value={isEn ? 'Incomplete' : 'Belum Lengkap'}>{isEn ? 'Incomplete' : 'Belum Lengkap'}</option>
@@ -780,13 +792,13 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
               placeholder="dd/mm/yyyy"
               value={activationDate}
               onChange={(e) => setActivationDate(e.target.value)}
-              className="w-full px-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs"
+              className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs focus:ring-1 focus:ring-red-600"
             />
           </div>
 
           {(status === 'Rejected' || status === 'Ditolak') && (
             <div className="md:col-span-2">
-              <label className="block text-xs font-bold text-rose-500 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-bold text-red-600 uppercase tracking-wider mb-1">
                 {isEn ? 'Reason for rejection:' : 'Sebab Penolakan'}
               </label>
               <textarea
@@ -794,7 +806,7 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
                 placeholder={isEn ? 'State reason for rejection...' : 'Nyatakan sebab permohonan ditolak...'}
                 value={rejectionReason}
                 onChange={(e) => setRejectionReason(e.target.value)}
-                className="w-full px-4 py-2 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-300 dark:border-rose-800 text-xs text-rose-900 dark:text-rose-200"
+                className="w-full px-4 py-2 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-300 dark:border-red-800 text-xs text-red-900 dark:text-red-200"
               />
             </div>
           )}
@@ -803,11 +815,11 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
         {/* ------------------------------------------------------------- */}
         {/* SECTION 6: DISCLAIMER & TERMS OF SERVICE */}
         {/* ------------------------------------------------------------- */}
-        <div className="bg-slate-900 text-white p-3 rounded-xl font-extrabold text-sm uppercase tracking-wider shadow-sm mt-8">
+        <div className="bg-gradient-to-r from-red-600 to-red-700 text-white p-3 rounded-xl font-extrabold text-sm uppercase tracking-wider shadow-sm mt-8">
           {isEn ? 'DISCLAIMER & TERMS OF SERVICE' : 'PENAFIAN & TERMA PERKHIDMATAN'}
         </div>
 
-        <div className="bg-slate-50 dark:bg-slate-950 p-6 rounded-2xl border border-slate-200 dark:border-slate-850 space-y-3 text-xs leading-relaxed text-slate-700 dark:text-slate-300">
+        <div className="bg-slate-50 dark:bg-slate-950 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-3 text-xs leading-relaxed text-slate-700 dark:text-slate-300 break-inside-avoid">
           <ol className="list-decimal pl-4 space-y-2">
             {isEn ? (
               <>
@@ -837,15 +849,15 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
           </ol>
 
           <div className="pt-4 border-t border-slate-200 dark:border-slate-800">
-            <label className="flex items-start gap-3 cursor-pointer bg-amber-500/10 border border-amber-500/30 p-3.5 rounded-xl">
+            <label className="flex items-start gap-3 cursor-pointer bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 p-3.5 rounded-xl">
               <input
                 type="checkbox"
                 required
                 checked={agreedToTerms}
                 onChange={(e) => setAgreedToTerms(e.target.checked)}
-                className="mt-0.5 accent-amber-500 w-4 h-4"
+                className="mt-0.5 accent-red-600 w-4 h-4"
               />
-              <span className="font-bold text-slate-900 dark:text-amber-300 text-xs">
+              <span className="font-bold text-slate-900 dark:text-red-200 text-xs">
                 {isEn
                   ? "I confirm that I have read, understood and agreed to the Company's Terms of Service, Disclaimer and Privacy Policy."
                   : 'Saya mengesahkan bahawa saya telah membaca, memahami dan bersetuju dengan Terma Perkhidmatan, Penafian dan Dasar Privasi syarikat.'}
@@ -855,32 +867,33 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
         </div>
 
         {/* ------------------------------------------------------------- */}
-        {/* SECTION 7: CONFIRMATION & SIGNATURE */}
+        {/* SECTION 7: CONFIRMATION & SIGNATURE (UNIFIED PAGE BLOCK) */}
         {/* ------------------------------------------------------------- */}
-        <div className="bg-slate-900 text-white p-3 rounded-xl font-extrabold text-sm uppercase tracking-wider shadow-sm mt-8">
-          {isEn ? 'CONFIRMATION & SIGNATURE' : 'PENGESAHAN & TANDATANGAN'}
-        </div>
-
-        <div className="space-y-6">
-          {/* Declaration Text */}
-          <div className="bg-slate-100 dark:bg-slate-950 p-4 rounded-xl text-xs italic text-slate-600 dark:text-slate-400 leading-relaxed border border-slate-200 dark:border-slate-850">
-            {isEn ? (
-              <>
-                <p className="font-semibold mb-1">Applicant Confirmation (Merchant)</p>
-                <p className="mb-2">I confirm that all information, documents and particulars submitted in this form are true, accurate and complete to the best of my knowledge. I also agree to cooperate if additional information or documents are required to process the application.</p>
-                <p>I agree that the personal information and documents submitted may be collected, used and processed by the agent for registration, verification and matters relating to Foodpanda, GrabFood and ShopeeFood, in accordance with the Personal Data Protection Act 2010.</p>
-              </>
-            ) : (
-              <p>Saya mengesahkan bahawa semua maklumat, dokumen dan butiran yang dikemukakan dalam borang ini adalah benar, tepat dan lengkap setakat pengetahuan saya. Saya juga bersetuju memberikan kerjasama sekiranya maklumat atau dokumen tambahan diperlukan bagi tujuan pemprosesan permohonan.</p>
-            )}
+        <div className="print-break-before break-inside-avoid section-block">
+          <div className="bg-gradient-to-r from-red-600 to-red-700 text-white p-3 rounded-xl font-extrabold text-sm uppercase tracking-wider shadow-sm mt-8">
+            {isEn ? 'CONFIRMATION & SIGNATURE' : 'PENGESAHAN & TANDATANGAN'}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Merchant Signature Box */}
-            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 space-y-3">
-              <h4 className="font-bold text-xs uppercase tracking-wider text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-850 pb-2">
-                {isEn ? 'Applicant Confirmation (Merchant)' : 'Pengesahan Pemohon (Peniaga)'}
-              </h4>
+          <div className="space-y-4 mt-4">
+            {/* Declaration Text */}
+            <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl text-xs italic text-slate-600 dark:text-slate-400 leading-relaxed border border-slate-200 dark:border-slate-800">
+              {isEn ? (
+                <>
+                  <p className="font-semibold mb-1 text-slate-900 dark:text-white">Applicant Confirmation (Merchant)</p>
+                  <p className="mb-2">I confirm that all information, documents and particulars submitted in this form are true, accurate and complete to the best of my knowledge. I also agree to cooperate if additional information or documents are required to process the application.</p>
+                  <p>I agree that the personal information and documents submitted may be collected, used and processed by the agent for registration, verification and matters relating to Foodpanda, GrabFood and ShopeeFood, in accordance with the Personal Data Protection Act 2010.</p>
+                </>
+              ) : (
+                <p>Saya mengesahkan bahawa semua maklumat, dokumen dan butiran yang dikemukakan dalam borang ini adalah benar, tepat dan lengkap setakat pengetahuan saya. Saya juga bersetuju memberikan kerjasama sekiranya maklumat atau dokumen tambahan diperlukan bagi tujuan pemprosesan permohonan.</p>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 print-grid-2 signature-grid gap-4">
+              {/* Merchant Signature Box */}
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-3 signature-box break-inside-avoid">
+                <h4 className="font-bold text-xs uppercase tracking-wider text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-800 pb-2">
+                  {isEn ? 'Applicant Confirmation (Merchant)' : 'Pengesahan Pemohon (Peniaga)'}
+                </h4>
               
               <div>
                 <label className="block text-[11px] font-semibold text-slate-500 mb-1">{isEn ? 'Name:' : 'Nama Peniaga:'}</label>
@@ -890,7 +903,7 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
                   placeholder={isEn ? "Merchant Name" : "Nama Pengesah Peniaga"}
                   value={merchantSignatureName}
                   onChange={(e) => setMerchantSignatureName(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs"
+                  className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs focus:ring-1 focus:ring-red-600"
                 />
               </div>
 
@@ -901,7 +914,7 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
                   placeholder={isEn ? "Identity Card / Passport No." : "Nombor IC / Pasport"}
                   value={merchantSignatureIc}
                   onChange={(e) => setMerchantSignatureIc(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs"
+                  className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs focus:ring-1 focus:ring-red-600"
                 />
               </div>
 
@@ -914,14 +927,14 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
                   required
                   value={merchantSignatureDate}
                   onChange={(e) => setMerchantSignatureDate(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs"
+                  className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs focus:ring-1 focus:ring-red-600"
                 />
               </div>
             </div>
 
             {/* Agent Signature Box */}
-            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 space-y-3">
-              <h4 className="font-bold text-xs uppercase tracking-wider text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-850 pb-2">
+            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-3">
+              <h4 className="font-bold text-xs uppercase tracking-wider text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-800 pb-2">
                 {isEn ? 'Agent Confirmation' : 'Pengesahan Ejen'}
               </h4>
 
@@ -932,7 +945,7 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
                   placeholder={isEn ? "Agent Name" : "Nama Ejen Pengesah"}
                   value={agentSignatureName}
                   onChange={(e) => setAgentSignatureName(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs"
+                  className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs focus:ring-1 focus:ring-red-600"
                 />
               </div>
 
@@ -943,7 +956,7 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
                   placeholder={isEn ? "Agent ID No. (e.g. AGT-8821)" : "ID Ejen (Contoh: AGT-8821)"}
                   value={agentSignatureId}
                   onChange={(e) => setAgentSignatureId(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs"
+                  className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs focus:ring-1 focus:ring-red-600"
                 />
               </div>
 
@@ -955,14 +968,14 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
                   placeholder="dd/mm/yyyy"
                   value={agentSignatureDate}
                   onChange={(e) => setAgentSignatureDate(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs"
+                  className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs focus:ring-1 focus:ring-red-600"
                 />
               </div>
             </div>
 
             {/* Reviewer Box */}
-            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 space-y-3">
-              <h4 className="font-bold text-xs uppercase tracking-wider text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-850 pb-2">
+            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-3">
+              <h4 className="font-bold text-xs uppercase tracking-wider text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-800 pb-2">
                 {isEn ? 'Reviewed By' : 'Disemak Oleh (Penyelia)'}
               </h4>
 
@@ -973,7 +986,7 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
                   placeholder={isEn ? "Reviewer Name" : "Nama Penyelia"}
                   value={reviewerName}
                   onChange={(e) => setReviewerName(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs"
+                  className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs focus:ring-1 focus:ring-red-600"
                 />
               </div>
 
@@ -983,7 +996,7 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
                   type="text"
                   value={reviewerRole}
                   onChange={(e) => setReviewerRole(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs"
+                  className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs focus:ring-1 focus:ring-red-600"
                 />
               </div>
 
@@ -995,14 +1008,14 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
                   placeholder="dd/mm/yyyy"
                   value={reviewerDate}
                   onChange={(e) => setReviewerDate(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs"
+                  className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs focus:ring-1 focus:ring-red-600"
                 />
               </div>
             </div>
 
             {/* Approver Box */}
-            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 space-y-3">
-              <h4 className="font-bold text-xs uppercase tracking-wider text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-850 pb-2">
+            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-3">
+              <h4 className="font-bold text-xs uppercase tracking-wider text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-800 pb-2">
                 {isEn ? 'Approved By' : 'Diluluskan Oleh (Pengurus)'}
               </h4>
 
@@ -1013,7 +1026,7 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
                   placeholder={isEn ? "Approver Name" : "Nama Pengurus Kelulusan"}
                   value={approverName}
                   onChange={(e) => setApproverName(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs"
+                  className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs focus:ring-1 focus:ring-red-600"
                 />
               </div>
 
@@ -1023,7 +1036,7 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
                   type="text"
                   value={approverRole}
                   onChange={(e) => setApproverRole(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs"
+                  className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs focus:ring-1 focus:ring-red-600"
                 />
               </div>
 
@@ -1035,23 +1048,24 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
                   placeholder="dd/mm/yyyy"
                   value={approverDate}
                   onChange={(e) => setApproverDate(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs"
+                  className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs focus:ring-1 focus:ring-red-600"
                 />
               </div>
             </div>
           </div>
         </div>
+      </div>
 
         {/* Submit Action Button */}
-        <div className="pt-4">
+        <div className="pt-4 print:hidden">
           <button
             type="submit"
             disabled={submitting}
-            className="w-full py-4 px-6 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-slate-950 font-black text-sm uppercase tracking-widest rounded-2xl shadow-xl shadow-amber-500/20 transition-all transform active:scale-98 disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full py-4 px-6 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-black text-sm uppercase tracking-widest rounded-2xl shadow-xl shadow-red-600/25 transition-all transform active:scale-98 disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {submitting ? (
               <>
-                <svg className="animate-spin h-5 w-5 text-slate-950" fill="none" viewBox="0 0 24 24">
+                <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                 </svg>

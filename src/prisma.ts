@@ -14,7 +14,10 @@ function createPrismaClient(): PrismaClient {
     return new PrismaClient({ adapter });
   }
 
-  const pool = new Pool({ connectionString: databaseUrl });
+  const pool = new Pool({ 
+    connectionString: databaseUrl,
+    ssl: databaseUrl.includes('supabase.co') || databaseUrl.includes('sslmode=require') ? { rejectUnauthorized: false } : undefined
+  });
   const adapter = new PrismaPg(pool);
   return new PrismaClient({ adapter });
 }
