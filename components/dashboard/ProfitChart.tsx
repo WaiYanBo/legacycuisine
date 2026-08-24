@@ -33,22 +33,22 @@ export const ProfitChart: React.FC<ProfitChartProps> = ({ data = [] }) => {
 
   if (!mounted) {
     return (
-      <div className="w-full bg-white dark:bg-black border border-[#b0712d] rounded-xl p-6 h-80 flex items-center justify-center text-[#b0712d]">
+      <div className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 h-80 flex items-center justify-center text-slate-400 text-xs">
         Loading chart visualization...
       </div>
     );
   }
 
   return (
-    <div className="w-full bg-white dark:bg-black border border-[#b0712d] rounded-xl p-6 shadow-sm">
+    <div className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm text-slate-900 dark:text-white">
       <div className="mb-4">
-        <h3 className="text-lg font-bold text-black dark:text-white">Margin Breakdown Trends</h3>
-        <p className="text-xs text-[#b0712d]">Comparing base payouts against leftover agency profit margins.</p>
+        <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">Margin Breakdown Trends</h3>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Comparing base payouts against leftover agency profit margins.</p>
       </div>
 
       <div className="h-80 w-full">
         {data.length === 0 ? (
-          <div className="h-full flex items-center justify-center border-2 border-dashed border-[#b0712d] rounded-lg text-[#b0712d]">
+          <div className="h-full flex items-center justify-center border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl text-slate-400 text-xs">
             No data available for the selected dates.
           </div>
         ) : (
@@ -57,28 +57,28 @@ export const ProfitChart: React.FC<ProfitChartProps> = ({ data = [] }) => {
               data={data}
               margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
             >
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#b0712d" strokeOpacity={0.3} />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" strokeOpacity={0.5} />
               <XAxis 
                 dataKey="date" 
                 tickLine={false}
                 axisLine={false}
-                tick={{ fill: '#b0712d', fontSize: 11 }}
+                tick={{ fill: '#64748b', fontSize: 11 }}
               />
               <YAxis 
                 tickLine={false}
                 axisLine={false}
                 tickFormatter={(value) => `RM${value}`}
-                tick={{ fill: '#b0712d', fontSize: 11 }}
+                tick={{ fill: '#64748b', fontSize: 11 }}
               />
               <Tooltip 
                 formatter={(value: number) => [formatValue(value), '']}
                 contentStyle={{
-                  backgroundColor: '#000000',
-                  border: '1px solid #b0712d',
-                  borderRadius: '8px',
-                  boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.5)',
+                  backgroundColor: '#0f172a',
+                  border: '1px solid #334155',
+                  borderRadius: '12px',
+                  boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.3)',
                   color: '#ffffff',
-                  fontSize: '13px'
+                  fontSize: '12px'
                 }}
               />
               <Legend 
@@ -86,21 +86,21 @@ export const ProfitChart: React.FC<ProfitChartProps> = ({ data = [] }) => {
                 height={36}
                 iconType="circle"
                 iconSize={8}
-                wrapperStyle={{ fontSize: '12px', color: '#b0712d' }}
+                wrapperStyle={{ fontSize: '12px', color: '#64748b' }}
               />
               <Bar 
                 name="Merchant Payout" 
                 dataKey="merchantPayouts" 
-                fill="#b0712d" 
-                radius={[4, 4, 0, 0]} 
-                maxBarSize={40}
+                fill="#f59e0b" 
+                radius={[6, 6, 0, 0]} 
+                maxBarSize={36}
               />
               <Bar 
                 name="Agency Profit" 
                 dataKey="clientProfit" 
-                fill="#aa0505" 
-                radius={[4, 4, 0, 0]} 
-                maxBarSize={40}
+                fill="#c81e1e" 
+                radius={[6, 6, 0, 0]} 
+                maxBarSize={36}
               />
             </BarChart>
           </ResponsiveContainer>

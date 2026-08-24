@@ -4,48 +4,48 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%; /* #ffffff White */
-    --foreground: 0 0% 0%; /* #000000 Black */
-    --card: 0 0% 100%; /* #ffffff White */
-    --card-foreground: 0 0% 0%;
+    --background: 210 40% 98%; /* Soft porcelain slate-50 */
+    --foreground: 222 47% 11%; /* Rich dark slate text */
+    --card: 0 0% 100%; /* Pure White */
+    --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 0%;
-    --primary: 360 94% 34%; /* #aa0505 Vivid Red */
+    --popover-foreground: 222 47% 11%;
+    --primary: 0 73% 45%; /* Modern Crimson Red #c81e1e */
     --primary-foreground: 0 0% 100%;
-    --secondary: 32 59% 43%; /* #b0712d Grey Yellow */
+    --secondary: 40 50% 55%; /* Warm Gold #c5a059 */
     --secondary-foreground: 0 0% 100%;
-    --muted: 0 0% 0%;
-    --muted-foreground: 0 0% 100%;
-    --accent: 32 59% 43%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 360 94% 34%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 32 59% 43%;
-    --input: 32 59% 43%;
-    --ring: 360 94% 34%;
-    --radius: 0.75rem;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 0 73% 97%;
+    --accent-foreground: 0 73% 45%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 214.3 31.8% 91.4%; /* Soft slate-200 */
+    --input: 214.3 31.8% 91.4%;
+    --ring: 0 73% 45%;
+    --radius: 0.85rem;
   }
 
   .dark {
-    --background: 0 0% 0%; /* #000000 Black */
-    --foreground: 0 0% 100%; /* #ffffff White */
-    --card: 0 0% 0%;
-    --card-foreground: 0 0% 100%;
-    --popover: 0 0% 0%;
-    --popover-foreground: 0 0% 100%;
-    --primary: 360 94% 34%; /* #aa0505 Vivid Red */
+    --background: 224 71% 4%; /* Dark Obsidian */
+    --foreground: 210 40% 98%;
+    --card: 222 47% 7%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 47% 7%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 0 73% 45%; /* Crimson Red */
     --primary-foreground: 0 0% 100%;
-    --secondary: 32 59% 43%; /* #b0712d Grey Yellow */
+    --secondary: 40 50% 55%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 0 0% 0%;
-    --muted-foreground: 0 0% 100%;
-    --accent: 32 59% 43%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 360 94% 34%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 32 59% 43%;
-    --input: 32 59% 43%;
-    --ring: 360 94% 34%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 0 73% 45%;
   }
 }
 
@@ -182,5 +182,240 @@
   animation: microShake 0.22s ease-in-out;
 }
 
+/* 🖨️ Professional A4 Print Stylesheet */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 8mm 10mm;
+  }
 
+  html,
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-size: 8.5pt;
+    line-height: 1.25;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
 
+  *, *::before, *::after {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    text-shadow: none !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Explicitly hide only non-printable dashboard elements */
+  aside,
+  nav,
+  header,
+  footer,
+  .print\:hidden,
+  .no-print,
+  button {
+    display: none !important;
+  }
+
+  /* Reset outer dashboard containers to fluid flow */
+  #dashboard-root {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+  }
+
+  #dashboard-main {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Form Container */
+  .printable-card {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+  }
+
+  .printable-card form {
+    space-y: 0 !important;
+  }
+
+  .printable-card form > * + * {
+    margin-top: 4px !important;
+  }
+
+  /* Reset all dark backgrounds on paper to clean transparent/white */
+  .printable-card [class*="bg-slate-"],
+  .printable-card [class*="bg-zinc-"],
+  .printable-card [class*="bg-neutral-"],
+  .printable-card [class*="bg-black"],
+  .dark .printable-card [class*="bg-slate-"],
+  .dark .printable-card [class*="bg-black"] {
+    background-color: transparent !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+    box-shadow: none !important;
+  }
+
+  /* Compact Logo Header on Paper */
+  .print-doc-header {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    border-bottom: 2px solid #aa0505 !important;
+    padding-bottom: 4px !important;
+    margin-bottom: 6px !important;
+  }
+
+  .print-logo-container {
+    width: 52px !important;
+    height: 52px !important;
+    min-width: 52px !important;
+    min-height: 52px !important;
+    max-width: 52px !important;
+    max-height: 52px !important;
+    border-radius: 9999px !important;
+    border: 2px solid #aa0505 !important;
+    background: #ffffff !important;
+    padding: 2px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: none !important;
+  }
+
+  .print-logo-container img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+  }
+
+  /* Section banners & headers */
+  .bg-gradient-to-r,
+  .printable-card .bg-gradient-to-r {
+    background: #aa0505 !important;
+    color: #ffffff !important;
+    padding: 2.5px 6px !important;
+    font-size: 8pt !important;
+    margin-top: 6px !important;
+    margin-bottom: 3px !important;
+    border-radius: 4px !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* 📄 Explicit Page Break Utilities for Physical A4 Forms */
+  .print-break-before,
+  .print\:break-before-page,
+  .page-break-before {
+    break-before: page !important;
+    page-break-before: always !important;
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+
+  .print-break-after,
+  .print\:break-after-page,
+  .page-break-after {
+    break-after: page !important;
+    page-break-after: always !important;
+  }
+
+  /* Avoid page breaks inside individual sections & signature boxes */
+  .section-block,
+  .page-break-avoid,
+  .break-inside-avoid,
+  .grid,
+  table,
+  tbody,
+  tr,
+  .signature-box {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Grid spacing on paper */
+  .grid {
+    gap: 3px 6px !important;
+  }
+
+  label {
+    font-size: 7pt !important;
+    margin-bottom: 1px !important;
+    color: #334155 !important;
+  }
+
+  /* Clean inputs on paper */
+  input, select, textarea {
+    border: 1px solid #94a3b8 !important;
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    padding: 2px 4px !important;
+    font-size: 7.5pt !important;
+    border-radius: 3px !important;
+    box-shadow: none !important;
+    height: 22px !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  input[type="radio"], input[type="checkbox"] {
+    height: 11px !important;
+    width: 11px !important;
+    display: inline-block !important;
+  }
+
+  textarea {
+    height: 22px !important;
+    min-height: 22px !important;
+  }
+
+  /* Table formatting for A4 */
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+
+  th, td {
+    padding: 2px 4px !important;
+    font-size: 7pt !important;
+  }
+
+  /* Signature and 2-column grids on paper */
+  .signature-grid,
+  .print-grid-2,
+  .print\:grid-cols-2 {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 4px 8px !important;
+  }
+
+  /* Typography scale */
+  h1 {
+    font-size: 11pt !important;
+    line-height: 1.15 !important;
+    margin-bottom: 1px !important;
+  }
+
+  h2, h3 {
+    font-size: 8pt !important;
+    line-height: 1.15 !important;
+  }
+
+  p, ol, ul, li {
+    font-size: 6.8pt !important;
+    line-height: 1.15 !important;
+  }
+}

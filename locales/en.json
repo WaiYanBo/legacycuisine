@@ -17,6 +17,8 @@
       "agentName": "Agent Name *",
       "agentNamePlaceholder": "e.g. John Doe",
       "date": "Date (DD/MM/YYYY) *",
+      "merchant": "Merchant / Business Name *",
+      "merchantPlaceholder": "e.g. Legacy Cuisine Enterprise",
       "vendor": "Merchant / Business Name *",
       "vendorPlaceholder": "e.g. Legacy Cuisine Enterprise",
       "personInCharge": "Person In Charge *",
@@ -57,7 +59,7 @@
       { "id": "s1_no_duplicate", "title": "No duplicate submission risk", "desc": "Have I checked whether the merchant, outlet or business entity already has an application or active account?" },
       { "id": "s1_timeline", "title": "Realistic timeline set", "desc": "Have I explained that verification may take several working days and missing information will delay approval?" },
       { "id": "s1_followup_plan", "title": "Follow-up plan agreed", "desc": "Did I set the next action, owner and date for each missing item?" },
-      { "id": "s1_vendor_capacity", "title": "Merchant can operate delivery orders", "desc": "Can the outlet prepare, pack, accept and hand over delivery orders consistently during operating hours?" },
+      { "id": "s1_merchant_capacity", "title": "Merchant can operate delivery orders", "desc": "Can the outlet prepare, pack, accept and hand over delivery orders consistently during operating hours?" },
       { "id": "s1_professional_record", "title": "Professional record created", "desc": "Have I recorded the lead source, remark, platform chosen and document status?" }
     ],
     "qualificationItems": [
@@ -116,13 +118,108 @@
     "successMsg": "🎉 Business Registration submitted and saved to Supabase successfully!"
   },
   "submissions": {
-    "title": "SUBMISSION RECORDS (SUPABASE)",
-    "subtitle": "Real-time submissions stored directly in your Supabase database.",
-    "refreshBtn": "🔄 Refresh Live Records",
+    "title": "REGISTRATION & SUBMISSION RECORDS",
+    "subtitle": "Official real-time records for agent onboarding, merchant registrations, and qualification checklists.",
+    "refreshBtn": "Refresh Live Records",
+    "agentsTab": "Agent Registrations",
+    "registrationsTab": "Merchant Registrations",
     "checklistsTab": "Merchant Checklists",
-    "registrationsTab": "Business Registrations",
-    "loading": "Loading live records from Supabase...",
-    "emptyChecklists": "No checklist submissions found in Supabase yet.",
-    "emptyRegistrations": "No business registrations found in Supabase yet."
+    "loading": "Loading live records...",
+    "emptyAgents": "No agent registration records found yet.",
+    "emptyChecklists": "No checklist submissions found yet.",
+    "emptyRegistrations": "No merchant registrations found yet."
+  },
+  "settings": {
+    "title": "Settings & Access Control",
+    "subtitle": "Manage your credentials, system security, and staff Role-Based Access Control (RBAC).",
+    "profileBadge": "Current Profile",
+    "changePassword": {
+      "title": "Change Password",
+      "subtitle": "Self-Service Security Update",
+      "currentPassword": "Current Password *",
+      "currentPasswordPlaceholder": "Enter current password",
+      "newPassword": "New Password *",
+      "newPasswordPlaceholder": "Minimum 8 characters",
+      "confirmPassword": "Confirm New Password *",
+      "confirmPasswordPlaceholder": "Repeat new password",
+      "strengthWeak": "Weak",
+      "strengthModerate": "Moderate",
+      "strengthStrong": "Strong & Secure",
+      "submitBtn": "Update Password",
+      "submittingBtn": "Updating Password...",
+      "successMsg": "Password updated successfully!",
+      "mismatchError": "New password and confirmation do not match.",
+      "lengthError": "New password must be at least 8 characters long."
+    },
+    "rbacMatrix": {
+      "title": "Roles & Access Permissions (RBAC)",
+      "superAdmin": "SUPER_ADMIN: Full unrestricted access to Financial Ledger, Storefront Invoicing, Submissions, User Management, and System Settings.",
+      "manager": "MANAGER: Access to Storefront Reconciliations, Financial Analytics, Statement Generation, and Registration Submissions.",
+      "staff": "STAFF / OPERATOR: Access to Registration & Forms Portal, Submission Records, and Manual Order Ingestion.",
+      "agent": "AGENT: Access to Public Agent & Merchant registration forms."
+    },
+    "staffManagement": {
+      "title": "Staff Access Control",
+      "subtitle": "Manage employee accounts, roles, access permissions, and password resets.",
+      "addStaffBtn": "Add New Staff",
+      "loading": "Loading staff accounts...",
+      "empty": "No staff records found.",
+      "table": {
+        "staffName": "Staff & Username",
+        "role": "Role",
+        "status": "Status",
+        "lastLogin": "Last Login",
+        "actions": "Actions",
+        "never": "Never"
+      },
+      "statusActive": "Active",
+      "statusInactive": "Inactive",
+      "actions": {
+        "edit": "Edit",
+        "resetPass": "Reset Pass",
+        "delete": "Delete"
+      },
+      "deleteConfirm": "Are you sure you want to delete staff account for \"{name}\"? This action cannot be undone.",
+      "deleteSelfError": "You cannot delete your own account."
+    },
+    "modals": {
+      "addStaff": {
+        "title": "Add New Staff Member",
+        "fullName": "Full Name *",
+        "fullNamePlaceholder": "e.g. Michael Tan",
+        "username": "Username *",
+        "usernamePlaceholder": "e.g. michael_tan",
+        "email": "Email (Optional)",
+        "emailPlaceholder": "michael@legacycuisine.com",
+        "initialPassword": "Initial Password *",
+        "initialPasswordPlaceholder": "Minimum 8 characters",
+        "role": "Access Role *",
+        "cancelBtn": "Cancel",
+        "submitBtn": "Register Staff",
+        "submittingBtn": "Registering..."
+      },
+      "editStaff": {
+        "title": "Update Staff Information",
+        "fullName": "Full Name *",
+        "email": "Email",
+        "role": "Access Role",
+        "accountStatus": "Account Status",
+        "active": "Active",
+        "inactive": "Inactive",
+        "cancelBtn": "Cancel",
+        "submitBtn": "Save Changes",
+        "submittingBtn": "Saving..."
+      },
+      "resetPassword": {
+        "title": "Reset Staff Password",
+        "forUser": "For: {name} (@{username})",
+        "newPassword": "New Password *",
+        "newPasswordPlaceholder": "Minimum 8 characters",
+        "cancelBtn": "Cancel",
+        "submitBtn": "Reset Password",
+        "submittingBtn": "Resetting...",
+        "successMsg": "Password for \"{name}\" was reset successfully."
+      }
+    }
   }
 }

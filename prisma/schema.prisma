@@ -328,3 +328,28 @@ model AgentRegistration {
   @@map("agent_registrations")
 }
 
+/// User represents administrative, management, and operational staff with RBAC.
+model User {
+  id           String    @id @default(uuid()) @db.Uuid
+  username     String    @unique
+  email        String?   @unique
+  fullName     String    @map("full_name")
+  passwordHash String    @map("password_hash")
+  role         UserRole  @default(STAFF)
+  isActive     Boolean   @default(true) @map("is_active")
+  lastLogin    DateTime? @map("last_login")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  @@index([username])
+  @@index([role])
+  @@map("users")
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  MANAGER
+  STAFF
+  AGENT
+}
+

@@ -83,23 +83,25 @@ export const ActionRequiredAlert: React.FC<ActionRequiredAlertProps> = ({ onReco
 
   if (loading) {
     return (
-      <div className="w-full bg-white dark:bg-black border border-[#b0712d] rounded-lg p-4 animate-pulse">
-        <div className="h-4 w-40 bg-[#b0712d] rounded mb-2"></div>
-        <div className="h-8 w-full bg-[#b0712d]/30 rounded"></div>
+      <div className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 animate-pulse shadow-sm">
+        <div className="h-4 w-40 bg-slate-200 dark:bg-slate-800 rounded mb-2"></div>
+        <div className="h-10 w-full bg-slate-100 dark:bg-slate-800/60 rounded-xl"></div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="w-full bg-white dark:bg-black border border-[#aa0505] text-black dark:text-white rounded-lg p-4 flex items-center justify-between">
+      <div className="w-full bg-rose-50 dark:bg-red-950/30 border border-rose-200 dark:border-red-900/40 text-slate-800 dark:text-slate-200 rounded-2xl p-4 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <svg className="w-5 h-5 text-[#aa0505] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-          </svg>
-          <span className="font-medium text-black dark:text-white">{error}</span>
+          <div className="bg-red-100 dark:bg-red-900/50 p-2 rounded-xl text-red-600 dark:text-red-400">
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <span className="font-medium text-sm text-slate-800 dark:text-slate-200">{error}</span>
         </div>
-        <button onClick={fetchNeedsReview} className="text-sm underline font-medium text-[#b0712d] hover:text-[#aa0505]">Retry</button>
+        <button onClick={fetchNeedsReview} className="text-xs font-semibold px-3 py-1.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all shadow-sm">Retry</button>
       </div>
     );
   }
@@ -107,43 +109,43 @@ export const ActionRequiredAlert: React.FC<ActionRequiredAlertProps> = ({ onReco
   // Clear state: Queue is clear
   if (items.length === 0) {
     return (
-      <div className="w-full bg-white dark:bg-black border border-[#b0712d] text-black dark:text-white rounded-xl p-5 flex items-center gap-4 shadow-sm transition-all duration-300">
-        <div className="bg-[#b0712d] rounded-full p-2 text-white">
+      <div className="w-full bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-200/80 dark:border-emerald-900/40 text-slate-800 dark:text-slate-100 rounded-2xl p-5 flex items-center gap-4 shadow-sm transition-all duration-300">
+        <div className="bg-emerald-500 rounded-xl p-2.5 text-white shadow-md shadow-emerald-500/20">
           <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
           </svg>
         </div>
         <div>
-          <h4 className="font-bold text-black dark:text-white text-lg">All Systems Reconciled</h4>
-          <p className="text-[#b0712d] text-sm">All Product Master entries have confirmed pricing. Payout balances are consistent.</p>
+          <h4 className="font-bold text-slate-900 dark:text-white text-base">All Systems Reconciled</h4>
+          <p className="text-slate-600 dark:text-slate-400 text-xs">All Product Master entries have confirmed pricing. Payout balances are consistent.</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="w-full bg-white dark:bg-black border border-[#aa0505] text-black dark:text-white rounded-xl p-5 shadow-sm">
+    <div className="w-full bg-white dark:bg-slate-900 border border-red-200 dark:border-red-900/40 text-slate-900 dark:text-white rounded-2xl p-6 shadow-sm shadow-red-500/5">
       <div className="flex items-start gap-4 mb-4">
-        <div className="bg-[#aa0505] rounded-full p-2 text-white flex-shrink-0">
+        <div className="bg-gradient-to-br from-red-500 to-red-700 rounded-xl p-2.5 text-white flex-shrink-0 shadow-md shadow-red-500/20">
           <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
         </div>
         <div>
-          <h4 className="font-bold text-black dark:text-white text-lg">Action Required ({items.length} Pending Review)</h4>
-          <p className="text-[#b0712d] text-sm">
+          <h4 className="font-extrabold text-slate-900 dark:text-white text-lg">Action Required ({items.length} Pending Review)</h4>
+          <p className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">
             GrabFood imported transactions for unregistered items. Please define the restaurant's actual base price (what they expect to be paid) to correct margin allocations.
           </p>
         </div>
       </div>
 
-      <div className="mt-3 max-h-60 overflow-y-auto divide-y divide-[#b0712d] bg-white dark:bg-black border border-[#b0712d] rounded-lg">
+      <div className="mt-4 max-h-64 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800 bg-slate-50/50 dark:bg-slate-850 border border-slate-200 dark:border-slate-800 rounded-xl">
         {items.map((item) => (
           <div key={item.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 gap-4">
             <div className="flex-1">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#b0712d] bg-[#b0712d]/15 px-2 py-0.5 rounded border border-[#b0712d]">SKU: {item.sku}</span>
-              <p className="font-bold text-black dark:text-white mt-1">{item.name}</p>
-              <p className="text-xs text-[#b0712d]">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-red-700 dark:text-red-400 bg-rose-50 dark:bg-red-950/50 px-2.5 py-1 rounded-md border border-rose-200 dark:border-red-900/50">SKU: {item.sku}</span>
+              <p className="font-bold text-slate-900 dark:text-white mt-1.5 text-sm">{item.name}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                 Grab expected price: {item.grabExpectedPrice !== null && item.grabExpectedPrice !== undefined
                   ? `RM ${parseFloat(item.grabExpectedPrice.toString()).toFixed(2)}`
                   : 'N/A'}
@@ -151,9 +153,9 @@ export const ActionRequiredAlert: React.FC<ActionRequiredAlertProps> = ({ onReco
             </div>
             
             <div className="flex items-center gap-3 w-full sm:w-auto">
-              <div className="relative rounded-md shadow-sm w-36">
+              <div className="relative rounded-xl shadow-sm w-36">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <span className="text-[#b0712d] text-sm font-semibold">RM</span>
+                  <span className="text-slate-400 text-xs font-semibold">RM</span>
                 </div>
                 <input
                   type="number"
@@ -162,17 +164,17 @@ export const ActionRequiredAlert: React.FC<ActionRequiredAlertProps> = ({ onReco
                   value={prices[item.id] || ''}
                   onChange={(e) => handlePriceChange(item.id, e.target.value)}
                   disabled={updatingId === item.id}
-                  className="block w-full pl-10 pr-3 py-2 text-sm bg-white dark:bg-black border border-[#b0712d] rounded-md focus:outline-none focus:border-[#aa0505] text-black dark:text-white"
+                  className="block w-full pl-9 pr-3 py-2 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 text-slate-900 dark:text-white"
                   placeholder="Base Price"
                 />
               </div>
               <button
                 onClick={() => handleVerifyPrice(item.id)}
                 disabled={updatingId === item.id}
-                className="bg-[#aa0505] hover:bg-[#b0712d] text-white text-sm font-semibold px-4 py-2 rounded-md transition-all disabled:opacity-50 flex items-center justify-center min-w-[100px]"
+                className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-md shadow-red-600/20 disabled:opacity-50 flex items-center justify-center min-w-[105px]"
               >
                 {updatingId === item.id ? (
-                  <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
                 ) : (
                   'Verify & Save'
                 )}

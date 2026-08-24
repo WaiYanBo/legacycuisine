@@ -8,13 +8,15 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        vividRed: '#aa0505',
-        greyYellow: '#b0712d',
+        vividRed: '#c81e1e',
+        greyYellow: '#c5a059',
         brand: {
           white: '#ffffff',
-          black: '#000000',
-          red: '#aa0505',
-          gold: '#b0712d',
+          black: '#0f172a',
+          red: '#c81e1e',
+          redDark: '#9b1c1c',
+          redLight: '#fef2f2',
+          gold: '#c5a059',
         }
       },
     },
