@@ -364,7 +364,7 @@ export default function AgentRegistrationForm({ lang = 'ms' }: AgentRegistration
                 <th className="py-3 px-3 w-12 text-center">{isEn ? 'No.' : 'Bil.'}</th>
                 <th className="py-3 px-3">{isEn ? 'Merchant Name' : 'Nama Peniaga'}</th>
                 <th className="py-3 px-3 w-40">Platform</th>
-                <th className="py-3 px-3 w-36">{isEn ? 'Date Registered' : 'Tarikh Didaftarkan'}</th>
+                <th className="py-3 px-3 w-36">{isEn ? 'Date Registered (DD/MM/YYYY)' : 'Tarikh Didaftarkan (DD/MM/YYYY)'}</th>
                 <th className="py-3 px-3">{isEn ? 'Remarks' : 'Catatan'}</th>
               </tr>
             </thead>

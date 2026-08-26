@@ -221,5 +221,157 @@
         "successMsg": "Kata laluan untuk \"{name}\" telah berjaya diset semula."
       }
     }
+  },
+  "dashboard": {
+    "sidebar": {
+      "brandTitle": "Legacy Cuisine",
+      "brandSubtitle": "Rekonsiliasi",
+      "navDashboard": "Papan Pemuka",
+      "navAnalytics": "Analisis Kewangan",
+      "navRegistration": "Pendaftaran & Borang",
+      "navSettings": "Tetapan & Akses",
+      "logout": "Log Keluar",
+      "lightMode": "Mod Cerah",
+      "darkMode": "Mod Gelap",
+      "language": "Bahasa"
+    },
+    "header": {
+      "title": "Rekonsiliasi Cawangan",
+      "subtitle": "Lejar penginvoisan cawangan agregat, metrik margin, dan penyelarasan harga asas.",
+      "autoIngestionActive": "Pengambilan Automatik: Aktif",
+      "manualDataInput": "Kemasukan Data Manual"
+    },
+    "timeFilters": {
+      "all": "Semua Masa",
+      "daily": "Harian",
+      "weekly": "Mingguan",
+      "monthly": "Bulanan",
+      "yearly": "Tahunan"
+    },
+    "kpi": {
+      "title": "Penunjuk Prestasi Utama (KPI)",
+      "subtitle": "Ringkasan jumlah pendapatan kasar, bayaran asas peniaga, dan komisen agensi.",
+      "totalRevenue": "Jumlah Pendapatan Grab",
+      "totalRevenueDesc": "Jumlah jualan transaksi yang direkodkan melalui resit Grab.",
+      "merchantPayouts": "Bayaran Peniaga",
+      "merchantPayoutsDesc": "Kos barangan dijual berdasarkan harga asas menu restoran.",
+      "netProfit": "Keuntungan Bersih Agensi",
+      "netProfitDesc": "Baki hasil markup yang dikutip selepas menjelaskan bayaran restoran."
+    },
+    "alerts": {
+      "allReconciledTitle": "Semua Sistem Telah Direkonsiliasi",
+      "allReconciledDesc": "Semua rekod Induk Produk mempunyai penetapan harga yang disahkan. Baki bayaran adalah konsisten.",
+      "actionRequiredTitle": "Tindakan Diperlukan ({count} Menunggu Semakan)",
+      "actionRequiredDesc": "GrabFood mengimport transaksi bagi item yang belum didaftarkan. Sila tentukan harga asas sebenar restoran (yang perlu dibayar kepada peniaga) untuk memperbetulkan peruntukan margin.",
+      "sku": "SKU",
+      "grabExpectedPrice": "Harga jangkaan Grab",
+      "basePricePlaceholder": "Harga Asas",
+      "verifyAndSave": "Sahkan & Simpan",
+      "saving": "Menyimpan..."
+    },
+    "invoice": {
+      "title": "Penjanaan Penyata & Invois",
+      "subtitle": "Pilih peniaga untuk menghimpunkan semua pesanan direkonsiliasi yang belum selesai ke dalam penyata invois korporat.",
+      "selectMerchant": "Pilih Peniaga",
+      "chooseMerchantPlaceholder": "-- Pilih Restoran Peniaga --",
+      "billingDate": "Tarikh Pengebilan Invois (DD/MM/YYYY)",
+      "generateBtn": "Jana Invois",
+      "generating": "Menjana...",
+      "selectMerchantError": "Sila pilih restoran peniaga.",
+      "selectDateError": "Sila pilih tarikh pengebilan invois.",
+      "successTitle": "Berjaya:",
+      "errorTitle": "Ralat:"
+    }
+  },
+  "analytics": {
+    "header": {
+      "title": "Analisis Kewangan",
+      "subtitle": "Jejaki margin markup, nisbah komisen, dan bayaran cawangan dari semasa ke semasa."
+    },
+    "cards": {
+      "grossMargin": "Margin Keuntungan Kasar",
+      "grossMarginDesc": "Nisbah keuntungan baki daripada hasil jualan Grab.",
+      "totalOrders": "Jumlah Pesanan Diproses",
+      "totalOrdersDesc": "Jumlah resit yang telah dihuraikan dan direkonsiliasi.",
+      "avgProfit": "Purata Untung Cawangan",
+      "avgProfitDesc": "Purata margin yang diperoleh bagi setiap cawangan restoran.",
+      "totalIngestion": "Jumlah Pengambilan Kasar",
+      "totalIngestionDesc": "Nilai agregat bagi semua lajur subtotal yang diproses."
+    },
+    "chart": {
+      "title": "Trend Pecahan Margin",
+      "subtitle": "Membandingkan bayaran asas peniaga dengan margin keuntungan bersih agensi.",
+      "merchantPayoutLegend": "Bayaran Peniaga",
+      "agencyProfitLegend": "Keuntungan Agensi",
+      "noData": "Tiada data tersedia bagi tarikh yang dipilih.",
+      "loading": "Memuatkan visualisasi carta..."
+    },
+    "rankings": {
+      "title": "Kedudukan Prestasi Cawangan",
+      "subtitle": "Pecahan terperinci hasil kasar, bayaran restoran, dan agihan margin bagi setiap cawangan.",
+      "noData": "Tiada data prestasi cawangan ditemui. Import resit pesanan untuk membina metrik!",
+      "colStorefront": "Butiran Cawangan",
+      "colOrders": "Pesanan",
+      "colGrossRevenue": "Hasil Kasar",
+      "colMerchantPayout": "Bayaran Peniaga",
+      "colNetMargin": "Margin Markup Bersih",
+      "colMarginRate": "Kadar Margin"
+    }
+  },
+  "manualOrder": {
+    "modalTitle": "Kemasukan Pesanan Manual & Fail Kelompok",
+    "modalSubtitle": "Terus rekonsiliasi dan masukkan rekod resit pesanan Grab ke dalam sistem.",
+    "fillSampleBtn": "⚡ Isi Pesanan Contoh",
+    "fastBadge": "Pantas",
+    "tabSingle": "Kemasukan Pesanan Tunggal",
+    "tabExcel": "Pengambilan Excel / CSV / Kelompok",
+    "singleSectionTitle": "1. Butiran Cawangan & Pesanan",
+    "selectStoreLabel": "Cawangan / Premis *",
+    "chooseStoreOption": "-- Pilih Cawangan Grab Terhubung --",
+    "customStoreLabel": "Pengecam / Emel Cawangan Tersuai",
+    "grabOrderIdLabel": "ID Pesanan Grab *",
+    "orderDateLabel": "Tarikh & Masa Pesanan (DD/MM/YYYY HH:MM) *",
+    "voucherBarcodeLabel": "Rujukan Baucar / Kod Bar (Pilihan)",
+    "lineItemsTitle": "2. Item Makanan Dipesan & Harga Seunit",
+    "addItemBtn": "+ Tambah Item",
+    "itemNameLabel": "Nama Item / Penerangan",
+    "itemQtyLabel": "Kuantiti",
+    "itemPriceLabel": "Harga Seunit (RM)",
+    "orderSumCalculated": "Jumlah Kiraan Item:",
+    "financialSectionTitle": "3. Pecahan Kewangan (MYR)",
+    "subtotalLabel": "Subtotal Makanan (RM) *",
+    "deliveryFeeLabel": "Caj Penghantaran (RM)",
+    "taxLabel": "Cukai / SST (RM)",
+    "commissionLabel": "Komisen Grab (RM)",
+    "totalCollectedLabel": "Jumlah Dikutip Grab (RM) *",
+    "saveOrderBtn": "Simpan & Rekonsiliasi Pesanan",
+    "savingOrderBtn": "Memproses Pesanan...",
+    "cancelBtn": "Batal",
+    "excelSectionTitle": "Muat Naik atau Tampal Data Hamparan",
+    "excelBatchTitle": "Import Kelompok daripada Excel atau CSV",
+    "excelBatchDesc": "Muat naik fail Excel atau salin-tampal baris dari helaian untuk memproses puluhan pesanan serentak.",
+    "downloadTemplateBtn": "📥 Muat Turun Templat Excel",
+    "batchCompleteTitle": "Pengambilan Kelompok Selesai!",
+    "totalOrdersLabel": "Jumlah Pesanan:",
+    "succeededLabel": "Berjaya:",
+    "failedLabel": "Dilepaskan/Gagal:",
+    "optionATitle": "Pilihan A: Muat Naik Fail Excel / CSV",
+    "optionADesc": "Seret & lepas fail .xlsx, .xls atau .csv anda di sini",
+    "optionBTitle": "Pilihan B: Salin-Tampal Baris terus dari Excel",
+    "optionBPlaceholder": "Tampal baris yang disalin (Ctrl+C) dari Excel atau Google Sheets di sini...",
+    "parseCopiedBtn": "Hurai Teks Disalin",
+    "previewTitle": "Pratonton Pesanan Kelompok ({count} Pesanan Unik)",
+    "clearPreviewBtn": "Kosongkan Pratonton",
+    "readyToImport": "Sedia untuk mengimport {count} pesanan",
+    "noOrdersLoaded": "Belum ada pesanan dimuatkan",
+    "closeBtn": "Tutup",
+    "importOrdersBtn": "Import {count} Pesanan",
+    "excelUploadDesc": "Muat naik fail .xlsx, .xls, atau .csv yang dieksport dari Portal Peniaga Grab.",
+    "orPasteLabel": "Atau Tampal Data Mentah CSV / Tab di sini:",
+    "pastePlaceholder": "Tampal data CSV di sini...",
+    "parseBtn": "Hurai Data Hamparan",
+    "importBatchBtn": "Import & Rekonsiliasi Semua ({count} Pesanan)",
+    "importingBatchBtn": "Mengimport Pesanan...",
+    "successMsg": "Pesanan berjaya disimpan dan direkonsiliasi!"
   }
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AgentRegistrationForm from '../forms/AgentRegistrationForm';
 import BusinessRegistrationForm from '../forms/BusinessRegistrationForm';
 import SubmissionsViewer from '../forms/SubmissionsViewer';
@@ -8,9 +8,19 @@ import { Locale } from '../../lib/i18n';
 
 type FormType = 'agent' | 'merchant' | 'submissions';
 
-export function RegistrationFormsView() {
+interface RegistrationFormsViewProps {
+  lang?: Locale;
+}
+
+export function RegistrationFormsView({ lang = 'ms' }: RegistrationFormsViewProps) {
   const [formType, setFormType] = useState<FormType>('agent');
-  const [selectedLang, setSelectedLang] = useState<Locale>('ms');
+  const [selectedLang, setSelectedLang] = useState<Locale>(lang);
+
+  useEffect(() => {
+    if (lang) {
+      setSelectedLang(lang);
+    }
+  }, [lang]);
 
   return (
     <div className="space-y-6 animate-fadeIn">

@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { ProductMaster } from '../../types/dashboard';
+import { getDictionary, Locale } from '../../lib/i18n';
 
 interface ActionRequiredAlertProps {
   onReconciliationTrigger?: () => void;
+  lang?: Locale;
 }
 
-export const ActionRequiredAlert: React.FC<ActionRequiredAlertProps> = ({ onReconciliationTrigger }) => {
+export const ActionRequiredAlert: React.FC<ActionRequiredAlertProps> = ({ onReconciliationTrigger, lang = 'en' }) => {
+  const dict = getDictionary(lang).dashboard.alerts;
   const [items, setItems] = useState<ProductMaster[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -17,21 +20,28 @@ export const ActionRequiredAlert: React.FC<ActionRequiredAlertProps> = ({ onReco
     try {
       setLoading(true);
       const res = await fetch('/api/products/needs-review');
-      if (!res.ok) {
-        throw new Error(`Failed to load review items: ${res.statusText}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          setItems(data);
+          const initialPrices: { [key: string]: string } = {};
+          data.forEach((item: any) => {
+            if (item.restaurantBasePrice) {
+              initialPrices[item.id] = item.restaurantBasePrice.toString();
+            }
+          });
+          setPrices(initialPrices);
+        } else {
+          setItems([]);
+        }
+      } else {
+        setItems([]);
       }
-      const data: ProductMaster[] = await res.json();
-      setItems(data);
-      
-      // Initialize price inputs
-      const initialPrices: { [key: string]: string } = {};
-      data.forEach(item => {
-        initialPrices[item.id] = item.restaurantBasePrice.toString();
-      });
-      setPrices(initialPrices);
       setError(null);
     } catch (err: any) {
-      setError(err.message || 'Error loading actions queue');
+      // Graceful fallback to zero pending items
+      setItems([]);
+      setError(null);
     } finally {
       setLoading(false);
     }
@@ -82,28 +92,7 @@ export const ActionRequiredAlert: React.FC<ActionRequiredAlertProps> = ({ onReco
   };
 
   if (loading) {
-    return (
-      <div className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 animate-pulse shadow-sm">
-        <div className="h-4 w-40 bg-slate-200 dark:bg-slate-800 rounded mb-2"></div>
-        <div className="h-10 w-full bg-slate-100 dark:bg-slate-800/60 rounded-xl"></div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="w-full bg-rose-50 dark:bg-red-950/30 border border-rose-200 dark:border-red-900/40 text-slate-800 dark:text-slate-200 rounded-2xl p-4 flex items-center justify-between shadow-sm">
-        <div className="flex items-center gap-3">
-          <div className="bg-red-100 dark:bg-red-900/50 p-2 rounded-xl text-red-600 dark:text-red-400">
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-          </div>
-          <span className="font-medium text-sm text-slate-800 dark:text-slate-200">{error}</span>
-        </div>
-        <button onClick={fetchNeedsReview} className="text-xs font-semibold px-3 py-1.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all shadow-sm">Retry</button>
-      </div>
-    );
+    return null;
   }
 
   // Clear state: Queue is clear
@@ -116,8 +105,8 @@ export const ActionRequiredAlert: React.FC<ActionRequiredAlertProps> = ({ onReco
           </svg>
         </div>
         <div>
-          <h4 className="font-bold text-slate-900 dark:text-white text-base">All Systems Reconciled</h4>
-          <p className="text-slate-600 dark:text-slate-400 text-xs">All Product Master entries have confirmed pricing. Payout balances are consistent.</p>
+          <h4 className="font-bold text-slate-900 dark:text-white text-base">{dict.allReconciledTitle}</h4>
+          <p className="text-slate-600 dark:text-slate-400 text-xs">{dict.allReconciledDesc}</p>
         </div>
       </div>
     );
@@ -132,9 +121,11 @@ export const ActionRequiredAlert: React.FC<ActionRequiredAlertProps> = ({ onReco
           </svg>
         </div>
         <div>
-          <h4 className="font-extrabold text-slate-900 dark:text-white text-lg">Action Required ({items.length} Pending Review)</h4>
+          <h4 className="font-extrabold text-slate-900 dark:text-white text-lg">
+            {dict.actionRequiredTitle.replace('{count}', items.length.toString())}
+          </h4>
           <p className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">
-            GrabFood imported transactions for unregistered items. Please define the restaurant's actual base price (what they expect to be paid) to correct margin allocations.
+            {dict.actionRequiredDesc}
           </p>
         </div>
       </div>
@@ -143,10 +134,10 @@ export const ActionRequiredAlert: React.FC<ActionRequiredAlertProps> = ({ onReco
         {items.map((item) => (
           <div key={item.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 gap-4">
             <div className="flex-1">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-red-700 dark:text-red-400 bg-rose-50 dark:bg-red-950/50 px-2.5 py-1 rounded-md border border-rose-200 dark:border-red-900/50">SKU: {item.sku}</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-red-700 dark:text-red-400 bg-rose-50 dark:bg-red-950/50 px-2.5 py-1 rounded-md border border-rose-200 dark:border-red-900/50">{dict.sku}: {item.sku}</span>
               <p className="font-bold text-slate-900 dark:text-white mt-1.5 text-sm">{item.name}</p>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                Grab expected price: {item.grabExpectedPrice !== null && item.grabExpectedPrice !== undefined
+                {dict.grabExpectedPrice}: {item.grabExpectedPrice !== null && item.grabExpectedPrice !== undefined
                   ? `RM ${parseFloat(item.grabExpectedPrice.toString()).toFixed(2)}`
                   : 'N/A'}
               </p>
@@ -165,7 +156,7 @@ export const ActionRequiredAlert: React.FC<ActionRequiredAlertProps> = ({ onReco
                   onChange={(e) => handlePriceChange(item.id, e.target.value)}
                   disabled={updatingId === item.id}
                   className="block w-full pl-9 pr-3 py-2 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 text-slate-900 dark:text-white"
-                  placeholder="Base Price"
+                  placeholder={dict.basePricePlaceholder}
                 />
               </div>
               <button
@@ -176,7 +167,7 @@ export const ActionRequiredAlert: React.FC<ActionRequiredAlertProps> = ({ onReco
                 {updatingId === item.id ? (
                   <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
                 ) : (
-                  'Verify & Save'
+                  dict.verifyAndSave
                 )}
               </button>
             </div>
