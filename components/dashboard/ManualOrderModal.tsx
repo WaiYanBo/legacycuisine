@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import * as XLSX from 'xlsx';
 
 interface LineItemInput {
@@ -25,17 +26,28 @@ interface ParsedBatchOrder {
   }>;
 }
 
+import { getDictionary, Locale } from '../../lib/i18n';
+
 interface ManualOrderModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  lang?: Locale;
 }
 
 export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
   isOpen,
   onClose,
-  onSuccess
+  onSuccess,
+  lang = 'en'
 }) => {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const dict = getDictionary(lang).manualOrder;
   const [activeTab, setActiveTab] = useState<'single' | 'excel'>('single');
 
   // Single Order State
@@ -309,7 +321,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
       };
 
       const storeIdentifier = String(
-        getVal(['storeidentifier', 'storeemail', 'store', 'merchant', 'vendor', 'email']) ||
+        getVal(['storeidentifier', 'storeemail', 're', 'merchant', 'vendor', 'email']) ||
         selectedMerchantEmail ||
         merchants[0]?.storefronts[0]?.grabEmail ||
         ''
@@ -435,11 +447,11 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
     }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden text-slate-900 dark:text-slate-100">
+  return createPortal(
+    <div className="fixed inset-0 z-[99999] w-screen h-screen flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden text-slate-900 dark:text-slate-100 relative">
         
         {/* Modal Header */}
         <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-slate-50/50 dark:bg-slate-950/50">
@@ -450,8 +462,8 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
               </svg>
             </div>
             <div>
-              <h2 className="text-lg font-bold">Manual Order Ingestion</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Directly ingest Grab receipts and update reconciliation records.</p>
+              <h2 className="text-lg font-bold">{dict.modalTitle}</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400">{dict.modalSubtitle}</p>
             </div>
           </div>
 
@@ -462,7 +474,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
                 onClick={handleFillSample}
                 className="text-xs font-semibold text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-900/40 border border-red-200 dark:border-red-900/40 px-3 py-1.5 rounded-lg transition-all"
               >
-                ⚡ Fill Sample Order
+                {dict.fillSampleBtn}
               </button>
             )}
             <button
@@ -486,7 +498,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
                 : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 border-transparent'
             }`}
           >
-            ✏️ Single Order Entry
+            ✏️ {dict.tabSingle}
           </button>
           
           <button
@@ -497,9 +509,9 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
                 : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 border-transparent'
             }`}
           >
-            <span>📊 Excel / CSV Bulk Importer</span>
+            <span>📊 {dict.tabExcel}</span>
             <span className="bg-emerald-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-extrabold uppercase animate-pulse">
-              Fast
+              {dict.fastBadge}
             </span>
           </button>
         </div>
@@ -521,25 +533,25 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
                 <svg className="w-5 h-5 text-emerald-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-                <span>Manual order successfully ingested and reconciled!</span>
+                <span>{dict.successMsg}</span>
               </div>
             )}
 
             {/* Section 1: Storefront & Order Details */}
             <div className="space-y-4">
-              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">1. Storefront & Basic Details</h3>
+              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">{dict.singleSectionTitle}</h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase mb-1">
-                    Select Registered Storefront
+                    {dict.selectStoreLabel}
                   </label>
                   <select
                     value={selectedMerchantEmail}
                     onChange={(e) => setSelectedMerchantEmail(e.target.value)}
                     className="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600"
                   >
-                    <option value="">-- Custom Identifier --</option>
+                    <option value="">{dict.chooseStoreOption}</option>
                     {merchants.flatMap((m) =>
                       (m.storefronts || []).map((sf: any) => (
                         <option key={sf.id} value={sf.grabEmail}>
@@ -553,7 +565,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
                 {!selectedMerchantEmail && (
                   <div>
                     <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase mb-1">
-                      Custom Store Identifier / Email
+                      {dict.customStoreLabel}
                     </label>
                     <input
                       type="text"
@@ -568,7 +580,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase mb-1">
-                    Grab Order ID
+                    {dict.grabOrderIdLabel}
                   </label>
                   <input
                     type="text"
@@ -582,7 +594,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase mb-1">
-                    Order Date & Time (DD/MM/YYYY)
+                    {dict.orderDateLabel}
                   </label>
                   <input
                     type="datetime-local"
@@ -602,13 +614,13 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
             {/* Section 2: Order Line Items */}
             <div className="space-y-3 pt-2">
               <div className="flex items-center justify-between">
-                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">2. Purchased Items</h3>
+                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">{dict.lineItemsTitle}</h3>
                 <button
                   type="button"
                   onClick={handleAddLineItem}
                   className="text-xs font-bold text-red-600 dark:text-red-400 hover:underline flex items-center gap-1"
                 >
-                  + Add Item
+                  {dict.addItemBtn}
                 </button>
               </div>
 
@@ -618,7 +630,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
                     <div className="flex-1">
                       <input
                         type="text"
-                        placeholder="Item Name (e.g. Nasi Lemak)"
+                        placeholder={dict.itemNameLabel}
                         value={item.itemName}
                         onChange={(e) => handleLineItemChange(index, 'itemName', e.target.value)}
                         className="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-md focus:outline-none focus:ring-1 focus:ring-red-600"
@@ -629,7 +641,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
                       <input
                         type="number"
                         min="1"
-                        placeholder="Qty"
+                        placeholder={dict.itemQtyLabel}
                         value={item.quantity}
                         onChange={(e) => handleLineItemChange(index, 'quantity', e.target.value)}
                         className="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-md focus:outline-none focus:ring-1 focus:ring-red-600 text-center"
@@ -641,7 +653,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
                       <input
                         type="number"
                         step="0.01"
-                        placeholder="Unit Price"
+                        placeholder={dict.itemPriceLabel}
                         value={item.unitPrice}
                         onChange={(e) => handleLineItemChange(index, 'unitPrice', e.target.value)}
                         className="w-full pl-9 pr-2 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-md focus:outline-none focus:ring-1 focus:ring-red-600"
@@ -671,17 +683,17 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
               </div>
 
               <div className="text-right text-xs font-medium text-slate-500">
-                Line Items Calculated Sum: <span className="font-bold text-slate-800 dark:text-slate-100">RM {lineItemsSum.toFixed(2)}</span>
+                {dict.orderSumCalculated} <span className="font-bold text-slate-800 dark:text-slate-100">RM {lineItemsSum.toFixed(2)}</span>
               </div>
             </div>
 
             {/* Section 3: Financial Totals Breakdown */}
             <div className="space-y-4 pt-2">
-              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">3. Grab Financial Totals Breakdown</h3>
+              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">{dict.financialSectionTitle}</h3>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Subtotal (RM)</label>
+                  <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">{dict.subtotalLabel}</label>
                   <input
                     type="number"
                     step="0.01"
@@ -693,7 +705,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Delivery Fee (RM)</label>
+                  <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">{dict.deliveryFeeLabel}</label>
                   <input
                     type="number"
                     step="0.01"
@@ -704,7 +716,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Tax / SST (RM)</label>
+                  <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">{dict.taxLabel}</label>
                   <input
                     type="number"
                     step="0.01"
@@ -715,7 +727,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Grab Commission (RM)</label>
+                  <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">{dict.commissionLabel}</label>
                   <input
                     type="number"
                     step="0.01"
@@ -726,7 +738,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
                 </div>
 
                 <div className="col-span-2 sm:col-span-1">
-                  <label className="block text-xs font-bold text-emerald-600 dark:text-emerald-400 mb-1">Total Collected by Grab (RM)</label>
+                  <label className="block text-xs font-bold text-emerald-600 dark:text-emerald-400 mb-1">{dict.totalCollectedLabel}</label>
                   <input
                     type="number"
                     step="0.01"
@@ -739,7 +751,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Voucher / Promo Code (Optional)</label>
+                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">{dict.voucherBarcodeLabel}</label>
                 <input
                   type="text"
                   placeholder="e.g. BARCODE-PROMO-50"
@@ -758,7 +770,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
                 disabled={status === 'loading'}
                 className="px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all"
               >
-                Cancel
+                {dict.cancelBtn}
               </button>
               <button
                 type="submit"
@@ -768,7 +780,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
                 {status === 'loading' ? (
                   <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
                 ) : (
-                  'Submit Order'
+                  dict.saveOrderBtn
                 )}
               </button>
             </div>
@@ -782,9 +794,9 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
             {/* Header info & Template Download */}
             <div className="bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/30 p-4 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div>
-                <h4 className="font-bold text-emerald-900 dark:text-emerald-300 text-sm">Batch Import from Excel or CSV</h4>
+                <h4 className="font-bold text-emerald-900 dark:text-emerald-300 text-sm">{dict.excelBatchTitle}</h4>
                 <p className="text-xs text-emerald-700 dark:text-emerald-400">
-                  Upload an Excel spreadsheet or copy-paste rows directly from Excel to ingest dozens of orders simultaneously.
+                  {dict.excelBatchDesc}
                 </p>
               </div>
 
@@ -796,7 +808,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                 </svg>
-                <span>📥 Download Excel Template</span>
+                <span>{dict.downloadTemplateBtn}</span>
               </button>
             </div>
 
@@ -815,13 +827,13 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
                   <svg className="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <span>Batch Ingestion Completed!</span>
+                  <span>{dict.batchCompleteTitle}</span>
                 </div>
                 <div className="text-xs space-x-4">
-                  <span>Total Orders: <strong>{batchResultSummary.total}</strong></span>
-                  <span className="text-emerald-600 font-bold">Succeeded: {batchResultSummary.succeeded}</span>
+                  <span>{dict.totalOrdersLabel} <strong>{batchResultSummary.total}</strong></span>
+                  <span className="text-emerald-600 font-bold">{dict.succeededLabel} {batchResultSummary.succeeded}</span>
                   {batchResultSummary.failed > 0 && (
-                    <span className="text-rose-600 font-bold">Skipped/Failed: {batchResultSummary.failed}</span>
+                    <span className="text-rose-600 font-bold">{dict.failedLabel} {batchResultSummary.failed}</span>
                   )}
                 </div>
               </div>
@@ -835,8 +847,8 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
                 <svg className="w-8 h-8 text-emerald-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                <p className="text-xs font-bold text-slate-700 dark:text-slate-200 mb-1">Option A: Upload Excel / CSV File</p>
-                <p className="text-[11px] text-slate-400 mb-3">Drag & drop your .xlsx, .xls or .csv file here</p>
+                <p className="text-xs font-bold text-slate-700 dark:text-slate-200 mb-1">{dict.optionATitle}</p>
+                <p className="text-[11px] text-slate-400 mb-3">{dict.optionADesc}</p>
                 <input
                   type="file"
                   accept=".xlsx, .xls, .csv"
@@ -848,11 +860,11 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
               {/* Option B: Copy Paste Text Block */}
               <div className="space-y-2 flex flex-col">
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-200">
-                  Option B: Copy-Paste Rows directly from Excel
+                  {dict.optionBTitle}
                 </label>
                 <textarea
                   rows={4}
-                  placeholder="Paste rows copied (Ctrl+C) from Excel or Sheets here..."
+                  placeholder={dict.optionBPlaceholder}
                   value={pasteContent}
                   onChange={(e) => setPasteContent(e.target.value)}
                   className="w-full flex-1 px-3 py-2 text-xs font-mono bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
@@ -862,7 +874,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
                   onClick={handleParsePastedText}
                   className="w-full bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold py-1.5 rounded-lg transition-all"
                 >
-                  Parse Copied Text
+                  {dict.parseCopiedBtn}
                 </button>
               </div>
             </div>
@@ -872,14 +884,14 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
               <div className="space-y-3 pt-2">
                 <div className="flex items-center justify-between">
                   <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-                    Parsed Batch Orders Preview ({parsedBatchOrders.length} Unique Orders)
+                    {dict.previewTitle.replace('{count}', parsedBatchOrders.length.toString())}
                   </h3>
                   <button
                     type="button"
                     onClick={() => setParsedBatchOrders([])}
                     className="text-xs text-rose-500 hover:underline"
                   >
-                    Clear Preview
+                    {dict.clearPreviewBtn}
                   </button>
                 </div>
 
@@ -915,7 +927,9 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
             {/* Batch Submit Footer */}
             <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center">
               <span className="text-xs text-slate-400 font-medium">
-                {parsedBatchOrders.length > 0 ? `Ready to import ${parsedBatchOrders.length} orders` : 'No orders loaded yet'}
+                {parsedBatchOrders.length > 0
+                  ? dict.readyToImport.replace('{count}', parsedBatchOrders.length.toString())
+                  : dict.noOrdersLoaded}
               </span>
 
               <div className="flex gap-3">
@@ -924,7 +938,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
                   onClick={onClose}
                   className="px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all"
                 >
-                  Close
+                  {dict.closeBtn}
                 </button>
 
                 <button
@@ -936,7 +950,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
                   {status === 'loading' ? (
                     <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
                   ) : (
-                    `Import ${parsedBatchOrders.length} Orders`
+                    dict.importOrdersBtn.replace('{count}', parsedBatchOrders.length.toString())
                   )}
                 </button>
               </div>
@@ -946,6 +960,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
         )}
 
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

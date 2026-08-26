@@ -221,5 +221,157 @@
         "successMsg": "Password for \"{name}\" was reset successfully."
       }
     }
+  },
+  "dashboard": {
+    "sidebar": {
+      "brandTitle": "Legacy Cuisine",
+      "brandSubtitle": "Reconciliations",
+      "navDashboard": "Dashboard",
+      "navAnalytics": "Analytics",
+      "navRegistration": "Registration & Forms",
+      "navSettings": "Settings & Access",
+      "logout": "Logout",
+      "lightMode": "Light Mode",
+      "darkMode": "Dark Mode",
+      "language": "Language"
+    },
+    "header": {
+      "title": "Storefront Reconciliation",
+      "subtitle": "Aggregate storefront invoicing ledger, margin metrics, and base-price adjustments.",
+      "autoIngestionActive": "Automated Ingestion: Active",
+      "manualDataInput": "Manual Data Input"
+    },
+    "timeFilters": {
+      "all": "All-Time",
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly",
+      "yearly": "Yearly"
+    },
+    "kpi": {
+      "title": "Key Performance Indicators",
+      "subtitle": "Summarized gross revenue, base payouts, and agency commissions.",
+      "totalRevenue": "Total Grab Revenue",
+      "totalRevenueDesc": "Aggregate transaction sales recorded by Grab receipts.",
+      "merchantPayouts": "Merchant Payouts",
+      "merchantPayoutsDesc": "Cost of goods sold based on restaurant menu base prices.",
+      "netProfit": "Net Agency Profit",
+      "netProfitDesc": "Remaining markup revenues collected after clearing restaurant payouts."
+    },
+    "alerts": {
+      "allReconciledTitle": "All Systems Reconciled",
+      "allReconciledDesc": "All Product Master entries have confirmed pricing. Payout balances are consistent.",
+      "actionRequiredTitle": "Action Required ({count} Pending Review)",
+      "actionRequiredDesc": "GrabFood imported transactions for unregistered items. Please define the restaurant's actual base price (what they expect to be paid) to correct margin allocations.",
+      "sku": "SKU",
+      "grabExpectedPrice": "Grab expected price",
+      "basePricePlaceholder": "Base Price",
+      "verifyAndSave": "Verify & Save",
+      "saving": "Saving..."
+    },
+    "invoice": {
+      "title": "Statement Generation",
+      "subtitle": "Select a merchant to compile all outstanding reconciled orders into a corporate statement invoice.",
+      "selectMerchant": "Select Merchant",
+      "chooseMerchantPlaceholder": "-- Choose Merchant Restaurant --",
+      "billingDate": "Invoice Billing Date (DD/MM/YYYY)",
+      "generateBtn": "Generate Invoice",
+      "generating": "Generating...",
+      "selectMerchantError": "Please select a restaurant merchant.",
+      "selectDateError": "Please select an invoice billing date.",
+      "successTitle": "Success:",
+      "errorTitle": "Error:"
+    }
+  },
+  "analytics": {
+    "header": {
+      "title": "Financial Analytics",
+      "subtitle": "Track markup margins, commission ratios, and storefront payouts over time."
+    },
+    "cards": {
+      "grossMargin": "Gross Profit Margin",
+      "grossMarginDesc": "Leftover profit ratio of Grab sales revenue.",
+      "totalOrders": "Total Orders Ingested",
+      "totalOrdersDesc": "Total receipts parsed and reconciled.",
+      "avgProfit": "Avg Storefront Profit",
+      "avgProfitDesc": "Average margin collected per restaurant storefront.",
+      "totalIngestion": "Total Gross Ingestion",
+      "totalIngestionDesc": "Sum value of all parsed subtotal columns."
+    },
+    "chart": {
+      "title": "Margin Breakdown Trends",
+      "subtitle": "Comparing base payouts against leftover agency profit margins.",
+      "merchantPayoutLegend": "Merchant Payout",
+      "agencyProfitLegend": "Agency Profit",
+      "noData": "No data available for the selected dates.",
+      "loading": "Loading chart visualization..."
+    },
+    "rankings": {
+      "title": "Storefront Performance Rankings",
+      "subtitle": "Detailed breakdown of gross revenue, restaurant payouts, and margin distributions per storefront.",
+      "noData": "No storefront performance data found. Import order receipts to build metrics!",
+      "colStorefront": "Storefront Details",
+      "colOrders": "Orders",
+      "colGrossRevenue": "Gross Revenue",
+      "colMerchantPayout": "Merchant Payout",
+      "colNetMargin": "Net Markup Margin",
+      "colMarginRate": "Margin Rate"
+    }
+  },
+  "manualOrder": {
+    "modalTitle": "Manual Order & Batch Ingestion",
+    "modalSubtitle": "Directly ingest Grab receipts and update reconciliation records.",
+    "fillSampleBtn": "⚡ Fill Sample Order",
+    "fastBadge": "Fast",
+    "tabSingle": "Single Order Entry",
+    "tabExcel": "Excel / CSV / Batch Ingestion",
+    "singleSectionTitle": "1. Storefront & Basic Details",
+    "selectStoreLabel": "Storefront / Outlet *",
+    "chooseStoreOption": "-- Select Connected Grab Store --",
+    "customStoreLabel": "Custom Store Identifier / Email",
+    "grabOrderIdLabel": "Grab Order ID *",
+    "orderDateLabel": "Order Date & Time (DD/MM/YYYY HH:MM) *",
+    "voucherBarcodeLabel": "Voucher / Barcode Reference (Optional)",
+    "lineItemsTitle": "2. Purchased Food Items & Unit Pricing",
+    "addItemBtn": "+ Add Item",
+    "itemNameLabel": "Item Name / Description",
+    "itemQtyLabel": "Qty",
+    "itemPriceLabel": "Unit Price (RM)",
+    "orderSumCalculated": "Line Items Calculated Sum:",
+    "financialSectionTitle": "3. Grab Financial Totals Breakdown (MYR)",
+    "subtotalLabel": "Food Subtotal (RM) *",
+    "deliveryFeeLabel": "Delivery Fee (RM)",
+    "taxLabel": "Tax / SST (RM)",
+    "commissionLabel": "Grab Commission (RM)",
+    "totalCollectedLabel": "Total Collected by Grab (RM) *",
+    "saveOrderBtn": "Save & Reconcile Order",
+    "savingOrderBtn": "Ingesting Order...",
+    "cancelBtn": "Cancel",
+    "excelSectionTitle": "Upload or Paste Spreadsheet Data",
+    "excelBatchTitle": "Batch Import from Excel or CSV",
+    "excelBatchDesc": "Upload an Excel spreadsheet or copy-paste rows directly from Excel to ingest dozens of orders simultaneously.",
+    "downloadTemplateBtn": "📥 Download Excel Template",
+    "batchCompleteTitle": "Batch Ingestion Completed!",
+    "totalOrdersLabel": "Total Orders:",
+    "succeededLabel": "Succeeded:",
+    "failedLabel": "Skipped/Failed:",
+    "optionATitle": "Option A: Upload Excel / CSV File",
+    "optionADesc": "Drag & drop your .xlsx, .xls or .csv file here",
+    "optionBTitle": "Option B: Copy-Paste Rows directly from Excel",
+    "optionBPlaceholder": "Paste rows copied (Ctrl+C) from Excel or Sheets here...",
+    "parseCopiedBtn": "Parse Copied Text",
+    "previewTitle": "Parsed Batch Orders Preview ({count} Unique Orders)",
+    "clearPreviewBtn": "Clear Preview",
+    "readyToImport": "Ready to import {count} orders",
+    "noOrdersLoaded": "No orders loaded yet",
+    "closeBtn": "Close",
+    "importOrdersBtn": "Import {count} Orders",
+    "excelUploadDesc": "Upload .xlsx, .xls, or .csv files exported from Grab Merchant Portal.",
+    "orPasteLabel": "Or Paste Raw CSV / Tab-Separated Data Here:",
+    "pastePlaceholder": "Paste CSV data here...",
+    "parseBtn": "Parse Spreadsheet Data",
+    "importBatchBtn": "Import & Reconcile All ({count} Orders)",
+    "importingBatchBtn": "Importing Orders...",
+    "successMsg": "Order successfully submitted and reconciled!"
   }
 }

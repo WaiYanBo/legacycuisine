@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { formatDateToDDMMYYYY } from '../../lib/dateUtils';
 import enDictionary from '../../locales/en.json';
 import msDictionary from '../../locales/ms.json';
@@ -25,8 +26,9 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
   const [lang, setLang] = useState<'en' | 'ms'>(initialLang);
 
   useEffect(() => {
-    const savedLang = (localStorage.getItem('lc_lang') as 'en' | 'ms') || initialLang || 'en';
-    setLang(savedLang);
+    if (initialLang) {
+      setLang(initialLang);
+    }
   }, [initialLang]);
 
   const handleLangToggle = (newLang: 'en' | 'ms') => {
@@ -606,8 +608,8 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
       </div>
 
       {/* ➕ MODAL: ADD NEW STAFF */}
-      {isAddStaffOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+      {isAddStaffOpen && typeof document !== 'undefined' && createPortal(
+        <div className="fixed inset-0 z-[99999] w-screen h-screen bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white dark:bg-[#0d1117] border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl space-y-5 animate-in fade-in zoom-in-95 duration-200 text-xs text-slate-900 dark:text-slate-100">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
               <h3 className="text-lg font-black text-slate-900 dark:text-white">{dict.modals.addStaff.title}</h3>
@@ -700,12 +702,13 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* ✏️ MODAL: EDIT STAFF DETAILS & ROLE */}
-      {editTargetUser && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+      {editTargetUser && typeof document !== 'undefined' && createPortal(
+        <div className="fixed inset-0 z-[99999] w-screen h-screen bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white dark:bg-[#0d1117] border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl space-y-5 animate-in fade-in zoom-in-95 duration-200 text-xs text-slate-900 dark:text-slate-100">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
               <h3 className="text-lg font-black text-slate-900 dark:text-white">{dict.modals.editStaff.title}</h3>
@@ -798,12 +801,13 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* 🔑 MODAL: RESET STAFF PASSWORD */}
-      {resetTargetUser && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+      {resetTargetUser && typeof document !== 'undefined' && createPortal(
+        <div className="fixed inset-0 z-[99999] w-screen h-screen bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white dark:bg-[#0d1117] border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl space-y-5 animate-in fade-in zoom-in-95 duration-200 text-xs text-slate-900 dark:text-slate-100">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
               <div>
@@ -852,7 +856,8 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

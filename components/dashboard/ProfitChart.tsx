@@ -10,13 +10,16 @@ import {
   ResponsiveContainer
 } from 'recharts';
 import { ChartDataPoint } from '../../types/dashboard';
+import { getDictionary, Locale } from '../../lib/i18n';
 
 interface ProfitChartProps {
   data: ChartDataPoint[];
+  lang?: Locale;
 }
 
-export const ProfitChart: React.FC<ProfitChartProps> = ({ data = [] }) => {
+export const ProfitChart: React.FC<ProfitChartProps> = ({ data = [], lang = 'en' }) => {
   const [mounted, setMounted] = useState(false);
+  const dict = getDictionary(lang).analytics.chart;
 
   // Prevent Next.js hydration warnings by rendering only after mounting on the client
   useEffect(() => {
@@ -34,7 +37,7 @@ export const ProfitChart: React.FC<ProfitChartProps> = ({ data = [] }) => {
   if (!mounted) {
     return (
       <div className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 h-80 flex items-center justify-center text-slate-400 text-xs">
-        Loading chart visualization...
+        {dict.loading}
       </div>
     );
   }
@@ -42,14 +45,14 @@ export const ProfitChart: React.FC<ProfitChartProps> = ({ data = [] }) => {
   return (
     <div className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm text-slate-900 dark:text-white">
       <div className="mb-4">
-        <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">Margin Breakdown Trends</h3>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Comparing base payouts against leftover agency profit margins.</p>
+        <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">{dict.title}</h3>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{dict.subtitle}</p>
       </div>
 
       <div className="h-80 w-full">
         {data.length === 0 ? (
           <div className="h-full flex items-center justify-center border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl text-slate-400 text-xs">
-            No data available for the selected dates.
+            {dict.noData}
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
@@ -89,14 +92,14 @@ export const ProfitChart: React.FC<ProfitChartProps> = ({ data = [] }) => {
                 wrapperStyle={{ fontSize: '12px', color: '#64748b' }}
               />
               <Bar 
-                name="Merchant Payout" 
+                name={dict.merchantPayoutLegend} 
                 dataKey="merchantPayouts" 
                 fill="#f59e0b" 
                 radius={[6, 6, 0, 0]} 
                 maxBarSize={36}
               />
               <Bar 
-                name="Agency Profit" 
+                name={dict.agencyProfitLegend} 
                 dataKey="clientProfit" 
                 fill="#c81e1e" 
                 radius={[6, 6, 0, 0]} 

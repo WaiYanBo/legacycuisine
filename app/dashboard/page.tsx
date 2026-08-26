@@ -9,6 +9,7 @@ import { RegistrationFormsView } from '../../components/dashboard/RegistrationFo
 import { ManualOrderModal } from '../../components/dashboard/ManualOrderModal';
 import { SettingsView } from '../../components/dashboard/SettingsView';
 import { DashboardMetrics } from '../../types/dashboard';
+import { getDictionary, Locale } from '../../lib/i18n';
 
 type TimeRange = 'daily' | 'weekly' | 'monthly' | 'yearly' | 'all';
 type TabName = 'dashboard' | 'analytics' | 'registration' | 'settings';
@@ -30,10 +31,13 @@ export default function DashboardOverviewPage() {
   const [isManualModalOpen, setIsManualModalOpen] = useState<boolean>(false);
   const [currentUser, setCurrentUser] = useState<SessionUser | null>(null);
 
+  // Language state
+  const [lang, setLang] = useState<Locale>('en');
+
   // Light/Dark Theme state
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
-  // Initialize and load theme & session from localStorage / API
+  // Initialize and load theme, language & session from localStorage / API
   useEffect(() => {
     const savedTheme = (localStorage.getItem('theme') as 'light' | 'dark') || 'light';
     setTheme(savedTheme);
@@ -42,6 +46,9 @@ export default function DashboardOverviewPage() {
     } else {
       document.documentElement.classList.remove('dark');
     }
+
+    const savedLang = (localStorage.getItem('lc_lang') as Locale) || 'en';
+    setLang(savedLang);
 
     const savedUser = localStorage.getItem('lc_user');
     if (savedUser) {
@@ -61,6 +68,11 @@ export default function DashboardOverviewPage() {
       })
       .catch(() => {});
   }, []);
+
+  const toggleLanguage = (targetLang: 'en' | 'ms') => {
+    setLang(targetLang);
+    localStorage.setItem('lc_lang', targetLang);
+  };
 
   const toggleTheme = () => {
     const nextTheme = theme === 'light' ? 'dark' : 'light';
@@ -90,14 +102,29 @@ export default function DashboardOverviewPage() {
     try {
       setLoading(true);
       const res = await fetch(`/api/dashboard/metrics?range=${timeRange}`);
-      if (!res.ok) {
-        throw new Error(`Failed to load metrics data: ${res.statusText}`);
+      if (res.ok) {
+        const data: DashboardMetrics = await res.json();
+        setMetrics(data);
+      } else {
+        // Default clean state
+        setMetrics({
+          totalRevenue: 0.00,
+          totalPayouts: 0.00,
+          netProfit: 0.00,
+          chartData: [],
+          storefrontsPerformance: [],
+        });
       }
-      const data: DashboardMetrics = await res.json();
-      setMetrics(data);
       setError(null);
     } catch (err: any) {
-      setError(err.message || 'Error loading dashboard metrics');
+      setMetrics({
+        totalRevenue: 0.00,
+        totalPayouts: 0.00,
+        netProfit: 0.00,
+        chartData: [],
+        storefrontsPerformance: [],
+      });
+      setError(null);
     } finally {
       setLoading(false);
     }
@@ -106,6 +133,10 @@ export default function DashboardOverviewPage() {
   useEffect(() => {
     fetchDashboardMetrics();
   }, [timeRange]);
+
+  const dict = getDictionary(lang).dashboard;
+  const analyticsDict = getDictionary(lang).analytics;
+  const isEn = lang === 'en';
 
   return (
     <div id="dashboard-root" className="flex h-screen overflow-hidden bg-white dark:bg-black text-black dark:text-white transition-colors duration-200 print:block print:h-auto print:overflow-visible print:bg-white">
@@ -121,8 +152,8 @@ export default function DashboardOverviewPage() {
               </svg>
             </div>
             <div>
-              <span className="text-base font-black tracking-tight text-slate-900 dark:text-white block">Legacy Cuisine</span>
-              <span className="block text-[10px] text-red-600 dark:text-red-400 font-extrabold uppercase tracking-wider">Reconciliations</span>
+              <span className="text-base font-black tracking-tight text-slate-900 dark:text-white block">{dict.sidebar.brandTitle}</span>
+              <span className="block text-[10px] text-red-600 dark:text-red-400 font-extrabold uppercase tracking-wider">{dict.sidebar.brandSubtitle}</span>
             </div>
           </div>
 
@@ -139,7 +170,7 @@ export default function DashboardOverviewPage() {
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z" />
               </svg>
-              Dashboard
+              {dict.sidebar.navDashboard}
             </button>
 
             <button
@@ -153,7 +184,7 @@ export default function DashboardOverviewPage() {
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z" />
               </svg>
-              Analytics
+              {dict.sidebar.navAnalytics}
             </button>
 
             <button
@@ -167,7 +198,7 @@ export default function DashboardOverviewPage() {
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-              Registration & Forms
+              {dict.sidebar.navRegistration}
             </button>
 
             <button
@@ -182,12 +213,12 @@ export default function DashboardOverviewPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
-              Settings & Access
+              {dict.sidebar.navSettings}
             </button>
           </nav>
         </div>
 
-        {/* Footer: User Profile, Theme Toggle & Logout */}
+        {/* Footer: User Profile, Language Switcher, Theme Toggle & Logout */}
         <div className="p-4 border-t border-slate-200 dark:border-slate-800 space-y-3">
           {currentUser && (
             <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2">
@@ -202,7 +233,7 @@ export default function DashboardOverviewPage() {
               </div>
               <button
                 onClick={handleLogout}
-                title="Log Keluar / Logout"
+                title={dict.sidebar.logout}
                 className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -212,11 +243,42 @@ export default function DashboardOverviewPage() {
             </div>
           )}
 
+          {/* Language Switcher */}
+          <div className="flex items-center justify-between p-1 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+            <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 pl-3">
+              {dict.sidebar.language}
+            </span>
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => toggleLanguage('ms')}
+                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                  !isEn
+                    ? 'bg-red-600 text-white shadow-sm'
+                    : 'text-slate-600 dark:text-slate-300 hover:text-red-600'
+                }`}
+              >
+                BM 🇲🇾
+              </button>
+              <button
+                type="button"
+                onClick={() => toggleLanguage('en')}
+                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                  isEn
+                    ? 'bg-red-600 text-white shadow-sm'
+                    : 'text-slate-600 dark:text-slate-300 hover:text-red-600'
+                }`}
+              >
+                EN 🇬🇧
+              </button>
+            </div>
+          </div>
+
           <button
             onClick={toggleTheme}
             className="w-full flex items-center justify-between px-4 py-2 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700/80 transition-all text-slate-700 dark:text-slate-200"
           >
-            <span className="capitalize">{theme} Mode</span>
+            <span>{theme === 'light' ? dict.sidebar.lightMode : dict.sidebar.darkMode}</span>
             {theme === 'light' ? (
               <svg className="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 100 2h1z" />
@@ -239,9 +301,9 @@ export default function DashboardOverviewPage() {
             {/* Header info */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-5">
               <div>
-                <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">Storefront Reconciliation</h1>
+                <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">{dict.header.title}</h1>
                 <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                  Aggregate storefront invoicing ledger, margin metrics, and base-price adjustments.
+                  {dict.header.subtitle}
                 </p>
               </div>
 
@@ -252,7 +314,7 @@ export default function DashboardOverviewPage() {
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
                   </span>
-                  <span className="font-semibold">Automated Ingestion: Active</span>
+                  <span className="font-semibold">{dict.header.autoIngestionActive}</span>
                 </div>
 
                 <button
@@ -263,7 +325,7 @@ export default function DashboardOverviewPage() {
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                   </svg>
-                  <span>Manual Data Input</span>
+                  <span>{dict.header.manualDataInput}</span>
                 </button>
               </div>
             </div>
@@ -273,36 +335,39 @@ export default function DashboardOverviewPage() {
               isOpen={isManualModalOpen}
               onClose={() => setIsManualModalOpen(false)}
               onSuccess={fetchDashboardMetrics}
+              lang={lang}
             />
-
 
             {/* Ingestion Alerts Banner */}
             <section aria-label="Urgent Action Items" className="w-full">
-              <ActionRequiredAlert onReconciliationTrigger={fetchDashboardMetrics} />
+              <ActionRequiredAlert onReconciliationTrigger={fetchDashboardMetrics} lang={lang} />
             </section>
 
             {/* Financial metrics Section */}
             <section aria-label="Financial Metrics Overview" className="space-y-4">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white dark:bg-slate-900 p-4 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
                 <div>
-                  <h3 className="font-bold text-slate-900 dark:text-white text-sm">Key Performance Indicators</h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">Summarized gross revenue, base payouts, and agency commissions.</p>
+                  <h3 className="font-bold text-slate-900 dark:text-white text-sm">{dict.kpi.title}</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">{dict.kpi.subtitle}</p>
                 </div>
 
                 <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
-                  {(['all', 'daily', 'weekly', 'monthly', 'yearly'] as TimeRange[]).map((range) => (
-                    <button
-                      key={range}
-                      onClick={() => setTimeRange(range)}
-                      className={`text-[11px] font-bold px-3 py-1.5 rounded-lg capitalize transition-all ${
-                        timeRange === range
-                          ? 'bg-red-600 text-white shadow-sm'
-                          : 'text-slate-600 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400'
-                      }`}
-                    >
-                      {range === 'all' ? 'All-Time' : range}
-                    </button>
-                  ))}
+                  {(['all', 'daily', 'weekly', 'monthly', 'yearly'] as TimeRange[]).map((range) => {
+                    const rangeLabel = dict.timeFilters[range] || range;
+                    return (
+                      <button
+                        key={range}
+                        onClick={() => setTimeRange(range)}
+                        className={`text-[11px] font-bold px-3 py-1.5 rounded-lg capitalize transition-all ${
+                          timeRange === range
+                            ? 'bg-red-600 text-white shadow-sm'
+                            : 'text-slate-600 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400'
+                        }`}
+                      >
+                        {rangeLabel}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -321,13 +386,14 @@ export default function DashboardOverviewPage() {
                   totalRevenue={metrics?.totalRevenue || 0}
                   totalPayouts={metrics?.totalPayouts || 0}
                   netProfit={metrics?.netProfit || 0}
+                  lang={lang}
                 />
               )}
             </section>
 
             {/* Invoicing Trigger */}
             <section aria-label="Statement Generation Engine" className="w-full">
-              <InvoiceTrigger />
+              <InvoiceTrigger lang={lang} />
             </section>
           </div>
         )}
@@ -337,43 +403,46 @@ export default function DashboardOverviewPage() {
           <div className="space-y-8 animate-fadeIn">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-5">
               <div>
-                <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">Financial Analytics</h1>
+                <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">{analyticsDict.header.title}</h1>
                 <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                  Track markup margins, commission ratios, and storefront payouts over time.
+                  {analyticsDict.header.subtitle}
                 </p>
               </div>
 
               <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
-                {(['all', 'daily', 'weekly', 'monthly', 'yearly'] as TimeRange[]).map((range) => (
-                  <button
-                    key={range}
-                    onClick={() => setTimeRange(range)}
-                    className={`text-[11px] font-bold px-3 py-1.5 rounded-lg capitalize transition-all ${
-                      timeRange === range
-                        ? 'bg-red-600 text-white shadow-sm'
-                        : 'text-slate-600 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400'
-                    }`}
-                  >
-                    {range === 'all' ? 'All-Time' : range}
-                  </button>
-                ))}
+                {(['all', 'daily', 'weekly', 'monthly', 'yearly'] as TimeRange[]).map((range) => {
+                  const rangeLabel = dict.timeFilters[range] || range;
+                  return (
+                    <button
+                      key={range}
+                      onClick={() => setTimeRange(range)}
+                      className={`text-[11px] font-bold px-3 py-1.5 rounded-lg capitalize transition-all ${
+                        timeRange === range
+                          ? 'bg-red-600 text-white shadow-sm'
+                          : 'text-slate-600 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400'
+                      }`}
+                    >
+                      {rangeLabel}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
             <section className="w-full">
-              <AnalyticsView metrics={metrics} loading={loading} />
+              <AnalyticsView metrics={metrics} loading={loading} lang={lang} />
             </section>
           </div>
         )}
 
         {/* VIEW 3: REGISTRATION & FORMS PORTAL */}
         {activeTab === 'registration' && (
-          <RegistrationFormsView />
+          <RegistrationFormsView lang={lang} />
         )}
 
         {/* VIEW 4: SETTINGS & ACCESS CONTROL */}
         {activeTab === 'settings' && (
-          <SettingsView />
+          <SettingsView initialLang={lang === 'ms' ? 'ms' : 'en'} />
         )}
 
       </main>

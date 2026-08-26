@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { getDictionary, Locale } from '../../lib/i18n';
 
-export const InvoiceTrigger: React.FC = () => {
+interface InvoiceTriggerProps {
+  lang?: Locale;
+}
+
+export const InvoiceTrigger: React.FC<InvoiceTriggerProps> = ({ lang = 'en' }) => {
+  const dict = getDictionary(lang).dashboard.invoice;
   const [merchants, setMerchants] = useState<any[]>([]);
   const [selectedMerchantId, setSelectedMerchantId] = useState<string>('');
   const [billingDate, setBillingDate] = useState<string>('');
@@ -28,13 +34,13 @@ export const InvoiceTrigger: React.FC = () => {
 
     if (!selectedMerchantId) {
       setStatus('error');
-      setMessage('Please select a restaurant merchant.');
+      setMessage(dict.selectMerchantError);
       return;
     }
 
     if (!billingDate) {
       setStatus('error');
-      setMessage('Please select an invoice billing date.');
+      setMessage(dict.selectDateError);
       return;
     }
 
@@ -69,14 +75,14 @@ export const InvoiceTrigger: React.FC = () => {
   return (
     <div className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-sm text-slate-900 dark:text-white">
       <div>
-        <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">Statement Generation</h3>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Select a merchant to compile all outstanding reconciled orders into a corporate statement invoice.</p>
+        <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">{dict.title}</h3>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{dict.subtitle}</p>
       </div>
 
       <form onSubmit={handleGenerate} className="mt-6 space-y-5">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <div>
-            <label htmlFor="merchant-select" className="block text-xs font-extrabold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Select Merchant</label>
+            <label htmlFor="merchant-select" className="block text-xs font-extrabold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">{dict.selectMerchant}</label>
             <select
               id="merchant-select"
               value={selectedMerchantId}
@@ -84,7 +90,7 @@ export const InvoiceTrigger: React.FC = () => {
               disabled={status === 'loading'}
               className="w-full px-4 py-2.5 text-xs font-medium bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 text-slate-900 dark:text-white transition-all"
             >
-              <option value="">-- Choose Merchant Restaurant --</option>
+              <option value="">{dict.chooseMerchantPlaceholder}</option>
               {merchants.map((m) => (
                 <option key={m.id} value={m.id}>
                   {m.businessName} ({m.name})
@@ -93,7 +99,7 @@ export const InvoiceTrigger: React.FC = () => {
             </select>
           </div>
           <div>
-            <label htmlFor="billing-date" className="block text-xs font-extrabold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Invoice Billing Date (DD/MM/YYYY)</label>
+            <label htmlFor="billing-date" className="block text-xs font-extrabold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">{dict.billingDate}</label>
             <input
               type="date"
               lang="en-GB"
@@ -115,7 +121,7 @@ export const InvoiceTrigger: React.FC = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <div>
-              <span className="font-bold">Success:</span> {message}
+              <span className="font-bold">{dict.successTitle}</span> {message}
             </div>
           </div>
         )}
@@ -126,7 +132,7 @@ export const InvoiceTrigger: React.FC = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
             <div>
-              <span className="font-bold">Error:</span> {message}
+              <span className="font-bold">{dict.errorTitle}</span> {message}
             </div>
           </div>
         )}
@@ -140,7 +146,7 @@ export const InvoiceTrigger: React.FC = () => {
             {status === 'loading' ? (
               <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
             ) : (
-              'Generate Invoice'
+              dict.generateBtn
             )}
           </button>
         </div>

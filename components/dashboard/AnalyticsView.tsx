@@ -1,15 +1,19 @@
 import React from 'react';
 import { DashboardMetrics } from '../../types/dashboard';
 import { ProfitChart } from './ProfitChart';
+import { getDictionary, Locale } from '../../lib/i18n';
 
 interface AnalyticsViewProps {
   metrics: DashboardMetrics | null;
   loading: boolean;
+  lang?: Locale;
 }
 
-export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ metrics, loading }) => {
+export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ metrics, loading, lang = 'en' }) => {
+  const dict = getDictionary(lang).analytics;
+
   const formatCurrency = (val: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-MY', {
       style: 'currency',
       currency: 'MYR',
     }).format(val);
@@ -44,64 +48,64 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ metrics, loading }
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {/* Margin Rate Card */}
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm text-slate-900 dark:text-white">
-          <span className="text-xs font-extrabold tracking-wider text-slate-500 dark:text-slate-400 uppercase">Gross Profit Margin</span>
+          <span className="text-xs font-extrabold tracking-wider text-slate-500 dark:text-slate-400 uppercase">{dict.cards.grossMargin}</span>
           <h2 className="text-3xl font-black text-red-600 dark:text-red-400 mt-2">{marginRate.toFixed(1)}%</h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Leftover profit ratio of Grab sales revenue.</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{dict.cards.grossMarginDesc}</p>
         </div>
 
         {/* Total Orders Ingested */}
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm text-slate-900 dark:text-white">
-          <span className="text-xs font-extrabold tracking-wider text-slate-500 dark:text-slate-400 uppercase">Total Orders Ingested</span>
+          <span className="text-xs font-extrabold tracking-wider text-slate-500 dark:text-slate-400 uppercase">{dict.cards.totalOrders}</span>
           <h2 className="text-3xl font-black text-slate-900 dark:text-white mt-2">{totalOrdersCount}</h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Total receipts parsed and reconciled.</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{dict.cards.totalOrdersDesc}</p>
         </div>
 
         {/* Avg Payout Card */}
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm text-slate-900 dark:text-white">
-          <span className="text-xs font-extrabold tracking-wider text-slate-500 dark:text-slate-400 uppercase">Avg Storefront Profit</span>
+          <span className="text-xs font-extrabold tracking-wider text-slate-500 dark:text-slate-400 uppercase">{dict.cards.avgProfit}</span>
           <h2 className="text-3xl font-black text-slate-900 dark:text-white mt-2">
             {metrics?.storefrontsPerformance && metrics.storefrontsPerformance.length > 0
               ? formatCurrency(profit / metrics.storefrontsPerformance.length)
               : 'RM 0.00'}
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Average margin collected per restaurant storefront.</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{dict.cards.avgProfitDesc}</p>
         </div>
 
         {/* Total Revenue */}
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm text-slate-900 dark:text-white">
-          <span className="text-xs font-extrabold tracking-wider text-slate-500 dark:text-slate-400 uppercase">Total Gross Ingestion</span>
+          <span className="text-xs font-extrabold tracking-wider text-slate-500 dark:text-slate-400 uppercase">{dict.cards.totalIngestion}</span>
           <h2 className="text-3xl font-black text-slate-900 dark:text-white mt-2">{formatCurrency(revenue)}</h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Sum value of all parsed subtotal columns.</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{dict.cards.totalIngestionDesc}</p>
         </div>
       </div>
 
       {/* Visual Chart Section */}
       <div className="w-full">
-        <ProfitChart data={metrics?.chartData || []} />
+        <ProfitChart data={metrics?.chartData || []} lang={lang} />
       </div>
 
       {/* Storefront Rankings Grid */}
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm text-slate-900 dark:text-white">
         <div className="mb-6">
-          <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">Storefront Performance Rankings</h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Detailed breakdown of gross revenue, restaurant payouts, and margin distributions per storefront.</p>
+          <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">{dict.rankings.title}</h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{dict.rankings.subtitle}</p>
         </div>
 
         {(!metrics?.storefrontsPerformance || metrics.storefrontsPerformance.length === 0) ? (
           <div className="text-center py-10 text-slate-400 dark:text-slate-500 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/50 dark:bg-slate-950/50 text-xs font-medium">
-            No storefront performance data found. Import order receipts to build metrics!
+            {dict.rankings.noData}
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-slate-200 dark:border-slate-800 text-[11px] font-extrabold tracking-wider text-slate-500 dark:text-slate-400 uppercase">
-                  <th className="py-3.5 px-4">Storefront Details</th>
-                  <th className="py-3.5 px-4 text-right">Orders</th>
-                  <th className="py-3.5 px-4 text-right">Gross Revenue</th>
-                  <th className="py-3.5 px-4 text-right">Merchant Payout</th>
-                  <th className="py-3.5 px-4 text-right">Net Markup Margin</th>
-                  <th className="py-3.5 px-4 text-right">Margin Rate</th>
+                  <th className="py-3.5 px-4">{dict.rankings.colStorefront}</th>
+                  <th className="py-3.5 px-4 text-right">{dict.rankings.colOrders}</th>
+                  <th className="py-3.5 px-4 text-right">{dict.rankings.colGrossRevenue}</th>
+                  <th className="py-3.5 px-4 text-right">{dict.rankings.colMerchantPayout}</th>
+                  <th className="py-3.5 px-4 text-right">{dict.rankings.colNetMargin}</th>
+                  <th className="py-3.5 px-4 text-right">{dict.rankings.colMarginRate}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
