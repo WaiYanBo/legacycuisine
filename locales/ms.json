@@ -158,11 +158,34 @@
       "staff": "STAFF / OPERATOR: Akses kepada Portal Pendaftaran & Borang, Semakan Submisi, dan Input Pesanan Manual.",
       "agent": "AGENT: Akses kepada Borang Pendaftaran Ejen & Senarai Semak Peniaga."
     },
+    "tabs": {
+      "profile": "Profil Saya & Keselamatan",
+      "staff": "Direktori Staf & Ejen",
+      "rbac": "Matriks Kebenaran Akses (RBAC)"
+    },
+    "metrics": {
+      "totalPersonnel": "Jumlah Staf & Ejen",
+      "activePersonnel": "Akaun Aktif",
+      "fieldAgents": "Ejen Lapangan",
+      "management": "Pengurus & Pentadbir"
+    },
+    "filters": {
+      "searchPlaceholder": "Cari nama staf, nama pengguna, emel, atau peranan...",
+      "allRoles": "Semua Peranan",
+      "allStatuses": "Semua Status",
+      "activeOnly": "Aktif",
+      "inactiveOnly": "Nyahaktif",
+      "showing": "Memaparkan {start} hingga {end} daripada {total} rekod",
+      "perPage": "Setiap halaman",
+      "prev": "Sebelumnya",
+      "next": "Seterusnya",
+      "noMatching": "Tiada rekod yang sepadan dengan carian atau penapis semasa."
+    },
     "staffManagement": {
-      "title": "Kawalan Akses Staf",
-      "subtitle": "Urus akaun pekerja, peranan akses, kebenaran sistem, dan set semula kata laluan.",
-      "addStaffBtn": "Tambah Staf Baharu",
-      "loading": "Memuatkan senarai staf...",
+      "title": "Direktori Kawalan Akses Staf & Ejen",
+      "subtitle": "Direktori berkapasiti tinggi dengan carian segera, penapis peranan, navigasi halaman, dan kawalan akses.",
+      "addStaffBtn": "Tambah Staf / Ejen Baharu",
+      "loading": "Memuatkan senarai staf & ejen...",
       "empty": "Tiada rekod staf ditemui.",
       "table": {
         "staffName": "Nama Staf & Pengguna",
