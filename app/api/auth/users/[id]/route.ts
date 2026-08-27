@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../../../src/prisma';
-import { verifySessionToken } from '../../../../../src/utils/security';
+import { hasPermission, verifySessionToken } from '../../../../../src/utils/security';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,9 +22,9 @@ export async function PATCH(
 ) {
   try {
     const session = getSessionUser(request);
-    if (!session || (session.role !== 'SUPER_ADMIN' && session.role !== 'MANAGER')) {
+    if (!session || !hasPermission(session, 'users:manage')) {
       return NextResponse.json(
-        { success: false, error: 'Access denied. Administrator privileges required.' },
+        { success: false, error: 'Access denied. You do not have permission to manage staff.' },
         { status: 403 }
       );
     }
@@ -137,9 +137,9 @@ export async function DELETE(
 ) {
   try {
     const session = getSessionUser(request);
-    if (!session || session.role !== 'SUPER_ADMIN') {
+    if (!session || !hasPermission(session, 'users:manage')) {
       return NextResponse.json(
-        { success: false, error: 'Access denied. Super Admin privileges required.' },
+        { success: false, error: 'Access denied. You do not have permission to delete staff.' },
         { status: 403 }
       );
     }
