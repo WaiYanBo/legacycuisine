@@ -145,7 +145,7 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
         (u.department && u.department.toLowerCase().includes(q)) ||
         (u.position && u.position.toLowerCase().includes(q));
 
-      const matchDept = departmentFilter === 'ALL' || u.department === departmentFilter;
+      const matchDept = departmentFilter === 'ALL' || (u.department || '').trim() === departmentFilter;
 
       return matchSearch && matchDept;
     });
@@ -408,7 +408,7 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
               <option value="ALL">All Departments ({staffList.length})</option>
               {STANDARD_DEPARTMENTS.map((dept) => (
                 <option key={dept} value={dept}>
-                  {dept} ({staffList.filter((u) => u.department === dept).length})
+                  {dept} ({staffList.filter((u) => (u.department || '').trim() === dept).length})
                 </option>
               ))}
             </select>
