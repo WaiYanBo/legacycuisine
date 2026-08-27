@@ -155,6 +155,10 @@ export function SettingsView({ lang: propLang, initialLang = 'en', onLangChange 
   const [resetSubmitting, setResetSubmitting] = useState(false);
   const [resetError, setResetError] = useState('');
 
+  const isIT = (currentUser?.department || '').trim() === 'IT & Systems Administration' || (currentUser?.department || '').trim() === 'IT Department';
+  const isIntern = (currentUser?.position || '').toLowerCase().includes('intern');
+  const canManageStaff = Boolean((isIT && !isIntern) || currentUser?.permissions?.includes('admin:all') || currentUser?.permissions?.includes('users:manage') || currentUser?.role === 'SUPER_ADMIN');
+
   useEffect(() => {
     fetchUsers();
   }, []);
@@ -166,12 +170,20 @@ export function SettingsView({ lang: propLang, initialLang = 'en', onLangChange 
       const meData = await meRes.json();
       if (meData.success && meData.user) {
         setCurrentUser(meData.user);
-      }
 
-      const staffRes = await fetch('/api/auth/users', { cache: 'no-store' });
-      const staffData = await staffRes.json();
-      if (staffData.success && Array.isArray(staffData.users)) {
-        setStaffList(staffData.users);
+        const userIsIT = (meData.user.department || '').trim() === 'IT & Systems Administration' || (meData.user.department || '').trim() === 'IT Department';
+        const userIsIntern = (meData.user.position || '').toLowerCase().includes('intern');
+        const userCanManage = Boolean((userIsIT && !userIsIntern) || meData.user.permissions?.includes('admin:all') || meData.user.permissions?.includes('users:manage') || meData.user.role === 'SUPER_ADMIN');
+
+        if (!userCanManage) {
+          setActiveTab('profile');
+        } else {
+          const staffRes = await fetch('/api/auth/users', { cache: 'no-store' });
+          const staffData = await staffRes.json();
+          if (staffData.success && Array.isArray(staffData.users)) {
+            setStaffList(staffData.users);
+          }
+        }
       }
     } catch (err) {
       console.error('Failed to fetch users:', err);
@@ -412,31 +424,35 @@ export function SettingsView({ lang: propLang, initialLang = 'en', onLangChange 
             </button>
           </div>
 
-          <button
-            onClick={() => setIsAddModalOpen(true)}
-            className="px-4 py-2.5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white rounded-xl font-bold text-xs shadow-md shadow-red-600/30 transition-all flex items-center gap-2"
-          >
-            <span>➕</span>
-            <span>{isMs ? 'Tambah Staf Baharu' : 'Add New Staff'}</span>
-          </button>
+          {canManageStaff && (
+            <button
+              onClick={() => setIsAddModalOpen(true)}
+              className="px-4 py-2.5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white rounded-xl font-bold text-xs shadow-md shadow-red-600/30 transition-all flex items-center gap-2"
+            >
+              <span>➕</span>
+              <span>{isMs ? 'Tambah Staf Baharu' : 'Add New Staff'}</span>
+            </button>
+          )}
         </div>
       </div>
 
       {/* 🧭 SIMPLE TABS */}
       <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800">
-        <button
-          onClick={() => setActiveTab('staff')}
-          className={`px-5 py-3 text-xs sm:text-sm font-extrabold border-b-2 transition-all flex items-center gap-2 ${
-            activeTab === 'staff'
-              ? 'border-red-600 text-red-600 bg-red-50/40 dark:bg-red-950/20'
-              : 'border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-white'
-          }`}
-        >
-          <span>👥 {isMs ? 'Semua Staf & Ejen' : 'All Staff & Agents'}</span>
-          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-            {staffList.length}
-          </span>
-        </button>
+        {canManageStaff && (
+          <button
+            onClick={() => setActiveTab('staff')}
+            className={`px-5 py-3 text-xs sm:text-sm font-extrabold border-b-2 transition-all flex items-center gap-2 ${
+              activeTab === 'staff'
+                ? 'border-red-600 text-red-600 bg-red-50/40 dark:bg-red-950/20'
+                : 'border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-white'
+            }`}
+          >
+            <span>👥 {isMs ? 'Semua Staf & Ejen' : 'All Staff & Agents'}</span>
+            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+              {staffList.length}
+            </span>
+          </button>
+        )}
 
         <button
           onClick={() => setActiveTab('profile')}
@@ -453,7 +469,7 @@ export function SettingsView({ lang: propLang, initialLang = 'en', onLangChange 
       {/* ═════════════════════════════════════════════════════════════════════ */}
       {/* 👥 TAB 1: ALL STAFF LIST                                             */}
       {/* ═════════════════════════════════════════════════════════════════════ */}
-      {activeTab === 'staff' && (
+      {canManageStaff && activeTab === 'staff' && (
         <div className="space-y-4">
           {/* Simple Search & Filter Toolbar */}
           <div className="flex flex-col sm:flex-row items-center gap-3 bg-white dark:bg-[#0d1117] p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">

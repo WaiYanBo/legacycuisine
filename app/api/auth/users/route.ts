@@ -1,12 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../../src/prisma';
-import { hashPassword } from '../../../../src/utils/security';
+import { hashPassword, hasPermission, verifySessionToken } from '../../../../src/utils/security';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-export async function GET() {
+function getSessionUser(request: NextRequest) {
+  const authCookie = request.cookies.get('lc_session')?.value;
+  const authHeader = request.headers.get('authorization');
+  let token = authCookie;
+  if (!token && authHeader?.startsWith('Bearer ')) {
+    token = authHeader.substring(7);
+  }
+  if (!token) return null;
+  const verified = verifySessionToken(token);
+  return verified.valid ? verified.user : null;
+}
+
+export async function GET(request: NextRequest) {
   try {
+    const session = getSessionUser(request);
+    if (!session || !hasPermission(session, 'users:manage')) {
+      return NextResponse.json(
+        { success: false, error: 'Access denied. You do not have permission to view staff directory.', users: [] },
+        { status: 403 }
+      );
+    }
     const users = await prisma.user.findMany({
       select: {
         id: true,
@@ -75,6 +94,14 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    const session = getSessionUser(request);
+    if (!session || !hasPermission(session, 'users:manage')) {
+      return NextResponse.json(
+        { success: false, error: 'Access denied. You do not have permission to register new staff.' },
+        { status: 403 }
+      );
+    }
+
     const body = await request.json();
     const { username, fullName, email, password, department, position, permissions, role } = body;
 
