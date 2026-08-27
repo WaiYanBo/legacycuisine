@@ -51,40 +51,82 @@ export async function PATCH(
         : String(permissions)
       : undefined;
 
-    const updated = await prisma.user.update({
-      where: { id },
-      data: {
-        fullName: fullName !== undefined ? String(fullName).trim() : undefined,
-        email: email !== undefined ? (email ? String(email).trim() : null) : undefined,
-        department: department !== undefined ? String(department).trim() : undefined,
-        position: position !== undefined ? String(position).trim() : undefined,
-        permissions: formattedPermissions,
-        role: role !== undefined ? role : undefined,
-        isActive: isActive !== undefined ? Boolean(isActive) : undefined,
-      },
-      select: {
-        id: true,
-        username: true,
-        fullName: true,
-        email: true,
-        department: true,
-        position: true,
-        permissions: true,
-        role: true,
-        isActive: true,
-        updatedAt: true,
-      },
-    });
+    let updated: any;
+    try {
+      updated = await prisma.user.update({
+        where: { id },
+        data: {
+          fullName: fullName !== undefined ? String(fullName).trim() : undefined,
+          email: email !== undefined ? (email ? String(email).trim() : null) : undefined,
+          department: department !== undefined ? String(department).trim() : undefined,
+          position: position !== undefined ? String(position).trim() : undefined,
+          permissions: formattedPermissions,
+          role: role !== undefined ? role : undefined,
+          isActive: isActive !== undefined ? Boolean(isActive) : undefined,
+        },
+        select: {
+          id: true,
+          username: true,
+          fullName: true,
+          email: true,
+          department: true,
+          position: true,
+          permissions: true,
+          role: true,
+          isActive: true,
+          updatedAt: true,
+        },
+      });
+    } catch (prismaErr: any) {
+      console.warn('[PATCH /users] Prisma update failed, trying direct pg query:', prismaErr?.message);
+      const { Pool } = require('pg');
+      const directPool = new Pool({
+        connectionString: process.env.DATABASE_URL || process.env.DIRECT_URL,
+        ssl: { rejectUnauthorized: false },
+        connectionTimeoutMillis: 5000,
+      });
+
+      const updateQuery = `
+        UPDATE users
+        SET
+          full_name = COALESCE($1, full_name),
+          email = CASE WHEN $2 IS NOT NULL THEN NULLIF($2, '') ELSE email END,
+          department = COALESCE($3, department),
+          position = COALESCE($4, position),
+          permissions = COALESCE($5, permissions),
+          is_active = COALESCE($6, is_active),
+          updated_at = NOW()
+        WHERE id = $7
+        RETURNING id, username, full_name as "fullName", email, department, position, permissions, role, is_active as "isActive", updated_at as "updatedAt"
+      `;
+
+      const pgRes = await directPool.query(updateQuery, [
+        fullName !== undefined ? String(fullName).trim() : null,
+        email !== undefined ? String(email).trim() : null,
+        department !== undefined ? String(department).trim() : null,
+        position !== undefined ? String(position).trim() : null,
+        formattedPermissions || null,
+        isActive !== undefined ? Boolean(isActive) : null,
+        id,
+      ]);
+      await directPool.end();
+
+      if (pgRes.rows.length === 0) {
+        return NextResponse.json({ success: false, error: 'User not found in database.' }, { status: 404 });
+      }
+      updated = pgRes.rows[0];
+    }
 
     return NextResponse.json({
       success: true,
       message: 'User updated successfully.',
       user: {
         ...updated,
-        permissions: typeof updated.permissions === 'string' ? JSON.parse(updated.permissions || '[]') : updated.permissions,
+        permissions: typeof updated.permissions === 'string' ? JSON.parse(updated.permissions || '[]') : (updated.permissions || []),
       },
     });
   } catch (error: any) {
+    console.error('[PATCH /users] Fatal error:', error);
     return NextResponse.json({ success: false, error: error.message || 'Failed to update user.' }, { status: 500 });
   }
 }

@@ -102,25 +102,55 @@ export async function POST(request: NextRequest) {
       ? finalPerms
       : JSON.stringify(['dashboard:view', 'forms:submit']);
 
-    const newUser = await prisma.user.create({
-      data: {
-        username: trimmed,
-        fullName: String(fullName).trim(),
-        email: email ? String(email).trim() : null,
-        department: resolvedDept,
-        position: resolvedPos,
-        permissions: formattedPermissions,
+    let newUser: any;
+    try {
+      newUser = await prisma.user.create({
+        data: {
+          username: trimmed,
+          fullName: String(fullName).trim(),
+          email: email ? String(email).trim() : null,
+          department: resolvedDept,
+          position: resolvedPos,
+          permissions: formattedPermissions,
+          passwordHash,
+          role: role || (isIT && !isIntern ? 'SUPER_ADMIN' : 'STAFF'),
+          isActive: true,
+        },
+      });
+    } catch (prismaErr: any) {
+      console.warn('[POST /users] Prisma create failed, trying direct pg query:', prismaErr?.message);
+      const { Pool } = require('pg');
+      const directPool = new Pool({
+        connectionString: process.env.DATABASE_URL || process.env.DIRECT_URL,
+        ssl: { rejectUnauthorized: false },
+        connectionTimeoutMillis: 5000,
+      });
+
+      const insertQuery = `
+        INSERT INTO users (username, full_name, email, department, position, permissions, password_hash, role, is_active, created_at, updated_at)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, true, NOW(), NOW())
+        RETURNING id, username, full_name as "fullName", email, department, position, permissions, role, is_active as "isActive", created_at as "createdAt", updated_at as "updatedAt"
+      `;
+
+      const pgRes = await directPool.query(insertQuery, [
+        trimmed,
+        String(fullName).trim(),
+        email ? String(email).trim() : null,
+        resolvedDept,
+        resolvedPos,
+        formattedPermissions,
         passwordHash,
-        role: role || (isIT && !isIntern ? 'SUPER_ADMIN' : 'STAFF'),
-        isActive: true,
-      },
-    });
+        role || (isIT && !isIntern ? 'SUPER_ADMIN' : 'STAFF'),
+      ]);
+      await directPool.end();
+      newUser = pgRes.rows[0];
+    }
 
     return NextResponse.json({
       success: true,
       user: {
         ...newUser,
-        permissions: typeof newUser.permissions === 'string' ? JSON.parse(newUser.permissions || '[]') : newUser.permissions,
+        permissions: typeof newUser.permissions === 'string' ? JSON.parse(newUser.permissions || '[]') : (newUser.permissions || []),
       },
     });
   } catch (error: any) {
