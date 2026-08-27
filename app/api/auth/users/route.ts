@@ -26,8 +26,8 @@ export async function GET() {
 
     const parsedUsers = users.map((u) => ({
       ...u,
-      department: u.department || 'Operations',
-      position: u.position || 'Staff Member',
+      department: (u.department || 'Operations').trim(),
+      position: (u.position || 'Staff Member').trim(),
       permissions: typeof u.permissions === 'string' ? JSON.parse(u.permissions || '[]') : (u.permissions || []),
     }));
 
@@ -37,26 +37,39 @@ export async function GET() {
       },
     });
   } catch (error: any) {
-    console.error('[API /users] Database error fetching users on deployed host:', error?.message || error);
-    return NextResponse.json({
-      success: true,
-      users: [
-        {
-          id: '00000000-0000-0000-0000-000000000001',
-          username: 'Wai Yan Bo',
-          fullName: 'Wai Yan Bo',
-          email: 'admin@legacycuisine.com',
-          department: 'IT & Systems Administration',
-          position: 'IT Lead',
-          permissions: ['admin:all', 'dashboard:view', 'analytics:view', 'reconciliation:process', 'invoices:generate', 'products:edit', 'forms:submit', 'forms:review', 'users:manage'],
-          role: 'SUPER_ADMIN',
-          isActive: true,
-          lastLogin: new Date().toISOString(),
-          createdAt: new Date().toISOString(),
-        },
-      ],
-      warning: 'Using fallback list. Please ensure DATABASE_URL is configured in Netlify Environment Variables.',
-    });
+    console.error('[API /users] Prisma error, attempting direct pg query:', error?.message || error);
+    
+    // Direct PG Pool Fallback for Serverless Resilience
+    try {
+      const { Pool } = require('pg');
+      const directPool = new Pool({
+        connectionString: process.env.DATABASE_URL || process.env.DIRECT_URL,
+        ssl: { rejectUnauthorized: false },
+        connectionTimeoutMillis: 5000,
+      });
+      const dbRes = await directPool.query(
+        'SELECT id, username, full_name as "fullName", email, department, position, permissions, role, is_active as "isActive", last_login as "lastLogin", created_at as "createdAt" FROM users ORDER BY created_at DESC'
+      );
+      await directPool.end();
+
+      const parsedUsers = dbRes.rows.map((u: any) => ({
+        ...u,
+        department: (u.department || 'Operations').trim(),
+        position: (u.position || 'Staff Member').trim(),
+        permissions: typeof u.permissions === 'string' ? JSON.parse(u.permissions || '[]') : (u.permissions || []),
+      }));
+
+      return NextResponse.json({ success: true, users: parsedUsers }, {
+        headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate' },
+      });
+    } catch (pgErr: any) {
+      console.error('[API /users] Direct PG query also failed:', pgErr?.message || pgErr);
+      return NextResponse.json({
+        success: false,
+        error: 'Database connection error. Please ensure database pooler is reachable.',
+        users: [],
+      }, { status: 500 });
+    }
   }
 }
 
