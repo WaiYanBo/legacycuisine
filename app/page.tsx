@@ -27,7 +27,16 @@ export default function LoginPage() {
         body: JSON.stringify({ username: username.trim(), password }),
       });
 
-      const data = await res.json();
+      let data: any = {};
+      try {
+        data = await res.json();
+      } catch {
+        throw new Error(
+          isEn
+            ? 'Server error: unable to process login. Please check database connection or credentials.'
+            : 'Ralat pelayan: tidak dapat memproses log masuk. Sila periksa sambungan pangkalan data.'
+        );
+      }
 
       if (!res.ok || !data.success) {
         throw new Error(
