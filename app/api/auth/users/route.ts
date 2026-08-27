@@ -44,10 +44,10 @@ export async function GET() {
         {
           id: '00000000-0000-0000-0000-000000000001',
           username: 'Wai Yan Bo',
-          fullName: 'Wai Yan Bo (Super Administrator)',
+          fullName: 'Wai Yan Bo',
           email: 'admin@legacycuisine.com',
-          department: 'Executive Management',
-          position: 'Managing Director / Super Admin',
+          department: 'IT & Systems Administration',
+          position: 'IT Lead',
           permissions: ['admin:all', 'dashboard:view', 'analytics:view', 'reconciliation:process', 'invoices:generate', 'products:edit', 'forms:submit', 'forms:review', 'users:manage'],
           role: 'SUPER_ADMIN',
           isActive: true,
@@ -71,11 +71,22 @@ export async function POST(request: NextRequest) {
 
     const trimmed = String(username).trim();
     const passwordHash = hashPassword(password);
+    const resolvedDept = department ? String(department).trim() : 'Operations & Reconciliation';
+    const resolvedPos = position ? String(position).trim() : 'Staff Member';
 
-    const formattedPermissions = Array.isArray(permissions)
-      ? JSON.stringify(permissions)
-      : typeof permissions === 'string'
-      ? permissions
+    // IT Department automatically gets full permissions unless they are an intern
+    const isIT = resolvedDept === 'IT & Systems Administration' || resolvedDept === 'IT Department';
+    const isIntern = resolvedPos.toLowerCase().includes('intern');
+
+    let finalPerms = permissions;
+    if (isIT && !isIntern && (!permissions || permissions.length === 0)) {
+      finalPerms = ['admin:all', 'dashboard:view', 'analytics:view', 'reconciliation:process', 'invoices:generate', 'products:edit', 'forms:submit', 'forms:review', 'users:manage'];
+    }
+
+    const formattedPermissions = Array.isArray(finalPerms)
+      ? JSON.stringify(finalPerms)
+      : typeof finalPerms === 'string'
+      ? finalPerms
       : JSON.stringify(['dashboard:view', 'forms:submit']);
 
     const newUser = await prisma.user.create({
@@ -83,11 +94,11 @@ export async function POST(request: NextRequest) {
         username: trimmed,
         fullName: String(fullName).trim(),
         email: email ? String(email).trim() : null,
-        department: department ? String(department).trim() : 'Operations',
-        position: position ? String(position).trim() : 'Staff Member',
+        department: resolvedDept,
+        position: resolvedPos,
         permissions: formattedPermissions,
         passwordHash,
-        role: role || (department === 'Executive Management' ? 'SUPER_ADMIN' : department === 'Field Recruitment' ? 'AGENT' : 'STAFF'),
+        role: role || (isIT && !isIntern ? 'SUPER_ADMIN' : 'STAFF'),
         isActive: true,
       },
     });
