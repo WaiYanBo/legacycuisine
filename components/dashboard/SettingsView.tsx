@@ -439,7 +439,9 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
                   {filteredUsers.map((user) => {
                     const perms = Array.isArray(user.permissions) ? user.permissions : [];
-                    const isRoot = perms.includes('admin:all') || user.role === 'SUPER_ADMIN';
+                    const isIT = user.department === 'IT & Systems Administration' || user.department === 'IT Department';
+                    const isIntern = user.position?.toLowerCase().includes('intern');
+                    const isFullAccess = (isIT && !isIntern) || perms.includes('admin:all') || user.role === 'SUPER_ADMIN';
 
                     return (
                       <tr key={user.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-900/40 transition-colors">
@@ -470,9 +472,9 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
                         </td>
 
                         <td className="py-4 px-4 whitespace-nowrap">
-                          {isRoot ? (
+                          {isFullAccess ? (
                             <span className="inline-flex items-center whitespace-nowrap px-3 py-1 rounded-full bg-red-600 text-white font-bold text-[10px] shadow-sm">
-                              👑 Full Access (Admin)
+                              👑 Full Access {isIT && !isIntern ? '(IT)' : ''}
                             </span>
                           ) : perms.length === 0 ? (
                             <span className="text-slate-400 italic text-[11px] whitespace-nowrap">No permissions granted</span>

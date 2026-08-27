@@ -98,12 +98,22 @@ export function generateSessionToken(user: {
 }
 
 /**
- * Checks if a session payload holds a specific permission or has root admin override.
+ * Checks if a session payload holds a specific permission or has IT Department / root admin override.
+ * IT Department members automatically receive FULL ACCESS across the entire system, EXCEPT interns.
  */
 export function hasPermission(sessionUser: SessionPayload | null | undefined, permissionKey: string): boolean {
   if (!sessionUser) return false;
+
+  // 1. Check IT Department (Full Access to all non-interns)
+  const isIT = sessionUser.department === 'IT & Systems Administration' || sessionUser.department === 'IT Department';
+  const isIntern = sessionUser.position?.toLowerCase().includes('intern');
+  if (isIT && !isIntern) return true;
+
+  // 2. Direct master override
   if (sessionUser.role === 'SUPER_ADMIN') return true;
   if (sessionUser.permissions?.includes('admin:all')) return true;
+
+  // 3. Granular permission check
   return Boolean(sessionUser.permissions?.includes(permissionKey));
 }
 
