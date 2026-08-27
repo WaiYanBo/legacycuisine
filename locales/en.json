@@ -160,18 +160,19 @@
     },
     "tabs": {
       "profile": "My Profile & Security",
-      "staff": "Staff & Agent Access Directory",
-      "rbac": "Access Permissions (RBAC)"
+      "staff": "Department & Personnel Directory",
+      "rbac": "Permission Capabilities Matrix"
     },
     "metrics": {
       "totalPersonnel": "Total Personnel",
       "activePersonnel": "Active Accounts",
       "fieldAgents": "Field Agents",
-      "management": "Admins & Managers"
+      "management": "Executive & Managers"
     },
     "filters": {
-      "searchPlaceholder": "Search by name, username, email, or role...",
+      "searchPlaceholder": "Search by name, username, email, department, position, or permission...",
       "allRoles": "All Roles",
+      "allDepartments": "All Departments",
       "allStatuses": "All Statuses",
       "activeOnly": "Active",
       "inactiveOnly": "Inactive",
@@ -181,14 +182,36 @@
       "next": "Next",
       "noMatching": "No personnel matching the current search or filters."
     },
+    "departments": {
+      "executive": "Executive Management",
+      "finance": "Finance & Accounts",
+      "operations": "Operations & Reconciliation",
+      "field": "Field Recruitment",
+      "it": "IT & Systems Administration",
+      "support": "Customer Support & Logistics"
+    },
+    "permissionsList": {
+      "dashboard_view": "📊 View Reconciliation Dashboard & Storefront Ledger",
+      "analytics_view": "📈 View Profit Margins & Financial Analytics",
+      "reconciliation_process": "💰 Perform Order Reconciliation & Price Adjustments",
+      "invoices_generate": "🧾 Generate & Approve Merchant Invoices",
+      "products_edit": "🏷️ Manage Menu Price Ledger & Grab Expected Prices",
+      "forms_submit": "📝 Submit Merchant Checklists & Agent Registration Forms",
+      "forms_review": "📋 Review & Audit Merchant Registrations",
+      "users_manage": "👥 Manage Personnel, Departments & Grant Permissions",
+      "admin_all": "👑 Full Root Administrator Override (All Access)"
+    },
     "staffManagement": {
-      "title": "Staff & Agent Access Directory",
-      "subtitle": "High-capacity employee & agent directory with instant search, role filtering, pagination, and access control.",
-      "addStaffBtn": "Add New Staff / Agent",
+      "title": "Department & Personnel Directory",
+      "subtitle": "Manage employees and agents by Department, Position / Job Title, and Granular Permission Grants.",
+      "addStaffBtn": "Add New Personnel",
       "loading": "Loading personnel directory...",
       "empty": "No staff records found.",
       "table": {
-        "staffName": "Staff & Username",
+        "staffName": "Personnel & Contact",
+        "department": "Department",
+        "position": "Position / Job Title",
+        "permissions": "Permissions Granted",
         "role": "Role",
         "status": "Status",
         "lastLogin": "Last Login",
@@ -198,7 +221,7 @@
       "statusActive": "Active",
       "statusInactive": "Inactive",
       "actions": {
-        "edit": "Edit",
+        "edit": "Edit & Permissions",
         "resetPass": "Reset Pass",
         "delete": "Delete"
       },
@@ -207,30 +230,39 @@
     },
     "modals": {
       "addStaff": {
-        "title": "Add New Staff Member",
+        "title": "Register New Personnel",
         "fullName": "Full Name *",
         "fullNamePlaceholder": "e.g. Michael Tan",
         "username": "Username *",
         "usernamePlaceholder": "e.g. michael_tan",
         "email": "Email (Optional)",
         "emailPlaceholder": "michael@legacycuisine.com",
+        "department": "Department *",
+        "position": "Position / Job Title *",
+        "positionPlaceholder": "e.g. Field Recruitment Agent, Finance Lead",
+        "permissions": "Granular Specific Permissions",
+        "presets": "Quick Permission Presets:",
         "initialPassword": "Initial Password *",
         "initialPasswordPlaceholder": "Minimum 8 characters",
-        "role": "Access Role *",
+        "role": "Access Tier *",
         "cancelBtn": "Cancel",
-        "submitBtn": "Register Staff",
+        "submitBtn": "Register Personnel",
         "submittingBtn": "Registering..."
       },
       "editStaff": {
-        "title": "Update Staff Information",
+        "title": "Update Personnel & Permissions",
         "fullName": "Full Name *",
         "email": "Email",
-        "role": "Access Role",
+        "department": "Department",
+        "position": "Position / Job Title",
+        "permissions": "Specific Permissions Granted",
+        "presets": "Apply Preset:",
+        "role": "Access Tier",
         "accountStatus": "Account Status",
         "active": "Active",
         "inactive": "Inactive",
         "cancelBtn": "Cancel",
-        "submitBtn": "Save Changes",
+        "submitBtn": "Save Changes & Permissions",
         "submittingBtn": "Saving..."
       },
       "resetPassword": {

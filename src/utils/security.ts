@@ -47,6 +47,9 @@ export interface SessionPayload {
   id: string;
   username: string;
   fullName: string;
+  department?: string;
+  position?: string;
+  permissions?: string[];
   role: 'SUPER_ADMIN' | 'MANAGER' | 'STAFF' | 'AGENT';
   exp: number;
 }
@@ -55,12 +58,34 @@ export interface SessionPayload {
  * Creates a cryptographically signed HMAC-SHA256 session token.
  * Output format: "base64Payload.signatureHex"
  */
-export function generateSessionToken(user: { id: string; username: string; fullName: string; role: string }): string {
+export function generateSessionToken(user: {
+  id: string;
+  username: string;
+  fullName: string;
+  role?: string;
+  department?: string | null;
+  position?: string | null;
+  permissions?: string | string[] | null;
+}): string {
+  let parsedPermissions: string[] = [];
+  if (Array.isArray(user.permissions)) {
+    parsedPermissions = user.permissions;
+  } else if (typeof user.permissions === 'string') {
+    try {
+      parsedPermissions = JSON.parse(user.permissions);
+    } catch {
+      parsedPermissions = [];
+    }
+  }
+
   const payload: SessionPayload = {
     id: user.id,
     username: user.username,
     fullName: user.fullName,
-    role: user.role as any,
+    department: user.department || 'Operations',
+    position: user.position || 'Staff Member',
+    permissions: parsedPermissions,
+    role: (user.role as any) || 'STAFF',
     exp: Date.now() + TOKEN_MAX_AGE_MS,
   };
 
@@ -70,6 +95,16 @@ export function generateSessionToken(user: { id: string; username: string; fullN
   const signature = hmac.digest('hex');
 
   return `${payloadB64}.${signature}`;
+}
+
+/**
+ * Checks if a session payload holds a specific permission or has root admin override.
+ */
+export function hasPermission(sessionUser: SessionPayload | null | undefined, permissionKey: string): boolean {
+  if (!sessionUser) return false;
+  if (sessionUser.role === 'SUPER_ADMIN') return true;
+  if (sessionUser.permissions?.includes('admin:all')) return true;
+  return Boolean(sessionUser.permissions?.includes(permissionKey));
 }
 
 /**
@@ -103,3 +138,4 @@ export function verifySessionToken(token: string): { valid: boolean; user?: Sess
     return { valid: false, error: error.message || 'Verification failure' };
   }
 }
+

@@ -76,6 +76,9 @@ export async function POST(request: NextRequest) {
       username: user.username,
       fullName: user.fullName,
       role: user.role,
+      department: user.department,
+      position: user.position,
+      permissions: user.permissions,
     });
 
     const response = NextResponse.json({
@@ -86,6 +89,9 @@ export async function POST(request: NextRequest) {
         username: user.username,
         fullName: user.fullName,
         email: user.email,
+        department: user.department || 'Operations',
+        position: user.position || 'Staff Member',
+        permissions: typeof user.permissions === 'string' ? JSON.parse(user.permissions || '[]') : (user.permissions || []),
         role: user.role,
       },
       token,

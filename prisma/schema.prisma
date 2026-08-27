@@ -335,6 +335,9 @@ model User {
   email        String?   @unique
   fullName     String    @map("full_name")
   passwordHash String    @map("password_hash")
+  department   String?   @default("Operations") @map("department")
+  position     String?   @default("Staff Member") @map("position")
+  permissions  String?   @default("[\"dashboard:view\",\"forms:submit\"]") @map("permissions") @db.Text
   role         UserRole  @default(STAFF)
   isActive     Boolean   @default(true) @map("is_active")
   lastLogin    DateTime? @map("last_login")
@@ -342,6 +345,7 @@ model User {
   updatedAt    DateTime  @updatedAt @map("updated_at")
 
   @@index([username])
+  @@index([department])
   @@index([role])
   @@map("users")
 }

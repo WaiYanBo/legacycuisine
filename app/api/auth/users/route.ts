@@ -13,6 +13,9 @@ export async function GET() {
         username: true,
         fullName: true,
         email: true,
+        department: true,
+        position: true,
+        permissions: true,
         role: true,
         isActive: true,
         lastLogin: true,
@@ -20,7 +23,15 @@ export async function GET() {
       },
       orderBy: { createdAt: 'desc' },
     });
-    return NextResponse.json({ success: true, users }, {
+
+    const parsedUsers = users.map((u) => ({
+      ...u,
+      department: u.department || 'Operations',
+      position: u.position || 'Staff Member',
+      permissions: typeof u.permissions === 'string' ? JSON.parse(u.permissions || '[]') : (u.permissions || []),
+    }));
+
+    return NextResponse.json({ success: true, users: parsedUsers }, {
       headers: {
         'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
       },
@@ -35,6 +46,9 @@ export async function GET() {
           username: 'Wai Yan Bo',
           fullName: 'Wai Yan Bo (Super Administrator)',
           email: 'admin@legacycuisine.com',
+          department: 'Executive Management',
+          position: 'Managing Director / Super Admin',
+          permissions: ['admin:all', 'dashboard:view', 'analytics:view', 'reconciliation:process', 'invoices:generate', 'products:edit', 'forms:submit', 'forms:review', 'users:manage'],
           role: 'SUPER_ADMIN',
           isActive: true,
           lastLogin: new Date().toISOString(),
@@ -49,7 +63,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { username, fullName, email, password, role } = body;
+    const { username, fullName, email, password, department, position, permissions, role } = body;
 
     if (!username || !fullName || !password) {
       return NextResponse.json({ success: false, error: 'Please fill in all required fields.' }, { status: 400 });
@@ -58,18 +72,33 @@ export async function POST(request: NextRequest) {
     const trimmed = String(username).trim();
     const passwordHash = hashPassword(password);
 
+    const formattedPermissions = Array.isArray(permissions)
+      ? JSON.stringify(permissions)
+      : typeof permissions === 'string'
+      ? permissions
+      : JSON.stringify(['dashboard:view', 'forms:submit']);
+
     const newUser = await prisma.user.create({
       data: {
         username: trimmed,
         fullName: String(fullName).trim(),
         email: email ? String(email).trim() : null,
+        department: department ? String(department).trim() : 'Operations',
+        position: position ? String(position).trim() : 'Staff Member',
+        permissions: formattedPermissions,
         passwordHash,
-        role: role || 'STAFF',
+        role: role || (department === 'Executive Management' ? 'SUPER_ADMIN' : department === 'Field Recruitment' ? 'AGENT' : 'STAFF'),
         isActive: true,
       },
     });
 
-    return NextResponse.json({ success: true, user: newUser });
+    return NextResponse.json({
+      success: true,
+      user: {
+        ...newUser,
+        permissions: typeof newUser.permissions === 'string' ? JSON.parse(newUser.permissions || '[]') : newUser.permissions,
+      },
+    });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message || 'Failed to create user.' }, { status: 500 });
   }

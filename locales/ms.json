@@ -160,18 +160,19 @@
     },
     "tabs": {
       "profile": "Profil Saya & Keselamatan",
-      "staff": "Direktori Staf & Ejen",
-      "rbac": "Matriks Kebenaran Akses (RBAC)"
+      "staff": "Direktori Jabatan & Staf",
+      "rbac": "Matriks Kebenaran Akses Terperinci"
     },
     "metrics": {
       "totalPersonnel": "Jumlah Staf & Ejen",
       "activePersonnel": "Akaun Aktif",
       "fieldAgents": "Ejen Lapangan",
-      "management": "Pengurus & Pentadbir"
+      "management": "Eksekutif & Pengurus"
     },
     "filters": {
-      "searchPlaceholder": "Cari nama staf, nama pengguna, emel, atau peranan...",
+      "searchPlaceholder": "Cari nama staf, pengguna, emel, jabatan, jawatan, atau kebenaran...",
       "allRoles": "Semua Peranan",
+      "allDepartments": "Semua Jabatan",
       "allStatuses": "Semua Status",
       "activeOnly": "Aktif",
       "inactiveOnly": "Nyahaktif",
@@ -181,15 +182,37 @@
       "next": "Seterusnya",
       "noMatching": "Tiada rekod yang sepadan dengan carian atau penapis semasa."
     },
+    "departments": {
+      "executive": "Pengurusan Eksekutif",
+      "finance": "Kewangan & Akaun",
+      "operations": "Operasi & Rekonsiliasi",
+      "field": "Perekrutan & Ejen Lapangan",
+      "it": "IT & Pentadbiran Sistem",
+      "support": "Khidmat Pelanggan & Logistik"
+    },
+    "permissionsList": {
+      "dashboard_view": "📊 Lihat Papan Pemuka Rekonsiliasi & Lejar Cawangan",
+      "analytics_view": "📈 Lihat Analitik Margin & Kewangan",
+      "reconciliation_process": "💰 Proses Rekonsiliasi Pesanan & Pelarasan Harga",
+      "invoices_generate": "🧾 Jana & Luluskan Penyata Invois Peniaga",
+      "products_edit": "🏷️ Urus Lejar Harga Menu & Harga Jangkaan Grab",
+      "forms_submit": "📝 Hantar Senarai Semak & Borang Pendaftaran Ejen",
+      "forms_review": "📋 Semak & Luluskan Pendaftaran Peniaga",
+      "users_manage": "👥 Urus Staf, Jabatan & Tetapkan Kebenaran Akses",
+      "admin_all": "👑 Akses Penuh Pentadbir Utama (Root Override)"
+    },
     "staffManagement": {
-      "title": "Direktori Kawalan Akses Staf & Ejen",
-      "subtitle": "Direktori berkapasiti tinggi dengan carian segera, penapis peranan, navigasi halaman, dan kawalan akses.",
-      "addStaffBtn": "Tambah Staf / Ejen Baharu",
+      "title": "Direktori Jabatan & Staf",
+      "subtitle": "Urus pekerja dan ejen mengikut Jabatan, Jawatan / Posisi, dan Hak Akses Spesifik.",
+      "addStaffBtn": "Tambah Staf / Ejen",
       "loading": "Memuatkan senarai staf & ejen...",
       "empty": "Tiada rekod staf ditemui.",
       "table": {
-        "staffName": "Nama Staf & Pengguna",
-        "role": "Peranan / Role",
+        "staffName": "Nama & Maklumat",
+        "department": "Jabatan",
+        "position": "Jawatan / Posisi",
+        "permissions": "Kebenaran Diberikan",
+        "role": "Peranan",
         "status": "Status",
         "lastLogin": "Log Masuk Terakhir",
         "actions": "Tindakan",
@@ -198,7 +221,7 @@
       "statusActive": "Aktif",
       "statusInactive": "Nyahaktif",
       "actions": {
-        "edit": "Edit",
+        "edit": "Edit & Kebenaran",
         "resetPass": "Reset Pass",
         "delete": "Padam"
       },
@@ -207,30 +230,39 @@
     },
     "modals": {
       "addStaff": {
-        "title": "Tambah Staf Baharu",
+        "title": "Daftar Staf / Ejen Baharu",
         "fullName": "Nama Penuh *",
         "fullNamePlaceholder": "Contoh: Ahmad Razak",
         "username": "Nama Pengguna / Username *",
         "usernamePlaceholder": "Contoh: ahmad_razak",
         "email": "Emel (Pilihan)",
         "emailPlaceholder": "ahmad@legacycuisine.com",
+        "department": "Jabatan *",
+        "position": "Jawatan / Posisi *",
+        "positionPlaceholder": "Contoh: Ejen Perekrutan, Pegawai Kewangan",
+        "permissions": "Kebenaran Khusus (Granular)",
+        "presets": "Pilihan Pantas Preset:",
         "initialPassword": "Kata Laluan Awal *",
         "initialPasswordPlaceholder": "Sekurang-kurangnya 8 aksara",
-        "role": "Peranan Akses *",
+        "role": "Tahap Akses *",
         "cancelBtn": "Batal",
         "submitBtn": "Daftar Staf",
         "submittingBtn": "Mendaftar..."
       },
       "editStaff": {
-        "title": "Kemaskini Maklumat Staf",
+        "title": "Kemaskini Staf & Kebenaran",
         "fullName": "Nama Penuh *",
         "email": "Emel",
-        "role": "Peranan Akses",
+        "department": "Jabatan",
+        "position": "Jawatan / Posisi",
+        "permissions": "Kebenaran Khusus Diberikan",
+        "presets": "Gunakan Preset:",
+        "role": "Tahap Akses",
         "accountStatus": "Status Akaun",
         "active": "Aktif",
         "inactive": "Nyahaktif",
         "cancelBtn": "Batal",
-        "submitBtn": "Simpan Kemaskini",
+        "submitBtn": "Simpan Kemaskini & Kebenaran",
         "submittingBtn": "Menyimpan..."
       },
       "resetPassword": {
