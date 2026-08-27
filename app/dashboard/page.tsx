@@ -19,7 +19,10 @@ interface SessionUser {
   username: string;
   fullName: string;
   email?: string;
-  role: 'SUPER_ADMIN' | 'MANAGER' | 'STAFF' | 'AGENT';
+  department?: string;
+  position?: string;
+  permissions?: string[];
+  role: string;
 }
 
 export default function DashboardOverviewPage() {
@@ -195,10 +198,10 @@ export default function DashboardOverviewPage() {
                   : 'text-slate-600 dark:text-slate-300 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-700 dark:hover:text-red-400'
               }`}
             >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-              {dict.sidebar.navRegistration}
+              <span>{dict.sidebar.navRegistration}</span>
             </button>
 
             <button
@@ -209,16 +212,15 @@ export default function DashboardOverviewPage() {
                   : 'text-slate-600 dark:text-slate-300 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-700 dark:hover:text-red-400'
               }`}
             >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
-              {dict.sidebar.navSettings}
+              <span>{dict.sidebar.navSettings}</span>
             </button>
           </nav>
         </div>
 
-        {/* Footer: User Profile, Language Switcher, Theme Toggle & Logout */}
         <div className="p-4 border-t border-slate-200 dark:border-slate-800 space-y-3">
           {currentUser && (
             <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2">
@@ -228,7 +230,9 @@ export default function DashboardOverviewPage() {
                 </div>
                 <div className="overflow-hidden">
                   <div className="text-xs font-bold text-slate-900 dark:text-white truncate">{currentUser.fullName}</div>
-                  <div className="text-[10px] text-red-600 dark:text-red-400 font-extrabold uppercase">{currentUser.role.replace('_', ' ')}</div>
+                  <div className="text-[10px] text-red-600 dark:text-red-400 font-extrabold uppercase truncate">
+                    {currentUser.position || currentUser.department || 'IT Lead'}
+                  </div>
                 </div>
               </div>
               <button
@@ -442,7 +446,7 @@ export default function DashboardOverviewPage() {
 
         {/* VIEW 4: SETTINGS & ACCESS CONTROL */}
         {activeTab === 'settings' && (
-          <SettingsView initialLang={lang === 'ms' ? 'ms' : 'en'} />
+          <SettingsView lang={lang === 'bm' ? 'ms' : (lang as 'en' | 'ms')} onLangChange={(l) => toggleLanguage(l)} />
         )}
 
       </main>
