@@ -415,7 +415,7 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
           </div>
 
           {/* Clean Staff Table */}
-          <div className="bg-white dark:bg-[#0d1117] border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm">
+          <div className="bg-white dark:bg-[#0d1117] border border-slate-200 dark:border-slate-800 rounded-2xl overflow-x-auto shadow-sm">
             {loading ? (
               <div className="p-12 text-center text-xs text-slate-400">Loading staff records...</div>
             ) : filteredUsers.length === 0 ? (
@@ -425,15 +425,15 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
                 <p className="text-xs text-slate-400">Click "Add New Staff" above to create your first team member.</p>
               </div>
             ) : (
-              <table className="w-full text-left text-xs border-collapse">
+              <table className="w-full min-w-[900px] text-left text-xs border-collapse">
                 <thead className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 text-slate-500 font-bold uppercase text-[11px]">
                   <tr>
-                    <th className="py-3 px-4">Name & Username</th>
-                    <th className="py-3 px-4">Department</th>
-                    <th className="py-3 px-4">Job Title</th>
-                    <th className="py-3 px-4">Permissions</th>
-                    <th className="py-3 px-4 text-center">Status</th>
-                    <th className="py-3 px-4 text-right">Actions</th>
+                    <th className="py-3.5 px-5 whitespace-nowrap">Name & Username</th>
+                    <th className="py-3.5 px-4 whitespace-nowrap">Department</th>
+                    <th className="py-3.5 px-4 whitespace-nowrap">Job Title / Position</th>
+                    <th className="py-3.5 px-4 whitespace-nowrap">Permissions</th>
+                    <th className="py-3.5 px-4 text-center whitespace-nowrap">Status</th>
+                    <th className="py-3.5 px-5 text-right whitespace-nowrap">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
@@ -443,51 +443,51 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
 
                     return (
                       <tr key={user.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-900/40 transition-colors">
-                        <td className="py-3.5 px-4">
+                        <td className="py-4 px-5 whitespace-nowrap">
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center font-bold text-slate-700 dark:text-slate-300 text-xs">
+                            <div className="w-9 h-9 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center font-bold text-slate-700 dark:text-slate-300 text-xs flex-shrink-0">
                               {user.fullName.charAt(0).toUpperCase()}
                             </div>
                             <div>
-                              <div className="font-extrabold text-slate-900 dark:text-white text-xs sm:text-sm">
+                              <div className="font-extrabold text-slate-900 dark:text-white text-xs sm:text-sm whitespace-nowrap">
                                 {user.fullName}
                               </div>
-                              <div className="text-[11px] text-slate-400 font-mono">
+                              <div className="text-[11px] text-slate-400 font-mono whitespace-nowrap">
                                 @{user.username} {user.email ? `• ${user.email}` : ''}
                               </div>
                             </div>
                           </div>
                         </td>
 
-                        <td className="py-3.5 px-4">
-                          <span className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold border ${getDeptColor(user.department)}`}>
+                        <td className="py-4 px-4 whitespace-nowrap">
+                          <span className={`inline-flex items-center whitespace-nowrap px-3 py-1 rounded-full text-[11px] font-extrabold border ${getDeptColor(user.department)}`}>
                             {user.department || 'Operations'}
                           </span>
                         </td>
 
-                        <td className="py-3.5 px-4 font-bold text-slate-700 dark:text-slate-300">
+                        <td className="py-4 px-4 whitespace-nowrap font-bold text-slate-800 dark:text-slate-200">
                           {user.position || 'Staff Member'}
                         </td>
 
-                        <td className="py-3.5 px-4">
+                        <td className="py-4 px-4 whitespace-nowrap">
                           {isRoot ? (
-                            <span className="px-2.5 py-0.5 rounded-md bg-red-600 text-white font-bold text-[10px]">
+                            <span className="inline-flex items-center whitespace-nowrap px-3 py-1 rounded-full bg-red-600 text-white font-bold text-[10px] shadow-sm">
                               👑 Full Access (Admin)
                             </span>
                           ) : perms.length === 0 ? (
-                            <span className="text-slate-400 italic text-[11px]">No access granted</span>
+                            <span className="text-slate-400 italic text-[11px] whitespace-nowrap">No permissions granted</span>
                           ) : (
-                            <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-[11px]">
+                            <span className="inline-flex items-center whitespace-nowrap px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-[11px]">
                               {perms.length} Permissions Active
                             </span>
                           )}
                         </td>
 
-                        <td className="py-3.5 px-4 text-center">
+                        <td className="py-4 px-4 text-center whitespace-nowrap">
                           <span
-                            className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                            className={`inline-flex items-center whitespace-nowrap px-3 py-1 rounded-full text-[10px] font-bold ${
                               user.isActive
-                                ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300'
+                                ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800'
                                 : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
                             }`}
                           >
@@ -495,8 +495,8 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
                           </span>
                         </td>
 
-                        <td className="py-3.5 px-4 text-right">
-                          <div className="flex items-center justify-end gap-1.5">
+                        <td className="py-4 px-5 text-right whitespace-nowrap">
+                          <div className="flex items-center justify-end gap-2">
                             <button
                               onClick={() => {
                                 setEditTarget(user);
@@ -507,7 +507,7 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
                                 setEditPermissions(Array.isArray(user.permissions) ? [...user.permissions] : []);
                                 setEditActive(user.isActive);
                               }}
-                              className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-red-50 hover:text-red-600 text-slate-700 dark:text-slate-300 font-bold text-xs transition-colors"
+                              className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-red-50 hover:text-red-600 text-slate-700 dark:text-slate-300 font-bold text-xs transition-colors"
                             >
                               Edit
                             </button>
@@ -516,14 +516,14 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
                                 setResetTarget(user);
                                 setResetPass('');
                               }}
-                              className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-amber-50 hover:text-amber-600 text-slate-700 dark:text-slate-300 font-bold text-xs transition-colors"
+                              className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-amber-50 hover:text-amber-600 text-slate-700 dark:text-slate-300 font-bold text-xs transition-colors"
                             >
                               Reset Pass
                             </button>
                             {user.id !== currentUser?.id && (
                               <button
                                 onClick={() => handleDeleteUser(user)}
-                                className="p-1 px-2 rounded-lg bg-red-50 dark:bg-red-950/40 hover:bg-red-600 hover:text-white text-red-600 font-bold text-xs transition-colors"
+                                className="p-1.5 px-2.5 rounded-xl bg-red-50 dark:bg-red-950/40 hover:bg-red-600 hover:text-white text-red-600 font-bold text-xs transition-colors"
                               >
                                 🗑️
                               </button>
