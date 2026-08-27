@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { formatDateToDDMMYYYY } from '../../lib/dateUtils';
 import enDictionary from '../../locales/en.json';
 import msDictionary from '../../locales/ms.json';
 
@@ -21,10 +20,12 @@ interface UserProfile {
 }
 
 interface SettingsViewProps {
+  lang?: 'en' | 'ms';
   initialLang?: 'en' | 'ms';
+  onLangChange?: (lang: 'en' | 'ms') => void;
 }
 
-type TabType = 'staff' | 'profile' | 'rbac';
+type TabType = 'staff' | 'profile';
 
 export const STANDARD_DEPARTMENTS = [
   'Executive Management',
@@ -35,32 +36,80 @@ export const STANDARD_DEPARTMENTS = [
   'Customer Support & Logistics',
 ];
 
-export const AVAILABLE_PERMISSIONS = [
-  { key: 'dashboard:view', label: '📊 View Dashboard & Storefront Ledger', desc: 'Can view daily orders & summary metrics' },
-  { key: 'analytics:view', label: '📈 View Margin & Financial Analytics', desc: 'Can view gross profit & revenue breakdown' },
-  { key: 'reconciliation:process', label: '💰 Process Order Reconciliations', desc: 'Can perform order reconciliations & adjustments' },
-  { key: 'invoices:generate', label: '🧾 Generate Merchant Invoices', desc: 'Can create billing invoices & download PDFs' },
-  { key: 'products:edit', label: '🏷️ Edit Product Base Prices', desc: 'Can update price ledger & Grab expected prices' },
-  { key: 'forms:submit', label: '📝 Submit Checklists & Agent Forms', desc: 'Can fill & submit recruitment forms' },
-  { key: 'forms:review', label: '📋 Review & Audit Registrations', desc: 'Can review & approve merchant registrations' },
-  { key: 'users:manage', label: '👥 Manage Staff & Permissions', desc: 'Can create users & grant permissions' },
-  { key: 'admin:all', label: '👑 Full Root Administrator (All Access)', desc: 'Full unrestricted master access' },
-];
-
-export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
-  const [lang, setLang] = useState<'en' | 'ms'>(initialLang);
+export function SettingsView({ lang: propLang, initialLang = 'en', onLangChange }: SettingsViewProps) {
+  const [currentLang, setCurrentLang] = useState<'en' | 'ms'>(propLang || initialLang);
   const [activeTab, setActiveTab] = useState<TabType>('staff');
 
+  // React to prop changes from Parent / Sidebar
   useEffect(() => {
-    if (initialLang) setLang(initialLang);
-  }, [initialLang]);
+    if (propLang && propLang !== currentLang) {
+      setCurrentLang(propLang);
+    }
+  }, [propLang]);
 
+  // Synchronize language toggling globally
   const handleLangToggle = (newLang: 'en' | 'ms') => {
-    setLang(newLang);
+    setCurrentLang(newLang);
     localStorage.setItem('lc_lang', newLang);
+    if (onLangChange) {
+      onLangChange(newLang);
+    }
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('lc_lang_changed', { detail: newLang }));
+    }
   };
 
-  const dict = lang === 'ms' ? msDictionary.settings : enDictionary.settings;
+  const isMs = currentLang === 'ms';
+  const dict = isMs ? msDictionary.settings : enDictionary.settings;
+
+  // Localized Permissions Definition
+  const permissionsList = useMemo(() => [
+    {
+      key: 'dashboard:view',
+      label: isMs ? '📊 Lihat Papan Pemuka & Lejar Cawangan' : '📊 View Dashboard & Storefront Ledger',
+      desc: isMs ? 'Boleh melihat pesanan harian & ringkasan metrik' : 'Can view daily orders & summary metrics',
+    },
+    {
+      key: 'analytics:view',
+      label: isMs ? '📈 Lihat Analitik Margin & Kewangan' : '📈 View Margin & Financial Analytics',
+      desc: isMs ? 'Boleh melihat untung kasar & pecahan hasil' : 'Can view gross profit & revenue breakdown',
+    },
+    {
+      key: 'reconciliation:process',
+      label: isMs ? '💰 Proses Rekonsiliasi Pesanan' : '💰 Process Order Reconciliations',
+      desc: isMs ? 'Boleh membuat rekonsiliasi pesanan & pelarasan harga' : 'Can perform order reconciliations & adjustments',
+    },
+    {
+      key: 'invoices:generate',
+      label: isMs ? '🧾 Jana Penyata Invois Peniaga' : '🧾 Generate Merchant Invoices',
+      desc: isMs ? 'Boleh mencipta invois & memuat turun PDF' : 'Can create billing invoices & download PDFs',
+    },
+    {
+      key: 'products:edit',
+      label: isMs ? '🏷️ Kemaskini Harga Asas Produk' : '🏷️ Edit Product Base Prices',
+      desc: isMs ? 'Boleh mengemaskini lejar harga & harga jangkaan Grab' : 'Can update price ledger & Grab expected prices',
+    },
+    {
+      key: 'forms:submit',
+      label: isMs ? '📝 Hantar Borang & Senarai Semak' : '📝 Submit Checklists & Agent Forms',
+      desc: isMs ? 'Boleh mengisi & menghantar borang pendaftaran' : 'Can fill & submit recruitment forms',
+    },
+    {
+      key: 'forms:review',
+      label: isMs ? '📋 Semak & Luluskan Pendaftaran' : '📋 Review & Audit Registrations',
+      desc: isMs ? 'Boleh menyemak & meluluskan pendaftaran peniaga' : 'Can review & approve merchant registrations',
+    },
+    {
+      key: 'users:manage',
+      label: isMs ? '👥 Urus Staf & Hak Akses' : '👥 Manage Staff & Permissions',
+      desc: isMs ? 'Boleh menambah pengguna & menetapkan kebenaran' : 'Can create users & grant permissions',
+    },
+    {
+      key: 'admin:all',
+      label: isMs ? '👑 Akses Penuh Pentadbir Utama' : '👑 Full Root Administrator (All Access)',
+      desc: isMs ? 'Akses master tanpa sekatan' : 'Full unrestricted master access',
+    },
+  ], [isMs]);
 
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
   const [staffList, setStaffList] = useState<UserProfile[]>([]);
@@ -113,14 +162,12 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      // 1. Current Session
       const meRes = await fetch('/api/auth/me');
       const meData = await meRes.json();
       if (meData.success && meData.user) {
         setCurrentUser(meData.user);
       }
 
-      // 2. All Users
       const staffRes = await fetch('/api/auth/users', { cache: 'no-store' });
       const staffData = await staffRes.json();
       if (staffData.success && Array.isArray(staffData.users)) {
@@ -155,11 +202,17 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
     e.preventDefault();
     setPassMessage(null);
     if (newPassword !== confirmPassword) {
-      setPassMessage({ type: 'error', text: 'New password and confirmation do not match.' });
+      setPassMessage({
+        type: 'error',
+        text: isMs ? 'Kata laluan baharu dan pengesahan tidak sepadan.' : 'New password and confirmation do not match.',
+      });
       return;
     }
     if (newPassword.length < 8) {
-      setPassMessage({ type: 'error', text: 'Password must be at least 8 characters long.' });
+      setPassMessage({
+        type: 'error',
+        text: isMs ? 'Kata laluan mesti sekurang-kurangnya 8 aksara.' : 'Password must be at least 8 characters long.',
+      });
       return;
     }
     setPassSubmitting(true);
@@ -171,7 +224,10 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || 'Failed to change password');
-      setPassMessage({ type: 'success', text: 'Password updated successfully!' });
+      setPassMessage({
+        type: 'success',
+        text: isMs ? 'Kata laluan berjaya dikemaskini!' : 'Password updated successfully!',
+      });
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
@@ -260,7 +316,7 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || 'Failed to reset password');
-      alert(`Password for ${resetTarget.fullName} reset successfully.`);
+      alert(isMs ? `Kata laluan untuk ${resetTarget.fullName} berjaya diset semula.` : `Password for ${resetTarget.fullName} reset successfully.`);
       setResetTarget(null);
       setResetPass('');
     } catch (err: any) {
@@ -271,7 +327,10 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
   };
 
   const handleDeleteUser = async (user: UserProfile) => {
-    if (!window.confirm(`Are you sure you want to delete account for "${user.fullName}"?`)) return;
+    const confirmPrompt = isMs
+      ? `Adakah anda pasti ingin memadamkan akaun untuk "${user.fullName}"?`
+      : `Are you sure you want to delete account for "${user.fullName}"?`;
+    if (!window.confirm(confirmPrompt)) return;
     try {
       const res = await fetch(`/api/auth/users/${user.id}`, { method: 'DELETE' });
       const data = await res.json();
@@ -315,32 +374,41 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
           </div>
           <div>
             <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
-              Staff & Access Management
+              {isMs ? 'Pengurusan Staf & Kawalan Akses' : 'Staff & Access Management'}
             </h1>
             <p className="text-xs text-slate-500">
-              Manage team members by Department, Job Title, and Custom Permissions.
+              {isMs
+                ? 'Urus ahli pasukan mengikut Jabatan, Jawatan, dan Kebenaran Khusus.'
+                : 'Manage team members by Department, Job Title, and Custom Permissions.'}
             </p>
           </div>
         </div>
 
         {/* Top Right Controls */}
         <div className="flex items-center gap-3">
-          <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold">
+          {/* Synchronized 2-Button Language Switcher */}
+          <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold shadow-sm">
             <button
               onClick={() => handleLangToggle('en')}
-              className={`px-3 py-1.5 rounded-lg transition-all ${
-                lang === 'en' ? 'bg-red-600 text-white shadow-sm' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+              className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 ${
+                currentLang === 'en'
+                  ? 'bg-red-600 text-white shadow-sm'
+                  : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
-              EN
+              <span>🇬🇧</span>
+              <span>EN</span>
             </button>
             <button
               onClick={() => handleLangToggle('ms')}
-              className={`px-3 py-1.5 rounded-lg transition-all ${
-                lang === 'ms' ? 'bg-red-600 text-white shadow-sm' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+              className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 ${
+                currentLang === 'ms'
+                  ? 'bg-red-600 text-white shadow-sm'
+                  : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
-              BM
+              <span>🇲🇾</span>
+              <span>BM</span>
             </button>
           </div>
 
@@ -349,7 +417,7 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
             className="px-4 py-2.5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white rounded-xl font-bold text-xs shadow-md shadow-red-600/30 transition-all flex items-center gap-2"
           >
             <span>➕</span>
-            <span>Add New Staff</span>
+            <span>{isMs ? 'Tambah Staf Baharu' : 'Add New Staff'}</span>
           </button>
         </div>
       </div>
@@ -364,7 +432,7 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
               : 'border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-white'
           }`}
         >
-          <span>👥 All Staff & Agents</span>
+          <span>👥 {isMs ? 'Semua Staf & Ejen' : 'All Staff & Agents'}</span>
           <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
             {staffList.length}
           </span>
@@ -378,7 +446,7 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
               : 'border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-white'
           }`}
         >
-          <span>🔒 Change Password</span>
+          <span>🔒 {isMs ? 'Tukar Kata Laluan' : 'Change Password'}</span>
         </button>
       </div>
 
@@ -393,7 +461,11 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
               <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs">🔍</span>
               <input
                 type="text"
-                placeholder="Search staff by name, username, department, or job title..."
+                placeholder={
+                  isMs
+                    ? 'Cari staf mengikut nama, pengguna, jabatan, atau jawatan...'
+                    : 'Search staff by name, username, department, or job title...'
+                }
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-600"
@@ -405,7 +477,9 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
               onChange={(e) => setDepartmentFilter(e.target.value)}
               className="w-full sm:w-auto px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-600"
             >
-              <option value="ALL">All Departments ({staffList.length})</option>
+              <option value="ALL">
+                {isMs ? 'Semua Jabatan' : 'All Departments'} ({staffList.length})
+              </option>
               {STANDARD_DEPARTMENTS.map((dept) => (
                 <option key={dept} value={dept}>
                   {dept} ({staffList.filter((u) => (u.department || '').trim() === dept).length})
@@ -417,23 +491,43 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
           {/* Clean Staff Table */}
           <div className="bg-white dark:bg-[#0d1117] border border-slate-200 dark:border-slate-800 rounded-2xl overflow-x-auto shadow-sm">
             {loading ? (
-              <div className="p-12 text-center text-xs text-slate-400">Loading staff records...</div>
+              <div className="p-12 text-center text-xs text-slate-400">
+                {isMs ? 'Memuatkan rekod staf...' : 'Loading staff records...'}
+              </div>
             ) : filteredUsers.length === 0 ? (
               <div className="p-12 text-center space-y-2">
                 <div className="text-3xl">👥</div>
-                <div className="font-bold text-sm text-slate-700 dark:text-slate-300">No staff found</div>
-                <p className="text-xs text-slate-400">Click "Add New Staff" above to create your first team member.</p>
+                <div className="font-bold text-sm text-slate-700 dark:text-slate-300">
+                  {isMs ? 'Tiada staf ditemui' : 'No staff found'}
+                </div>
+                <p className="text-xs text-slate-400">
+                  {isMs
+                    ? 'Klik "Tambah Staf Baharu" di atas untuk mendaftarkan ahli pasukan pertama anda.'
+                    : 'Click "Add New Staff" above to create your first team member.'}
+                </p>
               </div>
             ) : (
               <table className="w-full min-w-[900px] text-left text-xs border-collapse">
                 <thead className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 text-slate-500 font-bold uppercase text-[11px]">
                   <tr>
-                    <th className="py-3.5 px-5 whitespace-nowrap">Name & Username</th>
-                    <th className="py-3.5 px-4 whitespace-nowrap">Department</th>
-                    <th className="py-3.5 px-4 whitespace-nowrap">Job Title / Position</th>
-                    <th className="py-3.5 px-4 whitespace-nowrap">Permissions</th>
-                    <th className="py-3.5 px-4 text-center whitespace-nowrap">Status</th>
-                    <th className="py-3.5 px-5 text-right whitespace-nowrap">Actions</th>
+                    <th className="py-3.5 px-5 whitespace-nowrap">
+                      {isMs ? 'Nama & Pengguna' : 'Name & Username'}
+                    </th>
+                    <th className="py-3.5 px-4 whitespace-nowrap">
+                      {isMs ? 'Jabatan' : 'Department'}
+                    </th>
+                    <th className="py-3.5 px-4 whitespace-nowrap">
+                      {isMs ? 'Jawatan / Posisi' : 'Job Title / Position'}
+                    </th>
+                    <th className="py-3.5 px-4 whitespace-nowrap">
+                      {isMs ? 'Hak Akses' : 'Permissions'}
+                    </th>
+                    <th className="py-3.5 px-4 text-center whitespace-nowrap">
+                      {isMs ? 'Status' : 'Status'}
+                    </th>
+                    <th className="py-3.5 px-5 text-right whitespace-nowrap">
+                      {isMs ? 'Tindakan' : 'Actions'}
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
@@ -474,13 +568,15 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
                         <td className="py-4 px-4 whitespace-nowrap">
                           {isFullAccess ? (
                             <span className="inline-flex items-center whitespace-nowrap px-3 py-1 rounded-full bg-red-600 text-white font-bold text-[10px] shadow-sm">
-                              👑 Full Access {isIT && !isIntern ? '(IT)' : ''}
+                              👑 {isMs ? 'Akses Penuh' : 'Full Access'} {isIT && !isIntern ? '(IT)' : ''}
                             </span>
                           ) : perms.length === 0 ? (
-                            <span className="text-slate-400 italic text-[11px] whitespace-nowrap">No permissions granted</span>
+                            <span className="text-slate-400 italic text-[11px] whitespace-nowrap">
+                              {isMs ? 'Tiada kebenaran diberikan' : 'No permissions granted'}
+                            </span>
                           ) : (
                             <span className="inline-flex items-center whitespace-nowrap px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-[11px]">
-                              {perms.length} Permissions Active
+                              {perms.length} {isMs ? 'Kebenaran Aktif' : 'Permissions Active'}
                             </span>
                           )}
                         </td>
@@ -493,7 +589,7 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
                                 : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
                             }`}
                           >
-                            {user.isActive ? 'Active' : 'Inactive'}
+                            {user.isActive ? (isMs ? 'Aktif' : 'Active') : (isMs ? 'Nyahaktif' : 'Inactive')}
                           </span>
                         </td>
 
@@ -511,7 +607,7 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
                               }}
                               className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-red-50 hover:text-red-600 text-slate-700 dark:text-slate-300 font-bold text-xs transition-colors"
                             >
-                              Edit
+                              {isMs ? 'Edit' : 'Edit'}
                             </button>
                             <button
                               onClick={() => {
@@ -520,7 +616,7 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
                               }}
                               className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-amber-50 hover:text-amber-600 text-slate-700 dark:text-slate-300 font-bold text-xs transition-colors"
                             >
-                              Reset Pass
+                              {isMs ? 'Set Laluan' : 'Reset Pass'}
                             </button>
                             {user.id !== currentUser?.id && (
                               <button
@@ -547,8 +643,14 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
       {/* ═════════════════════════════════════════════════════════════════════ */}
       {activeTab === 'profile' && (
         <div className="max-w-lg bg-white dark:bg-[#0d1117] border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-sm">
-          <h2 className="text-lg font-black text-slate-900 dark:text-white mb-1">Change Your Password</h2>
-          <p className="text-xs text-slate-500 mb-5">Update your personal login password for Legacy Cuisine portal.</p>
+          <h2 className="text-lg font-black text-slate-900 dark:text-white mb-1">
+            {isMs ? 'Tukar Kata Laluan Anda' : 'Change Your Password'}
+          </h2>
+          <p className="text-xs text-slate-500 mb-5">
+            {isMs
+              ? 'Kemaskini kata laluan akaun log masuk peribadi anda.'
+              : 'Update your personal login password for Legacy Cuisine portal.'}
+          </p>
 
           <form onSubmit={handlePasswordChange} className="space-y-4 text-xs">
             {passMessage && (
@@ -564,7 +666,9 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
             )}
 
             <div>
-              <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Current Password</label>
+              <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                {isMs ? 'Kata Laluan Semasa' : 'Current Password'}
+              </label>
               <input
                 type="password"
                 required
@@ -575,7 +679,9 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
             </div>
 
             <div>
-              <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">New Password (min. 8 characters)</label>
+              <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                {isMs ? 'Kata Laluan Baharu (min. 8 aksara)' : 'New Password (min. 8 characters)'}
+              </label>
               <input
                 type="password"
                 required
@@ -586,7 +692,9 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
             </div>
 
             <div>
-              <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Confirm New Password</label>
+              <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                {isMs ? 'Sahkan Kata Laluan Baharu' : 'Confirm New Password'}
+              </label>
               <input
                 type="password"
                 required
@@ -601,7 +709,13 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
               disabled={passSubmitting}
               className="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl shadow-md transition-all disabled:opacity-50"
             >
-              {passSubmitting ? 'Updating Password...' : 'Save New Password'}
+              {passSubmitting
+                ? isMs
+                  ? 'Mengemaskini Kata Laluan...'
+                  : 'Updating Password...'
+                : isMs
+                ? 'Simpan Kata Laluan Baharu'
+                : 'Save New Password'}
             </button>
           </form>
         </div>
@@ -616,7 +730,9 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
             <div className="bg-white dark:bg-[#0d1117] border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-xl max-h-[90vh] overflow-y-auto p-6 shadow-2xl space-y-4">
               <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-                <h3 className="font-extrabold text-base text-slate-900 dark:text-white">➕ Add New Staff / Agent</h3>
+                <h3 className="font-extrabold text-base text-slate-900 dark:text-white">
+                  ➕ {isMs ? 'Tambah Staf / Ejen Baharu' : 'Add New Staff / Agent'}
+                </h3>
                 <button onClick={() => setIsAddModalOpen(false)} className="text-slate-400 hover:text-white font-bold">
                   ✕
                 </button>
@@ -627,7 +743,9 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
               <form onSubmit={handleAddUser} className="space-y-3.5 text-xs">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Full Name *</label>
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      {isMs ? 'Nama Penuh *' : 'Full Name *'}
+                    </label>
                     <input
                       type="text"
                       required
@@ -639,7 +757,9 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
                   </div>
 
                   <div>
-                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Username (Login ID) *</label>
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      {isMs ? 'Nama Pengguna (ID Log Masuk) *' : 'Username (Login ID) *'}
+                    </label>
                     <input
                       type="text"
                       required
@@ -651,7 +771,9 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
                   </div>
 
                   <div>
-                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Department *</label>
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      {isMs ? 'Jabatan *' : 'Department *'}
+                    </label>
                     <select
                       value={addDepartment}
                       onChange={(e) => setAddDepartment(e.target.value)}
@@ -666,7 +788,9 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
                   </div>
 
                   <div>
-                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Job Title / Position *</label>
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      {isMs ? 'Jawatan / Posisi *' : 'Job Title / Position *'}
+                    </label>
                     <input
                       type="text"
                       required
@@ -678,7 +802,9 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
                   </div>
 
                   <div>
-                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Email (Optional)</label>
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      {isMs ? 'Emel (Pilihan)' : 'Email (Optional)'}
+                    </label>
                     <input
                       type="email"
                       placeholder="ahmad@legacycuisine.com"
@@ -689,7 +815,9 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
                   </div>
 
                   <div>
-                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Initial Password *</label>
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      {isMs ? 'Kata Laluan Awal *' : 'Initial Password *'}
+                    </label>
                     <input
                       type="password"
                       required
@@ -704,24 +832,32 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
                 {/* Permissions Checkboxes */}
                 <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2">
                   <div className="flex items-center justify-between">
-                    <label className="font-bold text-slate-700 dark:text-slate-300">Grant Permissions:</label>
+                    <label className="font-bold text-slate-700 dark:text-slate-300">
+                      {isMs ? 'Berikan Hak Akses (Permissions):' : 'Grant Permissions:'}
+                    </label>
                     <button
                       type="button"
                       onClick={() =>
                         setAddPermissions(
-                          addPermissions.length === AVAILABLE_PERMISSIONS.length
+                          addPermissions.length === permissionsList.length
                             ? []
-                            : AVAILABLE_PERMISSIONS.map((p) => p.key)
+                            : permissionsList.map((p) => p.key)
                         )
                       }
                       className="text-red-600 font-bold hover:underline"
                     >
-                      {addPermissions.length === AVAILABLE_PERMISSIONS.length ? 'Deselect All' : 'Select All'}
+                      {addPermissions.length === permissionsList.length
+                        ? isMs
+                          ? 'Nyahpilih Semua'
+                          : 'Deselect All'
+                        : isMs
+                        ? 'Pilih Semua'
+                        : 'Select All'}
                     </button>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-slate-50 dark:bg-slate-950 p-3 rounded-2xl border border-slate-200 dark:border-slate-800">
-                    {AVAILABLE_PERMISSIONS.map((p) => {
+                    {permissionsList.map((p) => {
                       const isChecked = addPermissions.includes(p.key);
                       return (
                         <label
@@ -752,14 +888,20 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
                     onClick={() => setIsAddModalOpen(false)}
                     className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold"
                   >
-                    Cancel
+                    {isMs ? 'Batal' : 'Cancel'}
                   </button>
                   <button
                     type="submit"
                     disabled={addSubmitting}
                     className="px-5 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold shadow-md disabled:opacity-50"
                   >
-                    {addSubmitting ? 'Registering...' : 'Register Staff'}
+                    {addSubmitting
+                      ? isMs
+                        ? 'Mendaftar...'
+                        : 'Registering...'
+                      : isMs
+                      ? 'Daftar Staf'
+                      : 'Register Staff'}
                   </button>
                 </div>
               </form>
@@ -778,7 +920,7 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
             <div className="bg-white dark:bg-[#0d1117] border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-xl max-h-[90vh] overflow-y-auto p-6 shadow-2xl space-y-4">
               <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
                 <h3 className="font-extrabold text-base text-slate-900 dark:text-white">
-                  ✏️ Edit Staff: {editTarget.fullName}
+                  ✏️ {isMs ? 'Kemaskini Staf:' : 'Edit Staff:'} {editTarget.fullName}
                 </h3>
                 <button onClick={() => setEditTarget(null)} className="text-slate-400 hover:text-white font-bold">
                   ✕
@@ -790,7 +932,9 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
               <form onSubmit={handleUpdateUser} className="space-y-3.5 text-xs">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Full Name</label>
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      {isMs ? 'Nama Penuh' : 'Full Name'}
+                    </label>
                     <input
                       type="text"
                       required
@@ -801,7 +945,9 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
                   </div>
 
                   <div>
-                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Department</label>
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      {isMs ? 'Jabatan' : 'Department'}
+                    </label>
                     <select
                       value={editDepartment}
                       onChange={(e) => setEditDepartment(e.target.value)}
@@ -816,7 +962,9 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
                   </div>
 
                   <div>
-                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Job Title / Position</label>
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      {isMs ? 'Jawatan / Posisi' : 'Job Title / Position'}
+                    </label>
                     <input
                       type="text"
                       required
@@ -827,7 +975,9 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
                   </div>
 
                   <div>
-                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Email</label>
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      {isMs ? 'Emel' : 'Email'}
+                    </label>
                     <input
                       type="email"
                       value={editEmail}
@@ -839,7 +989,9 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
 
                 {/* Status Toggle */}
                 <div>
-                  <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Account Status</label>
+                  <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    {isMs ? 'Status Akaun' : 'Account Status'}
+                  </label>
                   <div className="flex gap-4">
                     <label className="flex items-center gap-2 cursor-pointer font-bold">
                       <input
@@ -848,7 +1000,7 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
                         checked={editActive === true}
                         onChange={() => setEditActive(true)}
                       />
-                      <span className="text-emerald-600">Active</span>
+                      <span className="text-emerald-600">{isMs ? 'Aktif' : 'Active'}</span>
                     </label>
                     <label className="flex items-center gap-2 cursor-pointer font-bold">
                       <input
@@ -857,7 +1009,7 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
                         checked={editActive === false}
                         onChange={() => setEditActive(false)}
                       />
-                      <span className="text-slate-400">Inactive</span>
+                      <span className="text-slate-400">{isMs ? 'Nyahaktif' : 'Inactive'}</span>
                     </label>
                   </div>
                 </div>
@@ -865,24 +1017,32 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
                 {/* Permissions Checkboxes */}
                 <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2">
                   <div className="flex items-center justify-between">
-                    <label className="font-bold text-slate-700 dark:text-slate-300">Grant Permissions:</label>
+                    <label className="font-bold text-slate-700 dark:text-slate-300">
+                      {isMs ? 'Berikan Hak Akses (Permissions):' : 'Grant Permissions:'}
+                    </label>
                     <button
                       type="button"
                       onClick={() =>
                         setEditPermissions(
-                          editPermissions.length === AVAILABLE_PERMISSIONS.length
+                          editPermissions.length === permissionsList.length
                             ? []
-                            : AVAILABLE_PERMISSIONS.map((p) => p.key)
+                            : permissionsList.map((p) => p.key)
                         )
                       }
                       className="text-red-600 font-bold hover:underline"
                     >
-                      {editPermissions.length === AVAILABLE_PERMISSIONS.length ? 'Deselect All' : 'Select All'}
+                      {editPermissions.length === permissionsList.length
+                        ? isMs
+                          ? 'Nyahpilih Semua'
+                          : 'Deselect All'
+                        : isMs
+                        ? 'Pilih Semua'
+                        : 'Select All'}
                     </button>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-slate-50 dark:bg-slate-950 p-3 rounded-2xl border border-slate-200 dark:border-slate-800">
-                    {AVAILABLE_PERMISSIONS.map((p) => {
+                    {permissionsList.map((p) => {
                       const isChecked = editPermissions.includes(p.key);
                       return (
                         <label
@@ -913,14 +1073,20 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
                     onClick={() => setEditTarget(null)}
                     className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold"
                   >
-                    Cancel
+                    {isMs ? 'Batal' : 'Cancel'}
                   </button>
                   <button
                     type="submit"
                     disabled={editSubmitting}
                     className="px-5 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold shadow-md disabled:opacity-50"
                   >
-                    {editSubmitting ? 'Saving...' : 'Save Changes'}
+                    {editSubmitting
+                      ? isMs
+                        ? 'Menyimpan...'
+                        : 'Saving...'
+                      : isMs
+                      ? 'Simpan Kemaskini'
+                      : 'Save Changes'}
                   </button>
                 </div>
               </form>
@@ -938,25 +1104,30 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
             <div className="bg-white dark:bg-[#0d1117] border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-sm p-6 shadow-2xl space-y-4">
               <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-                <h3 className="font-extrabold text-base text-slate-900 dark:text-white">🔑 Reset Password</h3>
+                <h3 className="font-extrabold text-base text-slate-900 dark:text-white">
+                  🔑 {isMs ? 'Set Semula Kata Laluan' : 'Reset Password'}
+                </h3>
                 <button onClick={() => setResetTarget(null)} className="text-slate-400 hover:text-white font-bold">
                   ✕
                 </button>
               </div>
 
               <div className="text-xs text-slate-600 dark:text-slate-400">
-                Resetting password for: <strong className="text-slate-900 dark:text-white">{resetTarget.fullName}</strong>
+                {isMs ? 'Menetapkan semula kata laluan untuk:' : 'Resetting password for:'}{' '}
+                <strong className="text-slate-900 dark:text-white">{resetTarget.fullName}</strong>
               </div>
 
               {resetError && <div className="p-3 rounded-xl bg-red-50 text-red-600 text-xs font-bold">⚠️ {resetError}</div>}
 
               <form onSubmit={handleResetPassword} className="space-y-4 text-xs">
                 <div>
-                  <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">New Password (min. 8 chars)</label>
+                  <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    {isMs ? 'Kata Laluan Baharu (min. 8 aksara)' : 'New Password (min. 8 chars)'}
+                  </label>
                   <input
                     type="password"
                     required
-                    placeholder="Enter new password"
+                    placeholder={isMs ? 'Masukkan kata laluan baharu' : 'Enter new password'}
                     value={resetPass}
                     onChange={(e) => setResetPass(e.target.value)}
                     className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white"
@@ -969,14 +1140,20 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
                     onClick={() => setResetTarget(null)}
                     className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold"
                   >
-                    Cancel
+                    {isMs ? 'Batal' : 'Cancel'}
                   </button>
                   <button
                     type="submit"
                     disabled={resetSubmitting}
                     className="px-5 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold shadow-md disabled:opacity-50"
                   >
-                    {resetSubmitting ? 'Resetting...' : 'Reset Password'}
+                    {resetSubmitting
+                      ? isMs
+                        ? 'Menetapkan...'
+                        : 'Resetting...'
+                      : isMs
+                      ? 'Set Semula'
+                      : 'Reset Password'}
                   </button>
                 </div>
               </form>
