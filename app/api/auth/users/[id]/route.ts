@@ -89,14 +89,14 @@ export async function PATCH(
       const updateQuery = `
         UPDATE users
         SET
-          full_name = COALESCE($1, full_name),
-          email = CASE WHEN $2 IS NOT NULL THEN NULLIF($2, '') ELSE email END,
-          department = COALESCE($3, department),
-          position = COALESCE($4, position),
-          permissions = COALESCE($5, permissions),
-          is_active = COALESCE($6, is_active),
+          full_name = COALESCE($1::text, full_name),
+          email = CASE WHEN $2::text IS NOT NULL THEN NULLIF($2::text, '') ELSE email END,
+          department = COALESCE($3::text, department),
+          position = COALESCE($4::text, position),
+          permissions = COALESCE($5::text, permissions),
+          is_active = COALESCE($6::boolean, is_active),
           updated_at = NOW()
-        WHERE id = $7
+        WHERE id = $7::uuid
         RETURNING id, username, full_name as "fullName", email, department, position, permissions, role, is_active as "isActive", updated_at as "updatedAt"
       `;
 
