@@ -31,7 +31,7 @@ export async function PATCH(
 
     const { id } = params;
     const body = await request.json();
-    const { fullName, email, role, isActive } = body;
+    const { fullName, email, department, position, permissions, role, isActive } = body;
 
     const user = await prisma.user.findUnique({ where: { id } });
     if (!user) {
@@ -43,16 +43,22 @@ export async function PATCH(
       if (isActive === false) {
         return NextResponse.json({ success: false, error: 'You cannot deactivate your own account.' }, { status: 400 });
       }
-      if (role && role !== 'SUPER_ADMIN' && session.role === 'SUPER_ADMIN') {
-        return NextResponse.json({ success: false, error: 'You cannot alter your own role.' }, { status: 400 });
-      }
     }
+
+    const formattedPermissions = permissions !== undefined
+      ? Array.isArray(permissions)
+        ? JSON.stringify(permissions)
+        : String(permissions)
+      : undefined;
 
     const updated = await prisma.user.update({
       where: { id },
       data: {
         fullName: fullName !== undefined ? String(fullName).trim() : undefined,
         email: email !== undefined ? (email ? String(email).trim() : null) : undefined,
+        department: department !== undefined ? String(department).trim() : undefined,
+        position: position !== undefined ? String(position).trim() : undefined,
+        permissions: formattedPermissions,
         role: role !== undefined ? role : undefined,
         isActive: isActive !== undefined ? Boolean(isActive) : undefined,
       },
@@ -61,13 +67,23 @@ export async function PATCH(
         username: true,
         fullName: true,
         email: true,
+        department: true,
+        position: true,
+        permissions: true,
         role: true,
         isActive: true,
         updatedAt: true,
       },
     });
 
-    return NextResponse.json({ success: true, message: 'User updated successfully.', user: updated });
+    return NextResponse.json({
+      success: true,
+      message: 'User updated successfully.',
+      user: {
+        ...updated,
+        permissions: typeof updated.permissions === 'string' ? JSON.parse(updated.permissions || '[]') : updated.permissions,
+      },
+    });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message || 'Failed to update user.' }, { status: 500 });
   }
