@@ -92,7 +92,7 @@ export function SettingsView({ initialLang = 'en' }: SettingsViewProps) {
       }
 
       // 2. Get Staff list if admin/manager
-      const staffRes = await fetch('/api/auth/users');
+      const staffRes = await fetch('/api/auth/users', { cache: 'no-store' });
       const staffData = await staffRes.json();
       if (staffData.success && staffData.users) {
         setStaffList(staffData.users);

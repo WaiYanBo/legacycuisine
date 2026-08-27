@@ -3,6 +3,7 @@ import { prisma } from '../../../../src/prisma';
 import { hashPassword } from '../../../../src/utils/security';
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function GET() {
   try {
@@ -19,8 +20,13 @@ export async function GET() {
       },
       orderBy: { createdAt: 'desc' },
     });
-    return NextResponse.json({ success: true, users });
-  } catch (error) {
+    return NextResponse.json({ success: true, users }, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+      },
+    });
+  } catch (error: any) {
+    console.error('[API /users] Database error fetching users on deployed host:', error?.message || error);
     return NextResponse.json({
       success: true,
       users: [
@@ -35,6 +41,7 @@ export async function GET() {
           createdAt: new Date().toISOString(),
         },
       ],
+      warning: 'Using fallback list. Please ensure DATABASE_URL is configured in Netlify Environment Variables.',
     });
   }
 }
