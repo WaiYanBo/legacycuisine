@@ -158,11 +158,34 @@
       "staff": "STAFF / OPERATOR: Access to Registration & Forms Portal, Submission Records, and Manual Order Ingestion.",
       "agent": "AGENT: Access to Public Agent & Merchant registration forms."
     },
+    "tabs": {
+      "profile": "My Profile & Security",
+      "staff": "Staff & Agent Access Directory",
+      "rbac": "Access Permissions (RBAC)"
+    },
+    "metrics": {
+      "totalPersonnel": "Total Personnel",
+      "activePersonnel": "Active Accounts",
+      "fieldAgents": "Field Agents",
+      "management": "Admins & Managers"
+    },
+    "filters": {
+      "searchPlaceholder": "Search by name, username, email, or role...",
+      "allRoles": "All Roles",
+      "allStatuses": "All Statuses",
+      "activeOnly": "Active",
+      "inactiveOnly": "Inactive",
+      "showing": "Showing {start} to {end} of {total} personnel",
+      "perPage": "Per page",
+      "prev": "Previous",
+      "next": "Next",
+      "noMatching": "No personnel matching the current search or filters."
+    },
     "staffManagement": {
-      "title": "Staff Access Control",
-      "subtitle": "Manage employee accounts, roles, access permissions, and password resets.",
-      "addStaffBtn": "Add New Staff",
-      "loading": "Loading staff accounts...",
+      "title": "Staff & Agent Access Directory",
+      "subtitle": "High-capacity employee & agent directory with instant search, role filtering, pagination, and access control.",
+      "addStaffBtn": "Add New Staff / Agent",
+      "loading": "Loading personnel directory...",
       "empty": "No staff records found.",
       "table": {
         "staffName": "Staff & Username",
