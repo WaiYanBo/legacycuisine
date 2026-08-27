@@ -13,7 +13,7 @@ function createPrismaClient(): PrismaClient {
   if (databaseUrl && !databaseUrl.startsWith('file:')) {
     const pool = new Pool({ 
       connectionString: databaseUrl,
-      ssl: databaseUrl.includes('supabase.co') || databaseUrl.includes('sslmode=require') ? { rejectUnauthorized: false } : undefined,
+      ssl: databaseUrl.includes('supabase.co') || databaseUrl.includes('supabase.com') || databaseUrl.includes('sslmode=require') ? { rejectUnauthorized: false } : undefined,
       max: 10,
       idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 10000,
