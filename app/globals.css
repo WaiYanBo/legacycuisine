@@ -247,6 +247,44 @@
     background: transparent !important;
   }
 
+  /* 🖨️ Modal Print Reset: Removes dark backdrop, centered card borders & shadow */
+  .print-modal-overlay {
+    position: static !important;
+    inset: auto !important;
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    display: block !important;
+  }
+
+  .print-modal-card {
+    position: static !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    max-height: none !important;
+    height: auto !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    display: block !important;
+  }
+
   .printable-card form {
     space-y: 0 !important;
   }
@@ -255,14 +293,25 @@
     margin-top: 4px !important;
   }
 
-  /* Reset all dark backgrounds on paper to clean transparent/white */
+  /* Reset all dark backgrounds on paper to clean transparent/white (Zero ink waste) */
   .printable-card [class*="bg-slate-"],
   .printable-card [class*="bg-zinc-"],
   .printable-card [class*="bg-neutral-"],
   .printable-card [class*="bg-black"],
+  .printable-card [class*="bg-amber-"],
+  .printable-card [class*="bg-emerald-"],
+  .printable-card [class*="bg-red-"],
   .dark .printable-card [class*="bg-slate-"],
-  .dark .printable-card [class*="bg-black"] {
+  .dark .printable-card [class*="bg-black"],
+  .print-modal-card [class*="bg-slate-"],
+  .print-modal-card [class*="bg-zinc-"],
+  .print-modal-card [class*="bg-neutral-"],
+  .print-modal-card [class*="bg-black"],
+  .print-modal-card [class*="bg-amber-"],
+  .print-modal-card [class*="bg-emerald-"],
+  .print-modal-card [class*="bg-red-"] {
     background-color: transparent !important;
+    background: transparent !important;
     color: #0f172a !important;
     border-color: #cbd5e1 !important;
     box-shadow: none !important;
@@ -304,16 +353,84 @@
 
   /* Section banners & headers */
   .bg-gradient-to-r,
-  .printable-card .bg-gradient-to-r {
-    background: #aa0505 !important;
+  .printable-card .bg-gradient-to-r,
+  .print-section-banner {
+    background: #000000 !important;
+    background-color: #000000 !important;
     color: #ffffff !important;
-    padding: 2.5px 6px !important;
+    padding: 3px 6px !important;
     font-size: 8pt !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
     margin-top: 6px !important;
     margin-bottom: 3px !important;
-    border-radius: 4px !important;
+    border-radius: 2px !important;
+    display: block !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+  }
+
+  /* Crisp Boxed Form Data Fields for Physical Ink-Friendly Printing */
+  .print-data-box {
+    border: 1px solid #94a3b8 !important;
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    padding: 2.5px 6px !important;
+    border-radius: 3px !important;
+    font-size: 7.5pt !important;
+    min-height: 22px !important;
+    display: flex !important;
+    align-items: center !important;
+    box-shadow: none !important;
+  }
+
+  .print-data-label {
+    font-size: 6.8pt !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.03em !important;
+    color: #475569 !important;
+    margin-bottom: 1px !important;
+    display: block !important;
+  }
+
+  .print-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    border: 1px solid #94a3b8 !important;
+  }
+
+  .print-table th {
+    background-color: #f1f5f9 !important;
+    color: #0f172a !important;
+    border: 1px solid #cbd5e1 !important;
+    padding: 2.5px 4px !important;
+    font-size: 7pt !important;
+    font-weight: bold !important;
+    text-align: left !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .print-table td {
+    border: 1px solid #cbd5e1 !important;
+    padding: 2.5px 4px !important;
+    font-size: 7pt !important;
+    color: #0f172a !important;
+    background: transparent !important;
+  }
+
+  .print-sig-box {
+    border: 1px dashed #94a3b8 !important;
+    background-color: #ffffff !important;
+    height: 48px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 7.5pt !important;
+    color: #334155 !important;
+    border-radius: 4px !important;
   }
 
   /* 📄 Explicit Page Break Utilities for Physical A4 Forms */
