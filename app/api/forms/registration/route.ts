@@ -8,9 +8,9 @@ export async function GET() {
     const records = await prisma.businessRegistration.findMany({
       orderBy: { createdAt: 'desc' },
     });
-    return NextResponse.json(records);
-  } catch (error) {
-    return NextResponse.json([]);
+    return NextResponse.json({ success: true, data: records });
+  } catch (error: any) {
+    return NextResponse.json({ success: false, data: [], error: error.message });
   }
 }
 

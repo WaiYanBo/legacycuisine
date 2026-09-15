@@ -22,23 +22,27 @@ export function RegistrationFormsView({ lang = 'ms' }: RegistrationFormsViewProp
     }
   }, [lang]);
 
+  const isEn = selectedLang === 'en';
+
   return (
     <div className="space-y-6 animate-fadeIn">
       {/* View Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-5 print:hidden">
         <div>
           <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
-            Registration & Forms Portal
+            {isEn ? 'Registration & Forms Portal' : 'Portal Pendaftaran & Borang'}
           </h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Official registration portal for Agent audit onboarding and Merchant storefront registrations.
+            {isEn
+              ? 'Official registration portal for Agent audit onboarding and Merchant storefront registrations.'
+              : 'Portal rasmi pendaftaran untuk audit onboarding ejen dan pendaftaran peniaga cawangan.'}
           </p>
         </div>
 
         {/* Language Selector Controls */}
         <div className="flex items-center gap-2 bg-white dark:bg-slate-900 p-1.5 rounded-xl border border-slate-200 dark:border-slate-800 self-start md:self-auto shadow-sm">
           <span className="text-xs font-bold text-slate-500 dark:text-slate-400 px-2 uppercase tracking-wider">
-            Language:
+            {isEn ? 'Language:' : 'Bahasa:'}
           </span>
           <button
             onClick={() => setSelectedLang('ms')}
@@ -86,10 +90,12 @@ export function RegistrationFormsView({ lang = 'ms' }: RegistrationFormsViewProp
           </div>
           <div>
             <h3 className={`font-bold text-base ${formType === 'agent' ? 'text-white' : 'text-slate-900 dark:text-white'}`}>
-              Borang Pendaftaran Ejen
+              {isEn ? 'Agent Registration Form' : 'Borang Pendaftaran Ejen'}
             </h3>
             <p className={`text-xs mt-1 ${formType === 'agent' ? 'text-red-100' : 'text-slate-500 dark:text-slate-400'}`}>
-              Rekod peribadi, perbankan, 5 peniaga didaftarkan & kaji selidik ejen
+              {isEn
+                ? 'Personal details, banking, 5 registered merchants & agent audit survey'
+                : 'Rekod peribadi, perbankan, 5 peniaga didaftarkan & kaji selidik ejen'}
             </p>
           </div>
         </button>
@@ -115,10 +121,12 @@ export function RegistrationFormsView({ lang = 'ms' }: RegistrationFormsViewProp
           </div>
           <div>
             <h3 className={`font-bold text-base ${formType === 'merchant' ? 'text-white' : 'text-slate-900 dark:text-white'}`}>
-              Pendaftaran Peniaga
+              {isEn ? 'Merchant Registration' : 'Pendaftaran Peniaga'}
             </h3>
             <p className={`text-xs mt-1 ${formType === 'merchant' ? 'text-red-100' : 'text-slate-500 dark:text-slate-400'}`}>
-              Borang onboarding profil kedai & muat naik gambar premis peniaga
+              {isEn
+                ? 'Store onboarding form, business profile & shop frontage photo'
+                : 'Borang onboarding profil kedai & muat naik gambar premis peniaga'}
             </p>
           </div>
         </button>
@@ -144,10 +152,12 @@ export function RegistrationFormsView({ lang = 'ms' }: RegistrationFormsViewProp
           </div>
           <div>
             <h3 className={`font-bold text-base ${formType === 'submissions' ? 'text-white' : 'text-slate-900 dark:text-white'}`}>
-              Rekod Penyerahan
+              {isEn ? 'Submission Records' : 'Rekod Penyerahan'}
             </h3>
             <p className={`text-xs mt-1 ${formType === 'submissions' ? 'text-red-100' : 'text-slate-500 dark:text-slate-400'}`}>
-              Lihat borang ejen & pendaftaran peniaga yang telah disimpan
+              {isEn
+                ? 'View saved agent audit forms & merchant registrations'
+                : 'Lihat borang ejen & pendaftaran peniaga yang telah disimpan'}
             </p>
           </div>
         </button>

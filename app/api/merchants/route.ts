@@ -6,6 +6,9 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
   try {
     const merchants = await prisma.merchant.findMany({
+      include: {
+        storefronts: true,
+      },
       orderBy: { businessName: 'asc' },
     });
     return NextResponse.json(merchants);
