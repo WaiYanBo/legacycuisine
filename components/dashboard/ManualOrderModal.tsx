@@ -450,8 +450,8 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
   if (!isOpen || !mounted) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[99999] w-screen h-screen flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden text-slate-900 dark:text-slate-100 relative">
+    <div className="fixed inset-0 z-[99999] w-full h-full flex items-center justify-center p-2.5 sm:p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[92dvh] flex flex-col overflow-hidden text-slate-900 dark:text-slate-100 relative">
         
         {/* Modal Header */}
         <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-slate-50/50 dark:bg-slate-950/50">
@@ -624,10 +624,10 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
                 </button>
               </div>
 
-              <div className="space-y-2 max-h-48 overflow-y-auto p-1">
+              <div className="space-y-2 max-h-56 overflow-y-auto p-1">
                 {lineItems.map((item, index) => (
-                  <div key={index} className="flex items-center gap-2 bg-slate-50 dark:bg-slate-950 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800">
-                    <div className="flex-1">
+                  <div key={index} className="flex flex-col sm:flex-row sm:items-center gap-2 bg-slate-50 dark:bg-slate-950 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800">
+                    <div className="flex-1 w-full">
                       <input
                         type="text"
                         placeholder={dict.itemNameLabel}
@@ -637,47 +637,49 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
                       />
                     </div>
 
-                    <div className="w-20">
-                      <input
-                        type="number"
-                        min="1"
-                        placeholder={dict.itemQtyLabel}
-                        value={item.quantity}
-                        onChange={(e) => handleLineItemChange(index, 'quantity', e.target.value)}
-                        className="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-md focus:outline-none focus:ring-1 focus:ring-red-600 text-center"
-                      />
-                    </div>
+                    <div className="flex items-center justify-between sm:justify-start gap-2 w-full sm:w-auto">
+                      <div className="w-20">
+                        <input
+                          type="number"
+                          min="1"
+                          placeholder={dict.itemQtyLabel}
+                          value={item.quantity}
+                          onChange={(e) => handleLineItemChange(index, 'quantity', e.target.value)}
+                          className="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-md focus:outline-none focus:ring-1 focus:ring-red-600 text-center"
+                        />
+                      </div>
 
-                    <div className="w-28 relative">
-                      <span className="absolute left-2.5 top-2 text-[11px] font-semibold text-slate-400 pointer-events-none">RM</span>
-                      <input
-                        type="number"
-                        step="0.01"
-                        placeholder={dict.itemPriceLabel}
-                        value={item.unitPrice}
-                        onChange={(e) => handleLineItemChange(index, 'unitPrice', e.target.value)}
-                        className="w-full pl-9 pr-2 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-md focus:outline-none focus:ring-1 focus:ring-red-600"
-                      />
-                    </div>
+                      <div className="w-28 relative">
+                        <span className="absolute left-2.5 top-2 text-[11px] font-semibold text-slate-400 pointer-events-none">RM</span>
+                        <input
+                          type="number"
+                          step="0.01"
+                          placeholder={dict.itemPriceLabel}
+                          value={item.unitPrice}
+                          onChange={(e) => handleLineItemChange(index, 'unitPrice', e.target.value)}
+                          className="w-full pl-9 pr-2 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-md focus:outline-none focus:ring-1 focus:ring-red-600"
+                        />
+                      </div>
 
-                    <div className="w-24 text-right pr-1">
-                      <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                        RM {((item.quantity || 0) * (item.unitPrice || 0)).toFixed(2)}
-                      </span>
-                    </div>
+                      <div className="w-24 text-right pr-1">
+                        <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                          RM {((item.quantity || 0) * (item.unitPrice || 0)).toFixed(2)}
+                        </span>
+                      </div>
 
-                    {lineItems.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveLineItem(index)}
-                        className="text-rose-500 hover:text-rose-700 p-1"
-                        title="Remove item"
-                      >
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                      </button>
-                    )}
+                      {lineItems.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveLineItem(index)}
+                          className="text-rose-500 hover:text-rose-700 p-1"
+                          title="Remove item"
+                        >
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>

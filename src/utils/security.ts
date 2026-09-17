@@ -47,6 +47,7 @@ export interface SessionPayload {
   id: string;
   username: string;
   fullName: string;
+  email?: string;
   department?: string;
   position?: string;
   permissions?: string[];
@@ -62,6 +63,7 @@ export function generateSessionToken(user: {
   id: string;
   username: string;
   fullName: string;
+  email?: string | null;
   role?: string;
   department?: string | null;
   position?: string | null;
@@ -82,6 +84,7 @@ export function generateSessionToken(user: {
     id: user.id,
     username: user.username,
     fullName: user.fullName,
+    email: user.email || undefined,
     department: user.department || 'Operations',
     position: user.position || 'Staff Member',
     permissions: parsedPermissions,

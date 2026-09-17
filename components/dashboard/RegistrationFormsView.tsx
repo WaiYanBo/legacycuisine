@@ -29,10 +29,10 @@ export function RegistrationFormsView({ lang = 'ms' }: RegistrationFormsViewProp
       {/* View Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-5 print:hidden">
         <div>
-          <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
-            {isEn ? 'Registration & Forms Portal' : 'Portal Pendaftaran & Borang'}
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+            {isEn ? 'Registration Portal' : 'Portal Pendaftaran'}
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
             {isEn
               ? 'Official registration portal for Agent audit onboarding and Merchant storefront registrations.'
               : 'Portal rasmi pendaftaran untuk audit onboarding ejen dan pendaftaran peniaga cawangan.'}
@@ -68,11 +68,11 @@ export function RegistrationFormsView({ lang = 'ms' }: RegistrationFormsViewProp
       </div>
 
       {/* Form Type Selection Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 print:hidden">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 print:hidden">
         {/* AGENT FORM CARD */}
         <button
           onClick={() => setFormType('agent')}
-          className={`p-5 rounded-2xl border text-left transition-all flex flex-col justify-between ${
+          className={`p-4 sm:p-5 rounded-2xl border text-left transition-all flex flex-col justify-between ${
             formType === 'agent'
               ? 'bg-gradient-to-r from-red-600 to-red-700 text-white shadow-md shadow-red-600/25 border-red-600'
               : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-700 dark:hover:text-red-400 hover:border-red-200 dark:hover:border-red-900'
@@ -103,7 +103,7 @@ export function RegistrationFormsView({ lang = 'ms' }: RegistrationFormsViewProp
         {/* MERCHANT FORM CARD */}
         <button
           onClick={() => setFormType('merchant')}
-          className={`p-5 rounded-2xl border text-left transition-all flex flex-col justify-between ${
+          className={`p-4 sm:p-5 rounded-2xl border text-left transition-all flex flex-col justify-between ${
             formType === 'merchant'
               ? 'bg-gradient-to-r from-red-600 to-red-700 text-white shadow-md shadow-red-600/25 border-red-600'
               : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-700 dark:hover:text-red-400 hover:border-red-200 dark:hover:border-red-900'
@@ -134,7 +134,7 @@ export function RegistrationFormsView({ lang = 'ms' }: RegistrationFormsViewProp
         {/* SUBMISSIONS CARD */}
         <button
           onClick={() => setFormType('submissions')}
-          className={`p-5 rounded-2xl border text-left transition-all flex flex-col justify-between ${
+          className={`p-4 sm:p-5 rounded-2xl border text-left transition-all flex flex-col justify-between ${
             formType === 'submissions'
               ? 'bg-gradient-to-r from-red-600 to-red-700 text-white shadow-md shadow-red-600/25 border-red-600'
               : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-700 dark:hover:text-red-400 hover:border-red-200 dark:hover:border-red-900'
