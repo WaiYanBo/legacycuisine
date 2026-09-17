@@ -8,7 +8,7 @@
   },
   "checklist": {
     "badge": "Foodpanda, GrabFood & ShopeeFood Malaysia",
-    "title": "MERCHANT RECRUITMENT & REGISTRATION CHECKLIST",
+    "title": "MERCHANT REGISTRATION",
     "subtitle": "Checklist for screening, document collection, menu preparation, submission readiness and follow-up.",
     "purposeNoticeTitle": "Purpose of this checklist:",
     "purposeNoticeBody": "Use this form before submitting any merchant application. Tick YES only when you have verified the item or seen clear supporting evidence. Tick NO when the item is missing or fails the requirement. Tick N/A only when it genuinely does not apply.",
@@ -153,10 +153,10 @@
     },
     "rbacMatrix": {
       "title": "Roles & Access Permissions (RBAC)",
-      "superAdmin": "SUPER_ADMIN: Full unrestricted access to Financial Ledger, Storefront Invoicing, Submissions, User Management, and System Settings.",
-      "manager": "MANAGER: Access to Storefront Reconciliations, Financial Analytics, Statement Generation, and Registration Submissions.",
-      "staff": "STAFF / OPERATOR: Access to Registration & Forms Portal, Submission Records, and Manual Order Ingestion.",
-      "agent": "AGENT: Access to Public Agent & Merchant registration forms."
+      "superAdmin": "SUPER_ADMIN: Full unrestricted access to Financial Ledger, Price Settings, Invoicing, Forms, and Staff Management.",
+      "manager": "MANAGER: Access to Reconciliation, Margin Analytics, Invoice Generation, and Form Submissions.",
+      "staff": "STAFF / OPERATOR: Access to Registration Portal, Submission Records, and Manual Order Ingestion.",
+      "agent": "AGENT: Access to Agent Registration Form & Merchant Checklist."
     },
     "tabs": {
       "profile": "My Profile & Security",
@@ -283,7 +283,7 @@
       "brandSubtitle": "Reconciliations",
       "navDashboard": "Dashboard",
       "navAnalytics": "Analytics",
-      "navRegistration": "Registration & Forms",
+      "navRegistration": "Registration",
       "navSettings": "Settings & Access",
       "logout": "Logout",
       "lightMode": "Light Mode",

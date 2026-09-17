@@ -10,6 +10,7 @@ interface AnalyticsViewProps {
 }
 
 export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ metrics, loading, lang = 'en' }) => {
+  const isEn = lang === 'en';
   const dict = getDictionary(lang).analytics;
 
   const formatCurrency = (val: number) => {
@@ -32,38 +33,38 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ metrics, loading, 
   if (loading) {
     return (
       <div className="space-y-6 animate-pulse">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {[1, 2, 3, 4].map((n) => (
-            <div key={n} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 h-28"></div>
+            <div key={n} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-6 h-28"></div>
           ))}
         </div>
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 h-80"></div>
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-6 h-80"></div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-8 animate-fadeIn">
+    <div className="space-y-6 sm:space-y-8 animate-fadeIn">
       {/* Analytics Insight Row */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {/* Margin Rate Card */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm text-slate-900 dark:text-white">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-6 shadow-sm text-slate-900 dark:text-white">
           <span className="text-xs font-extrabold tracking-wider text-slate-500 dark:text-slate-400 uppercase">{dict.cards.grossMargin}</span>
-          <h2 className="text-3xl font-black text-red-600 dark:text-red-400 mt-2">{marginRate.toFixed(1)}%</h2>
+          <h2 className="text-2xl sm:text-3xl font-black text-red-600 dark:text-red-400 mt-2 truncate">{marginRate.toFixed(1)}%</h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{dict.cards.grossMarginDesc}</p>
         </div>
 
         {/* Total Orders Ingested */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm text-slate-900 dark:text-white">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-6 shadow-sm text-slate-900 dark:text-white">
           <span className="text-xs font-extrabold tracking-wider text-slate-500 dark:text-slate-400 uppercase">{dict.cards.totalOrders}</span>
-          <h2 className="text-3xl font-black text-slate-900 dark:text-white mt-2">{totalOrdersCount}</h2>
+          <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mt-2 truncate">{totalOrdersCount}</h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{dict.cards.totalOrdersDesc}</p>
         </div>
 
         {/* Avg Payout Card */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm text-slate-900 dark:text-white">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-6 shadow-sm text-slate-900 dark:text-white">
           <span className="text-xs font-extrabold tracking-wider text-slate-500 dark:text-slate-400 uppercase">{dict.cards.avgProfit}</span>
-          <h2 className="text-3xl font-black text-slate-900 dark:text-white mt-2">
+          <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mt-2 truncate">
             {metrics?.storefrontsPerformance && metrics.storefrontsPerformance.length > 0
               ? formatCurrency(profit / metrics.storefrontsPerformance.length)
               : 'RM 0.00'}
@@ -72,9 +73,9 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ metrics, loading, 
         </div>
 
         {/* Total Revenue */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm text-slate-900 dark:text-white">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-6 shadow-sm text-slate-900 dark:text-white">
           <span className="text-xs font-extrabold tracking-wider text-slate-500 dark:text-slate-400 uppercase">{dict.cards.totalIngestion}</span>
-          <h2 className="text-3xl font-black text-slate-900 dark:text-white mt-2">{formatCurrency(revenue)}</h2>
+          <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mt-2 truncate">{formatCurrency(revenue)}</h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{dict.cards.totalIngestionDesc}</p>
         </div>
       </div>
@@ -85,10 +86,17 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ metrics, loading, 
       </div>
 
       {/* Storefront Rankings Grid */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm text-slate-900 dark:text-white">
-        <div className="mb-6">
-          <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">{dict.rankings.title}</h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{dict.rankings.subtitle}</p>
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-6 shadow-sm text-slate-900 dark:text-white min-w-0">
+        <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight">{dict.rankings.title}</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{dict.rankings.subtitle}</p>
+          </div>
+          <div className="text-[11px] text-slate-400 font-medium sm:hidden flex items-center gap-1">
+            <span>👈</span>
+            <span>{isEn ? 'Swipe horizontally to view all columns' : 'Leret mendatar untuk melihat semua kolum'}</span>
+            <span>👉</span>
+          </div>
         </div>
 
         {(!metrics?.storefrontsPerformance || metrics.storefrontsPerformance.length === 0) ? (
@@ -96,8 +104,8 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ metrics, loading, 
             {dict.rankings.noData}
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+          <div className="overflow-x-auto rounded-xl border border-slate-100 dark:border-slate-800">
+            <table className="w-full text-left border-collapse min-w-[620px]">
               <thead>
                 <tr className="border-b border-slate-200 dark:border-slate-800 text-[11px] font-extrabold tracking-wider text-slate-500 dark:text-slate-400 uppercase">
                   <th className="py-3.5 px-4">{dict.rankings.colStorefront}</th>

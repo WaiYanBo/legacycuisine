@@ -8,7 +8,7 @@
   },
   "checklist": {
     "badge": "Foodpanda, GrabFood & ShopeeFood Malaysia",
-    "title": "SENARAI SEMAK PEREKRUTAN & PENDAFTARAN MERCHANT",
+    "title": "PENDAFTARAN PENIAGA",
     "subtitle": "Senarai semak untuk saringan, pengumpulan dokumen, penyediaan menu, kesiapsiagaan penghantaran permohonan dan tindakan susulan.",
     "purposeNoticeTitle": "Tujuan senarai semak ini:",
     "purposeNoticeBody": "Gunakan borang ini sebelum menghantar sebarang permohonan merchant. Tandakan YA hanya apabila anda telah mengesahkan perkara tersebut atau melihat bukti sokongan yang jelas. Tandakan TIDAK apabila perkara itu tiada atau tidak memenuhi syarat. Tandakan T/B (Tidak Berkenaan) hanya apabila perkara tersebut benar-benar tidak berkenaan.",
@@ -155,7 +155,7 @@
       "title": "Peranan & Hak Akses (RBAC)",
       "superAdmin": "SUPER_ADMIN: Akses penuh tanpa had kepada Lejar Kewangan, Penetapan Harga, Invois, Borang, dan Pengurusan Staf.",
       "manager": "MANAGER: Akses kepada Rekonsiliasi, Analitik Margin, Penjanaan Invois, dan Submisi Borang.",
-      "staff": "STAFF / OPERATOR: Akses kepada Portal Pendaftaran & Borang, Semakan Submisi, dan Input Pesanan Manual.",
+      "staff": "STAFF / OPERATOR: Akses kepada Portal Pendaftaran, Semakan Submisi, dan Input Pesanan Manual.",
       "agent": "AGENT: Akses kepada Borang Pendaftaran Ejen & Senarai Semak Peniaga."
     },
     "tabs": {
@@ -283,7 +283,7 @@
       "brandSubtitle": "Rekonsiliasi",
       "navDashboard": "Papan Pemuka",
       "navAnalytics": "Analisis Kewangan",
-      "navRegistration": "Pendaftaran & Borang",
+      "navRegistration": "Pendaftaran",
       "navSettings": "Tetapan & Akses",
       "logout": "Log Keluar",
       "lightMode": "Mod Cerah",

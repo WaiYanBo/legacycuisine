@@ -43,13 +43,13 @@ export const ProfitChart: React.FC<ProfitChartProps> = ({ data = [], lang = 'en'
   }
 
   return (
-    <div className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm text-slate-900 dark:text-white">
+    <div className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-6 shadow-sm text-slate-900 dark:text-white min-w-0 overflow-hidden">
       <div className="mb-4">
-        <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">{dict.title}</h3>
+        <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight">{dict.title}</h3>
         <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{dict.subtitle}</p>
       </div>
 
-      <div className="h-80 w-full">
+      <div className="h-64 sm:h-80 w-full min-w-0">
         {data.length === 0 ? (
           <div className="h-full flex items-center justify-center border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl text-slate-400 text-xs">
             {dict.noData}
@@ -58,7 +58,7 @@ export const ProfitChart: React.FC<ProfitChartProps> = ({ data = [], lang = 'en'
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={data}
-              margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
+              margin={{ top: 10, right: 5, left: -20, bottom: 0 }}
             >
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" strokeOpacity={0.5} />
               <XAxis 

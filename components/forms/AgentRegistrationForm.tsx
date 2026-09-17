@@ -27,6 +27,7 @@ export default function AgentRegistrationForm({ lang = 'ms' }: AgentRegistration
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [agentNo, setAgentNo] = useState('');
   const [agentName, setAgentName] = useState('');
+  const [email, setEmail] = useState('');
   const [icNumber, setIcNumber] = useState('');
   const [race, setRace] = useState(isEn ? 'Malay' : 'Melayu');
   const [religion, setReligion] = useState(isEn ? 'Islam' : 'Islam');
@@ -47,12 +48,9 @@ export default function AgentRegistrationForm({ lang = 'ms' }: AgentRegistration
     { bil: 5, namaPeniaga: '', platform: 'ShopeeFood', tarikhDidaftarkan: '', catatan: '' },
   ]);
 
-  // 4. Bahagian Kaji Selidik / Survey Section
-  const [prospectSource, setProspectSource] = useState(isEn ? 'Referral' : 'Rujukan');
-  const [prospectSourceOther, setProspectSourceOther] = useState('');
-  const [approachedByOtherAgents, setApproachedByOtherAgents] = useState(isEn ? 'No' : 'Tidak');
-  const [confidenceLevel, setConfidenceLevel] = useState(isEn ? 'High' : 'Tinggi');
-  const [estimatedDuration, setEstimatedDuration] = useState(isEn ? '1-3 Days' : '1-3 Hari');
+  // 4. Pengakuan Ejen & Terma Perkhidmatan / Declaration & Terms of Engagement
+  const [agreedToTerms, setAgreedToTerms] = useState(true);
+  const [showTermsModal, setShowTermsModal] = useState(false);
 
   // 5. Pengesahan & Tandatangan / Confirmation & Signature
   const [agentSignatureName, setAgentSignatureName] = useState('');
@@ -70,6 +68,15 @@ export default function AgentRegistrationForm({ lang = 'ms' }: AgentRegistration
     e.preventDefault();
     setSuccessMsg('');
     setErrorMsg('');
+    if (!agreedToTerms) {
+      setErrorMsg(
+        isEn
+          ? 'Please read and check the Declaration & Terms of Engagement confirmation box.'
+          : 'Sila baca dan tanda kotak pengesahan Pengakuan & Terma Perkhidmatan Ejen.'
+      );
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -77,6 +84,7 @@ export default function AgentRegistrationForm({ lang = 'ms' }: AgentRegistration
         date,
         agentNo,
         agentName,
+        email: email.trim().toLowerCase(),
         icNumber,
         race,
         religion,
@@ -86,11 +94,11 @@ export default function AgentRegistrationForm({ lang = 'ms' }: AgentRegistration
         bankName,
         bankAccountNumber,
         registeredMerchants: JSON.stringify(merchants),
-        prospectSource,
-        prospectSourceOther,
-        approachedByOtherAgents,
-        confidenceLevel,
-        estimatedDuration,
+        prospectSource: 'Declaration Signed & Confirmed',
+        prospectSourceOther: null,
+        approachedByOtherAgents: 'Tidak',
+        confidenceLevel: 'Tinggi',
+        estimatedDuration: 'Completed',
         agentSignature: agentSignatureName,
         supervisorName,
         supervisorDate,
@@ -110,8 +118,8 @@ export default function AgentRegistrationForm({ lang = 'ms' }: AgentRegistration
 
       setSuccessMsg(
         isEn
-          ? 'Agent Registration Form submitted and saved successfully!'
-          : 'Borang Pendaftaran Ejen berjaya dihantar dan disimpan!'
+          ? `Agent Registration submitted successfully! Portal account created for ${email}. You may log in with default password: Default123!`
+          : `Borang Pendaftaran Ejen berjaya dihantar! Akaun portal telah dicipta untuk ${email}. Anda boleh log masuk dengan kata laluan lalai: Default123!`
       );
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err: any) {
@@ -122,14 +130,14 @@ export default function AgentRegistrationForm({ lang = 'ms' }: AgentRegistration
   };
 
   return (
-    <div className="max-w-4xl mx-auto bg-white dark:bg-[#0d1117] text-slate-900 dark:text-slate-100 p-6 sm:p-10 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800 print:border-none print:shadow-none print:p-0 printable-card">
+    <div className="max-w-4xl mx-auto bg-white dark:bg-[#0d1117] text-slate-900 dark:text-slate-100 p-4 sm:p-8 md:p-10 rounded-2xl sm:rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800 print:border-none print:shadow-none print:p-0 printable-card">
 
       {/* 📄 DOCUMENT HEADER */}
-      <div className="border-b-2 border-red-600 pb-6 mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 print-doc-header">
+      <div className="border-b-2 border-red-600 pb-5 mb-6 sm:mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 print-doc-header">
         <div>
           <div className="flex items-center gap-3 mb-2">
             <div className="inline-block px-3 py-1 bg-red-600 text-white font-extrabold text-xs tracking-widest rounded-md uppercase">
-              {isEn ? 'AGENT FORM' : 'BORANG EJEN'}
+              {isEn ? 'AGENT REGISTRATION' : 'PENDAFTARAN EJEN'}
             </div>
             <button
               type="button"
@@ -141,7 +149,7 @@ export default function AgentRegistrationForm({ lang = 'ms' }: AgentRegistration
             </button>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">
-            {isEn ? 'MERCHANT RECRUITMENT & REGISTRATION CHECKLIST' : 'SENARAI SEMAK PEREKRUTAN & PENDAFTARAN PENIAGA'}
+            {isEn ? 'AGENT REGISTRATION' : 'PENDAFTARAN EJEN'}
           </h1>
           <p className="text-sm font-bold text-red-600 dark:text-red-400 mt-1">
             Foodpanda, GrabFood and ShopeeFood — Malaysia
@@ -153,7 +161,7 @@ export default function AgentRegistrationForm({ lang = 'ms' }: AgentRegistration
           </p>
         </div>
 
-        <div className="w-20 h-20 sm:w-24 sm:h-24 shrink-0 rounded-full bg-white p-2.5 flex items-center justify-center border-2 border-red-600 shadow-md ring-4 ring-red-600/15 transition-transform hover:scale-105 print-logo-container">
+        <div className="w-16 h-16 sm:w-24 sm:h-24 shrink-0 rounded-full bg-white p-2 sm:p-2.5 flex items-center justify-center border-2 border-red-600 shadow-md ring-4 ring-red-600/15 transition-transform hover:scale-105 print-logo-container self-end md:self-center">
           <Image src="/logo-circle.png" alt="Legacy Cuisine Logo" width={96} height={96} className="object-contain w-full h-full" priority />
         </div>
       </div>
@@ -221,6 +229,28 @@ export default function AgentRegistrationForm({ lang = 'ms' }: AgentRegistration
               onChange={(e) => setAgentName(e.target.value)}
               className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600 transition-all"
             />
+          </div>
+
+          <div className="md:col-span-2">
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
+              {isEn ? 'Email Address (For Portal Login) *' : 'Alamat E-mel (Untuk Log Masuk Portal) *'}
+            </label>
+            <input
+              type="email"
+              required
+              placeholder={isEn ? 'agent@legacycuisine.com' : 'ejen@legacycuisine.com'}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600 transition-all"
+            />
+            <p className="text-[11px] text-red-600 dark:text-red-400 font-medium mt-1 flex items-center gap-1.5">
+              <span>ℹ️</span>
+              <span>
+                {isEn
+                  ? 'This email will be your portal login username with initial default password: Default123!'
+                  : 'E-mel ini akan digunakan sebagai nama pengguna log masuk portal dengan kata laluan lalai: Default123!'}
+              </span>
+            </p>
           </div>
 
           <div>
@@ -358,7 +388,7 @@ export default function AgentRegistrationForm({ lang = 'ms' }: AgentRegistration
         </div>
 
         <div className="overflow-x-auto print:overflow-visible rounded-2xl border border-slate-200 dark:border-slate-800 print:border-slate-300">
-          <table className="w-full text-left text-xs text-slate-800 dark:text-slate-200 print:text-black">
+          <table className="w-full min-w-[620px] text-left text-xs text-slate-800 dark:text-slate-200 print:text-black">
             <thead className="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-white font-bold uppercase tracking-wider border-b border-slate-200 dark:border-slate-800">
               <tr>
                 <th className="py-3 px-3 w-12 text-center">{isEn ? 'No.' : 'Bil.'}</th>
@@ -422,108 +452,57 @@ export default function AgentRegistrationForm({ lang = 'ms' }: AgentRegistration
         {/* PAGE 2 BLOCK: SECTION 4 & SECTION 5 (UNIFIED PAGE BLOCK) */}
         {/* ------------------------------------------------------------- */}
         <div className="print-break-before break-inside-avoid section-block">
-          {/* SECTION 4: SURVEY SECTION */}
+          {/* SECTION 4: AGENT'S DECLARATION / SEKSYEN 4: PENGAKUAN EJEN */}
           <div className="bg-gradient-to-r from-red-600 to-red-700 text-white p-3 rounded-xl font-extrabold text-sm uppercase tracking-wider shadow-sm mt-8">
-            {isEn ? 'SURVEY SECTION' : 'BAHAGIAN KAJI SELIDIK'}
+            {isEn ? "SECTION 4: AGENT'S DECLARATION" : 'SEKSYEN 4: PENGAKUAN EJEN'}
           </div>
 
-          <div className="space-y-5 bg-slate-50 dark:bg-slate-950/60 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 text-xs mt-3">
-            {/* Question 1 */}
-            <div>
-              <label className="block font-bold text-slate-800 dark:text-slate-200 mb-2">
-                {isEn ? '1. Source of this merchant prospect:' : '1. Sumber prospek peniaga ini:'}
-              </label>
-              <div className="flex flex-wrap gap-4">
-                {(isEn
-                  ? ['Referral', 'Own Visit', 'Social Media', 'Other']
-                  : ['Rujukan', 'Lawatan Sendiri', 'Media Sosial', 'Lain-lain']
-                ).map((option) => (
-                  <label key={option} className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="prospectSource"
-                      value={option}
-                      checked={prospectSource === option}
-                      onChange={(e) => setProspectSource(e.target.value)}
-                      className="accent-red-600"
-                    />
-                    <span>{option}</span>
-                  </label>
-                ))}
-              </div>
-              {(prospectSource === 'Other' || prospectSource === 'Lain-lain') && (
-                <input
-                  type="text"
-                  placeholder={isEn ? 'Specify other source...' : 'Nyatakan sumber lain...'}
-                  value={prospectSourceOther}
-                  onChange={(e) => setProspectSourceOther(e.target.value)}
-                  className="mt-2 w-full max-w-md px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs focus:ring-1 focus:ring-red-600"
-                />
+          <div className="bg-slate-50 dark:bg-slate-950/60 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 text-xs mt-3 space-y-3">
+            <p className="text-slate-700 dark:text-slate-300 leading-relaxed text-xs">
+              {isEn ? (
+                <>
+                  I hereby solemnly declare that all personal particulars, banking information, and registered merchants submitted in this form are true, accurate, and complete to the best of my knowledge. I confirm that I have read, understood, and agreed to be bound by the official{' '}
+                  <button
+                    type="button"
+                    onClick={() => setShowTermsModal(true)}
+                    className="font-black text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 underline decoration-red-500/50 hover:decoration-red-600 underline-offset-2 transition-colors inline-flex items-center gap-1 cursor-pointer print:text-black print:no-underline"
+                  >
+                    <span>Terms &amp; Conditions of Engagement</span>
+                    <span className="text-[10px] print:hidden">↗</span>
+                  </button>{' '}
+                  and the Company&apos;s Code of Conduct &amp; Confidentiality Policies under the Personal Data Protection Act 2010.
+                </>
+              ) : (
+                <>
+                  Saya dengan sesungguhnya memperakui bahawa semua butiran peribadi, maklumat perbankan, dan senarai peniaga yang dikemukakan dalam borang ini adalah benar, tepat, dan lengkap setakat pengetahuan saya. Saya mengesahkan bahawa saya telah membaca, memahami, dan bersetuju untuk terikat dengan{' '}
+                  <button
+                    type="button"
+                    onClick={() => setShowTermsModal(true)}
+                    className="font-black text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 underline decoration-red-500/50 hover:decoration-red-600 underline-offset-2 transition-colors inline-flex items-center gap-1 cursor-pointer print:text-black print:no-underline"
+                  >
+                    <span>Terma &amp; Syarat Pelantikan Ejen</span>
+                    <span className="text-[10px] print:hidden">↗</span>
+                  </button>{' '}
+                  serta Kod Etika &amp; Dasar Kerahsiaan Syarikat di bawah Akta Perlindungan Data Peribadi 2010.
+                </>
               )}
-            </div>
+            </p>
 
-            {/* Question 2 */}
-            <div>
-              <label className="block font-bold text-slate-800 dark:text-slate-200 mb-2">
-                {isEn
-                  ? '2. Has this merchant been approached by another agent before?'
-                  : '2. Pernahkah peniaga ini didekati oleh ejen lain sebelum ini?'}
+            <div className="pt-2.5 border-t border-slate-200 dark:border-slate-800">
+              <label className="flex items-start gap-2.5 cursor-pointer">
+                <input
+                  type="checkbox"
+                  required
+                  checked={agreedToTerms}
+                  onChange={(e) => setAgreedToTerms(e.target.checked)}
+                  className="mt-0.5 accent-red-600 w-4 h-4 shrink-0 cursor-pointer"
+                />
+                <span className="font-bold text-slate-900 dark:text-white text-xs leading-snug">
+                  {isEn
+                    ? 'I agree to the Terms & Conditions and solemnly confirm this Declaration.'
+                    : 'Saya bersetuju dengan Terma & Syarat serta mengesahkan Pengakuan ini.'}
+                </span>
               </label>
-              <div className="flex gap-6">
-                {(isEn ? ['Yes', 'No', 'Unsure'] : ['Ya', 'Tidak', 'Tidak Pasti']).map((option) => (
-                  <label key={option} className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="approachedByOtherAgents"
-                      value={option}
-                      checked={approachedByOtherAgents === option}
-                      onChange={(e) => setApproachedByOtherAgents(e.target.value)}
-                      className="accent-red-600"
-                    />
-                    <span>{option}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Question 3 */}
-            <div>
-              <label className="block font-bold text-slate-800 dark:text-slate-200 mb-2">
-                {isEn
-                  ? '3. Your confidence level in the success of this registration:'
-                  : '3. Tahap keyakinan anda terhadap kejayaan pendaftaran ini:'}
-              </label>
-              <div className="flex gap-6">
-                {(isEn ? ['High', 'Moderate', 'Low'] : ['Tinggi', 'Sederhana', 'Rendah']).map((option) => (
-                  <label key={option} className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="confidenceLevel"
-                      value={option}
-                      checked={confidenceLevel === option}
-                      onChange={(e) => setConfidenceLevel(e.target.value)}
-                      className="accent-red-600"
-                    />
-                    <span>{option}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Question 4 */}
-            <div>
-              <label className="block font-bold text-slate-800 dark:text-slate-200 mb-1">
-                {isEn
-                  ? '4. Estimated period from the first visit to successful registration:'
-                  : '4. Anggaran tempoh dari lawatan pertama ke pendaftaran berjaya:'}
-              </label>
-              <input
-                type="text"
-                placeholder={isEn ? 'e.g. 3 Days / 1 Week' : 'Contoh: 3 Hari / 1 Minggu'}
-                value={estimatedDuration}
-                onChange={(e) => setEstimatedDuration(e.target.value)}
-                className="w-full max-w-md px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs focus:ring-1 focus:ring-red-600"
-              />
             </div>
           </div>
 
@@ -625,6 +604,122 @@ export default function AgentRegistrationForm({ lang = 'ms' }: AgentRegistration
         </div>
 
       </form>
+
+      {/* 📜 TERMS & CONDITIONS TEMPLATE MODAL (HIDDEN ON PRINT) */}
+      {showTermsModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/75 backdrop-blur-sm overflow-y-auto animate-fadeIn print:hidden">
+          <div className="max-w-2xl w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 sm:p-7 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto text-slate-900 dark:text-slate-100">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+              <div>
+                <span className="text-[10px] font-black uppercase tracking-wider text-red-600 dark:text-red-400">
+                  {isEn ? 'Official Legal Document' : 'Dokumen Perundangan Rasmi'}
+                </span>
+                <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white">
+                  {isEn ? 'Agent Terms & Conditions of Engagement' : 'Terma & Syarat Pelantikan Ejen Medan'}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowTermsModal(false)}
+                className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-red-50 text-slate-500 hover:text-red-600 flex items-center justify-center font-bold text-sm"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Clauses */}
+            <div className="space-y-3 text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+              {isEn ? (
+                <>
+                  <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800">
+                    <strong className="text-slate-900 dark:text-white block mb-1">1. Independent Contractor & Representation</strong>
+                    The Agent is engaged as an independent merchant acquisition contractor for Legacy Cuisine Group and associated food delivery aggregator platforms (Foodpanda, GrabFood, ShopeeFood). This agreement does not establish an employment, joint venture, or partnership relationship.
+                  </div>
+
+                  <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800">
+                    <strong className="text-slate-900 dark:text-white block mb-1">2. Merchant Onboarding & Code of Conduct</strong>
+                    The Agent warrants that all merchant information, business addresses, SSM registration details, and banking particulars submitted are authentic, truthful, and obtained directly with the merchant&apos;s explicit consent. Submitting forged documents or false registrations is strictly prohibited and constitutes legal fraud.
+                  </div>
+
+                  <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800">
+                    <strong className="text-slate-900 dark:text-white block mb-1">3. Confidentiality & PDPA 2010 Compliance (Act 709)</strong>
+                    All personal data, merchant commercial documents, and trade information collected in the performance of duties must be handled in strict compliance with the Personal Data Protection Act 2010. The Agent shall maintain strict confidentiality and shall not disclose or sell merchant information to any unauthorized third party.
+                  </div>
+
+                  <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800">
+                    <strong className="text-slate-900 dark:text-white block mb-1">4. Commission Disbursement & Audit Verification</strong>
+                    Commission payments are contingent upon compliance audit approval and successful merchant storefront activation. Payouts are made directly to the registered banking account detailed in Section 2. The Company reserves the right to withhold or claw back commissions on accounts found to be inactive or non-compliant.
+                  </div>
+
+                  <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800">
+                    <strong className="text-slate-900 dark:text-white block mb-1">5. Non-Circumvention & Termination</strong>
+                    The Company reserves the right to terminate agent portal access immediately upon notice for breach of ethics, submission of unverified entities, or breach of aggregator guidelines.
+                  </div>
+
+                  {/* CUSTOMIZABLE TEMPLATE SLOT */}
+                  <div className="p-3 bg-red-50/60 dark:bg-red-950/20 rounded-xl border border-dashed border-red-300 dark:border-red-900">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-red-600 text-white">Template Clause / Terma Templat</span>
+                      <strong className="text-red-900 dark:text-red-200">6. Additional Company Terms & Specific Policies</strong>
+                    </div>
+                    <p className="text-slate-600 dark:text-slate-400 italic">
+                      [INSERT CUSTOM COMPANY TERMS, PERFORMANCE TARGETS, EXCLUSIVITY RULES, OR REGIONAL OPERATING GUIDELINES HERE AS NEEDED]
+                    </p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800">
+                    <strong className="text-slate-900 dark:text-white block mb-1">1. Pelantikan Kontraktor Bebas & Perwakilan</strong>
+                    Ejen dilantik atas kapasiti kontraktor bebas bagi pengambilan peniaga di bawah Legacy Cuisine Group dan platform agregator berkaitan (Foodpanda, GrabFood, ShopeeFood). Pelantikan ini tidak mewujudkan hubungan majikan-pekerja, perkongsian perniagaan, atau liabiliti statutori pekerjaan.
+                  </div>
+
+                  <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800">
+                    <strong className="text-slate-900 dark:text-white block mb-1">2. Pendaftaran Peniaga & Kod Etika Integriti</strong>
+                    Ejen menjamin bahawa semua maklumat peniaga, alamat kedai, dokumen pendaftaran SSM, dan maklumat akaun bank yang diserahkan adalah tulen, sah, dan disahkan terus bersama pemilik perniagaan. Sebarang pemalsuan tandatangan atau maklumat palsu adalah dilarang sama sekali.
+                  </div>
+
+                  <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800">
+                    <strong className="text-slate-900 dark:text-white block mb-1">3. Kerahsiaan & Pematuhan Akta PDPA 2010 (Akta 709)</strong>
+                    Semua data peribadi, nombor telefon, dan dokumen perniagaan yang diperoleh semasa proses onboarding adalah sulit dan dilindungi di bawah Akta Perlindungan Data Peribadi 2010. Ejen bertanggungjawab menjaga kerahsiaan data dan dilarang mendedahkan maklumat kepada pihak luar.
+                  </div>
+
+                  <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800">
+                    <strong className="text-slate-900 dark:text-white block mb-1">4. Pembayaran Komisen & Semakan Audit</strong>
+                    Komisen hanya akan dibayar setelah permohonan peniaga diluluskan oleh pihak audit serta premis berjaya diaktifkan dalam sistem. Pembayaran akan dikreditkan ke akaun bank yang dinyatakan dalam Seksyen 2.
+                  </div>
+
+                  <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800">
+                    <strong className="text-slate-900 dark:text-white block mb-1">5. Pembatalan & Penamatan Perkhidmatan</strong>
+                    Syarikat berhak menamatkan akses portal ejen serta-merta tanpa notis sekiranya didapati melanggar kod etika atau melakukan manipulasi data.
+                  </div>
+
+                  {/* CUSTOMIZABLE TEMPLATE SLOT */}
+                  <div className="p-3 bg-red-50/60 dark:bg-red-950/20 rounded-xl border border-dashed border-red-300 dark:border-red-900">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-red-600 text-white">Template Clause / Terma Templat</span>
+                      <strong className="text-red-900 dark:text-red-200">6. Terma Tambahan Syarikat & Polisi Khusus</strong>
+                    </div>
+                    <p className="text-slate-600 dark:text-slate-400 italic">
+                      [MASUKKAN TERMA KHUSUS SYARIKAT, SASARAN PRESTASI (KPI), SYARAT EKSKLUSIF, ATAU PANDUAN KAWASAN OPERASI DI SINI MENGIKUT KEPERLUAN SEMASA]
+                    </p>
+                  </div>
+                </>
+              )}
+            </div>
+
+            <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setShowTermsModal(false)}
+                className="px-5 py-2.5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-extrabold text-xs rounded-xl shadow-md transition-all"
+              >
+                {isEn ? 'Close & Return to Form' : 'Tutup & Kembali ke Borang'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

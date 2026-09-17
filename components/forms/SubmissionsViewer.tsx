@@ -157,9 +157,9 @@ export default function SubmissionsViewer({ lang = 'en' }: SubmissionsViewerProp
       {/* Outer Submissions List View: Hidden during print if a form modal is being viewed */}
       <div className={viewingForm ? 'print:hidden' : ''}>
         {/* Title Header Card */}
-        <div className="bg-white dark:bg-[#0d1117] border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 mb-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-slate-900 dark:text-slate-100">
+        <div className="bg-white dark:bg-[#0d1117] border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-4 sm:p-8 mb-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-slate-900 dark:text-slate-100">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">{dict.title}</h1>
+          <h1 className="text-xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">{dict.title}</h1>
           <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm mt-1">
             {dict.subtitle}
           </p>
@@ -173,12 +173,11 @@ export default function SubmissionsViewer({ lang = 'en' }: SubmissionsViewerProp
         </button>
       </div>
 
-      {/* Tabs Navigation */}
-      {/* Tabs Navigation */}
-      <div className="flex flex-wrap gap-3 mb-6">
+      {/* Tabs Navigation (Horizontally scrollable on mobile) */}
+      <div className="flex overflow-x-auto no-scrollbar pb-1 sm:flex-wrap gap-2 sm:gap-3 mb-6">
         <button
           onClick={() => setActiveTab('agents')}
-          className={`px-5 py-2.5 rounded-xl font-bold text-xs tracking-wider transition-all border ${
+          className={`px-3.5 sm:px-5 py-2 sm:py-2.5 whitespace-nowrap rounded-xl font-bold text-xs tracking-wider transition-all border ${
             activeTab === 'agents'
               ? 'bg-gradient-to-r from-red-600 to-red-700 text-white border-red-600 shadow-md shadow-red-600/25'
               : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-700 dark:hover:text-red-400'
@@ -188,7 +187,7 @@ export default function SubmissionsViewer({ lang = 'en' }: SubmissionsViewerProp
         </button>
         <button
           onClick={() => setActiveTab('registrations')}
-          className={`px-5 py-2.5 rounded-xl font-bold text-xs tracking-wider transition-all border ${
+          className={`px-3.5 sm:px-5 py-2 sm:py-2.5 whitespace-nowrap rounded-xl font-bold text-xs tracking-wider transition-all border ${
             activeTab === 'registrations'
               ? 'bg-gradient-to-r from-red-600 to-red-700 text-white border-red-600 shadow-md shadow-red-600/25'
               : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-700 dark:hover:text-red-400'
@@ -198,7 +197,7 @@ export default function SubmissionsViewer({ lang = 'en' }: SubmissionsViewerProp
         </button>
         <button
           onClick={() => setActiveTab('checklists')}
-          className={`px-5 py-2.5 rounded-xl font-bold text-xs tracking-wider transition-all border ${
+          className={`px-3.5 sm:px-5 py-2 sm:py-2.5 whitespace-nowrap rounded-xl font-bold text-xs tracking-wider transition-all border ${
             activeTab === 'checklists'
               ? 'bg-gradient-to-r from-red-600 to-red-700 text-white border-red-600 shadow-md shadow-red-600/25'
               : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-700 dark:hover:text-red-400'
@@ -537,6 +536,11 @@ export default function SubmissionsViewer({ lang = 'en' }: SubmissionsViewerProp
                       {r.createdAt && (
                         <div><strong className="text-slate-900 dark:text-white">{isEn ? 'Registered (DD/MM/YYYY):' : 'Didaftarkan (DD/MM/YYYY):'}</strong> {formatDateToDDMMYYYY(r.createdAt)}</div>
                       )}
+                      {(r.agentSignatureName || r.agentEmail) && (
+                        <div className="pt-1 text-red-600 dark:text-red-400 font-semibold">
+                          <strong>{isEn ? 'Registered by Agent:' : 'Didaftarkan Oleh Ejen:'}</strong> {r.agentSignatureName || r.agentEmail}
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -567,17 +571,17 @@ export default function SubmissionsViewer({ lang = 'en' }: SubmissionsViewerProp
       {/* OFFICIAL FORM VIEWING MODAL (AGENT, MERCHANT, OR CHECKLIST) */}
       {/* ------------------------------------------------------------- */}
       {viewingForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/75 backdrop-blur-sm overflow-y-auto animate-fadeIn print-modal-overlay print:static print:inset-auto print:p-0 print:m-0 print:bg-white print:overflow-visible">
-          <div className="max-w-4xl w-full bg-white dark:bg-[#0d1117] border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 max-h-[92vh] overflow-y-auto shadow-2xl space-y-6 text-slate-900 dark:text-slate-100 print-modal-card printable-card print:border-none print:shadow-none print:p-0 print:m-0 print:rounded-none print:max-w-none print:max-h-none print:overflow-visible">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-6 bg-black/75 backdrop-blur-sm overflow-y-auto animate-fadeIn print-modal-overlay print:static print:inset-auto print:p-0 print:m-0 print:bg-white print:overflow-visible">
+          <div className="max-w-4xl w-full bg-white dark:bg-[#0d1117] border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-3.5 sm:p-8 max-h-[92dvh] overflow-y-auto shadow-2xl space-y-5 sm:space-y-6 text-slate-900 dark:text-slate-100 print-modal-card printable-card print:border-none print:shadow-none print:p-0 print:m-0 print:rounded-none print:max-w-none print:max-h-none print:overflow-visible">
             
             {/* Modal Top Bar (On-screen controls only, hidden on paper) */}
-            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4 print:hidden">
-              <div className="flex items-center gap-2.5">
-                <span className="px-3 py-1 bg-red-600 text-white font-extrabold text-xs tracking-wider rounded-lg uppercase">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-800 pb-3 sm:pb-4 print:hidden">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="px-2.5 sm:px-3 py-1 bg-red-600 text-white font-extrabold text-[11px] sm:text-xs tracking-wider rounded-lg uppercase">
                   {viewingForm.type === 'agent'
-                    ? (isEn ? 'OFFICIAL AGENT FORM' : 'BORANG RASMI EJEN')
+                    ? (isEn ? 'AGENT REGISTRATION' : 'PENDAFTARAN EJEN')
                     : viewingForm.type === 'merchant'
-                    ? (isEn ? 'OFFICIAL MERCHANT REGISTRATION' : 'BORANG RASMI PENIAGA')
+                    ? (isEn ? 'MERCHANT REGISTRATION' : 'PENDAFTARAN PENIAGA')
                     : (isEn ? 'RECRUITMENT CHECKLIST' : 'SENARAI SEMAK PEREKRUTAN')}
                 </span>
                 <span className="text-xs text-slate-500 dark:text-slate-400 font-mono">
@@ -616,14 +620,14 @@ export default function SubmissionsViewer({ lang = 'en' }: SubmissionsViewerProp
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <span className="inline-block px-2.5 py-0.5 bg-red-600 text-white font-extrabold text-[10px] tracking-wider rounded uppercase print:bg-black print:text-white print:border-none print:px-2 print:py-0.5">
-                        {isEn ? 'AGENT FORM' : 'BORANG EJEN'}
+                        {isEn ? 'AGENT REGISTRATION' : 'PENDAFTARAN EJEN'}
                       </span>
                       <span className="text-xs font-mono font-bold text-slate-600 dark:text-slate-400 print:text-black">
                         {isEn ? 'AGENT NO:' : 'NO. EJEN:'} {viewingForm.data.agentNo}
                       </span>
                     </div>
                     <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 dark:text-white print:text-black print:text-[13pt] print:font-extrabold">
-                      {isEn ? 'MERCHANT RECRUITMENT & REGISTRATION CHECKLIST' : 'SENARAI SEMAK PEREKRUTAN & PENDAFTARAN PENIAGA'}
+                      {isEn ? 'AGENT REGISTRATION' : 'PENDAFTARAN EJEN'}
                     </h1>
                     <p className="text-xs font-bold text-red-600 dark:text-red-400 print:text-slate-800 mt-0.5">
                       Foodpanda, GrabFood and ShopeeFood — Malaysia
@@ -758,7 +762,7 @@ export default function SubmissionsViewer({ lang = 'en' }: SubmissionsViewerProp
                     {isEn ? 'LIST OF 5 SUCCESSFULLY REGISTERED MERCHANTS' : 'SENARAI 5 NAMA PENIAGA BERJAYA DIDAFTARKAN'}
                   </div>
                   <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800 print:rounded-none print:border-slate-400">
-                    <table className="w-full text-left text-xs print-table">
+                    <table className="w-full min-w-[550px] text-left text-xs print-table">
                       <thead className="bg-slate-100 dark:bg-slate-950 font-bold text-slate-700 dark:text-slate-300">
                         <tr>
                           <th className="py-2 px-2.5 w-10 text-center">NO.</th>
@@ -795,42 +799,56 @@ export default function SubmissionsViewer({ lang = 'en' }: SubmissionsViewerProp
                 {/* Section 4: Prospecting Survey */}
                 <div className="space-y-1.5">
                   <div className="bg-gradient-to-r from-red-600 to-red-700 text-white px-3 py-1.5 rounded-xl font-bold text-xs uppercase tracking-wider print-section-banner">
-                    {isEn ? 'AGENT SURVEY & PROSPECTING AUDIT' : 'BAHAGIAN KAJI SELIDIK & AUDIT EJEN'}
+                    {isEn ? "AGENT DECLARATION & TERMS OF ENGAGEMENT" : 'PENGAKUAN & TERMA PERKHIDMATAN EJEN'}
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 print:grid-cols-2">
-                    <div>
-                      <span className="print-data-label text-[10px] font-bold text-slate-500 dark:text-slate-400 block mb-0.5 uppercase tracking-wider">
-                        {isEn ? 'Prospect Source' : 'Dari mana anda kenal peniaga ini?'}
+                  {viewingForm.data.prospectSource === 'Declaration Signed & Confirmed' ? (
+                    <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-emerald-600 dark:text-emerald-400 font-bold text-sm">✅</span>
+                        <span className="text-xs font-bold text-slate-900 dark:text-white">
+                          {isEn ? 'Terms & Conditions of Engagement Acknowledged & Accepted' : 'Terma & Syarat Perkhidmatan Diperakui & Diterima'}
+                        </span>
+                      </div>
+                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800">
+                        {isEn ? 'Declared & Signed' : 'Diperakui Sah'}
                       </span>
-                      <div className="print-data-box px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-900 dark:text-white">
-                        {viewingForm.data.prospectSource} {viewingForm.data.prospectSourceOther ? `(${viewingForm.data.prospectSourceOther})` : ''}
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 print:grid-cols-2">
+                      <div>
+                        <span className="print-data-label text-[10px] font-bold text-slate-500 dark:text-slate-400 block mb-0.5 uppercase tracking-wider">
+                          {isEn ? 'Prospect Source' : 'Dari mana anda kenal peniaga ini?'}
+                        </span>
+                        <div className="print-data-box px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-900 dark:text-white">
+                          {viewingForm.data.prospectSource} {viewingForm.data.prospectSourceOther ? `(${viewingForm.data.prospectSourceOther})` : ''}
+                        </div>
+                      </div>
+                      <div>
+                        <span className="print-data-label text-[10px] font-bold text-slate-500 dark:text-slate-400 block mb-0.5 uppercase tracking-wider">
+                          {isEn ? 'Approached by other agents?' : 'Pernahkah peniaga didekati ejen lain?'}
+                        </span>
+                        <div className="print-data-box px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-900 dark:text-white">
+                          {viewingForm.data.approachedByOtherAgents}
+                        </div>
+                      </div>
+                      <div>
+                        <span className="print-data-label text-[10px] font-bold text-slate-500 dark:text-slate-400 block mb-0.5 uppercase tracking-wider">
+                          {isEn ? 'Confidence Level' : 'Tahap keyakinan peniaga bekerjasama:'}
+                        </span>
+                        <div className="print-data-box px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-900 dark:text-white">
+                          {viewingForm.data.confidenceLevel}
+                        </div>
+                      </div>
+                      <div>
+                        <span className="print-data-label text-[10px] font-bold text-slate-500 dark:text-slate-400 block mb-0.5 uppercase tracking-wider">
+                          {isEn ? 'Estimated Onboarding Duration' : 'Anggaran tempoh onboarding:'}
+                        </span>
+                        <div className="print-data-box px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-900 dark:text-white">
+                          {viewingForm.data.estimatedDuration}
+                        </div>
                       </div>
                     </div>
-                    <div>
-                      <span className="print-data-label text-[10px] font-bold text-slate-500 dark:text-slate-400 block mb-0.5 uppercase tracking-wider">
-                        {isEn ? 'Approached by other agents?' : 'Pernahkah peniaga didekati ejen lain?'}
-                      </span>
-                      <div className="print-data-box px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-900 dark:text-white">
-                        {viewingForm.data.approachedByOtherAgents}
-                      </div>
-                    </div>
-                    <div>
-                      <span className="print-data-label text-[10px] font-bold text-slate-500 dark:text-slate-400 block mb-0.5 uppercase tracking-wider">
-                        {isEn ? 'Confidence Level' : 'Tahap keyakinan peniaga bekerjasama:'}
-                      </span>
-                      <div className="print-data-box px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-900 dark:text-white">
-                        {viewingForm.data.confidenceLevel}
-                      </div>
-                    </div>
-                    <div>
-                      <span className="print-data-label text-[10px] font-bold text-slate-500 dark:text-slate-400 block mb-0.5 uppercase tracking-wider">
-                        {isEn ? 'Estimated Onboarding Duration' : 'Anggaran tempoh onboarding:'}
-                      </span>
-                      <div className="print-data-box px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-900 dark:text-white">
-                        {viewingForm.data.estimatedDuration}
-                      </div>
-                    </div>
-                  </div>
+                  )}
                 </div>
 
                 {/* Section 5: Signatures */}
@@ -879,7 +897,7 @@ export default function SubmissionsViewer({ lang = 'en' }: SubmissionsViewerProp
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <span className="inline-block px-2.5 py-0.5 bg-red-600 text-white font-extrabold text-[10px] tracking-wider rounded uppercase print:bg-black print:text-white print:border-none print:px-2 print:py-0.5">
-                        {isEn ? 'MERCHANT FORM' : 'BORANG PENIAGA'}
+                        {isEn ? 'MERCHANT REGISTRATION' : 'PENDAFTARAN PENIAGA'}
                       </span>
                       <span className="text-xs font-mono font-bold text-slate-600 dark:text-slate-400 print:text-black">
                         SSM: {viewingForm.data.registrationNo || 'N/A'} • {isEn ? 'MEMBER NO:' : 'NO. AHLI:'} {viewingForm.data.memberNo || 'N/A'}

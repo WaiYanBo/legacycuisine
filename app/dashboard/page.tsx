@@ -8,6 +8,7 @@ import { AnalyticsView } from '../../components/dashboard/AnalyticsView';
 import { RegistrationFormsView } from '../../components/dashboard/RegistrationFormsView';
 import { ManualOrderModal } from '../../components/dashboard/ManualOrderModal';
 import { SettingsView } from '../../components/dashboard/SettingsView';
+import { AgentPortalView } from '../../components/dashboard/AgentPortalView';
 import { DashboardMetrics } from '../../types/dashboard';
 import { getDictionary, Locale } from '../../lib/i18n';
 
@@ -33,6 +34,7 @@ export default function DashboardOverviewPage() {
   const [error, setError] = useState<string | null>(null);
   const [isManualModalOpen, setIsManualModalOpen] = useState<boolean>(false);
   const [currentUser, setCurrentUser] = useState<SessionUser | null>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
 
   // Language state
   const [lang, setLang] = useState<Locale>('en');
@@ -141,11 +143,226 @@ export default function DashboardOverviewPage() {
   const analyticsDict = getDictionary(lang).analytics;
   const isEn = lang === 'en';
 
+  // 🛡️ ROLE SEPARATION: AGENTS ARE DIRECTED TO THE DEDICATED AGENT PORTAL
+  if (currentUser && currentUser.role === 'AGENT') {
+    return (
+      <AgentPortalView
+        user={currentUser}
+        lang={lang}
+        theme={theme}
+        onToggleLang={toggleLanguage}
+        onToggleTheme={toggleTheme}
+        onLogout={handleLogout}
+      />
+    );
+  }
+
   return (
-    <div id="dashboard-root" className="flex h-screen overflow-hidden bg-white dark:bg-black text-black dark:text-white transition-colors duration-200 print:block print:h-auto print:overflow-visible print:bg-white">
+    <div id="dashboard-root" className="flex flex-col md:flex-row h-screen min-h-[100dvh] overflow-hidden bg-white dark:bg-black text-black dark:text-white transition-colors duration-200 print:block print:h-auto print:overflow-visible print:bg-white">
       
-      {/* 1. LEFT SIDEBAR NAVIGATION */}
-      <aside className="w-64 h-full bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col justify-between shrink-0 shadow-sm z-10 print:hidden">
+      {/* 📱 MOBILE TOP APP BAR (Phone & Small Tablet Viewports) */}
+      <header className="md:hidden flex items-center justify-between px-3.5 py-2.5 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shrink-0 z-30 safe-top print:hidden">
+        <div className="flex items-center gap-2 sm:gap-2.5">
+          <button
+            type="button"
+            onClick={() => setIsMobileMenuOpen(true)}
+            className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-red-600 dark:hover:text-red-400 flex items-center justify-center transition-colors shadow-sm"
+            aria-label="Open Navigation Menu"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-full bg-white p-0.5 border border-red-600 shadow-sm flex items-center justify-center shrink-0">
+              <img src="/logo-circle.png" alt="Legacy Cuisine Logo" className="object-contain w-full h-full" />
+            </div>
+            <div>
+              <span className="font-black text-xs sm:text-sm text-slate-900 dark:text-white tracking-tight block leading-tight">Legacy Cuisine</span>
+              <span className="text-[8.5pt] text-red-600 dark:text-red-400 font-extrabold uppercase tracking-wider block leading-none">
+                {activeTab === 'dashboard' ? dict.sidebar.navDashboard : activeTab === 'analytics' ? dict.sidebar.navAnalytics : activeTab === 'registration' ? dict.sidebar.navRegistration : dict.sidebar.navSettings}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={() => toggleLanguage(lang === 'en' ? 'ms' : 'en')}
+            className="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:text-red-600"
+          >
+            {isEn ? 'EN 🇬🇧' : 'BM 🇲🇾'}
+          </button>
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 text-amber-500 border border-slate-200 dark:border-slate-700 flex items-center justify-center"
+            title="Toggle Theme"
+          >
+            {theme === 'light' ? '☀️' : '🌙'}
+          </button>
+        </div>
+      </header>
+
+      {/* 📱 MOBILE NAVIGATION DRAWER (Slide-over with Backdrop) */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden fixed inset-0 z-50 flex animate-fadeIn print:hidden">
+          {/* Backdrop Blur Overlay */}
+          <div
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="fixed inset-0 bg-black/65 backdrop-blur-sm transition-opacity"
+            aria-hidden="true"
+          />
+
+          {/* Slide-in Drawer Container */}
+          <div className="relative w-72 max-w-[85vw] bg-white dark:bg-slate-900 h-full flex flex-col justify-between p-4 shadow-2xl border-r border-slate-200 dark:border-slate-800 z-10 animate-in slide-in-from-left duration-200 safe-top safe-bottom">
+            <div>
+              {/* Drawer Top Header */}
+              <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-full bg-white p-1 border-2 border-red-600 shadow-sm flex items-center justify-center">
+                    <img src="/logo-circle.png" alt="Legacy Cuisine Logo" className="object-contain w-full h-full" />
+                  </div>
+                  <div>
+                    <span className="text-sm font-black text-slate-900 dark:text-white block">{dict.sidebar.brandTitle}</span>
+                    <span className="text-[10px] text-red-600 dark:text-red-400 font-extrabold uppercase">{dict.sidebar.brandSubtitle}</span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-red-50 dark:hover:bg-red-950/40 text-slate-500 hover:text-red-600 flex items-center justify-center font-bold text-sm"
+                  title="Close Menu"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Navigation Links */}
+              <nav className="mt-4 space-y-1.5" aria-label="Mobile Drawer Navigation">
+                <button
+                  onClick={() => { setActiveTab('dashboard'); setIsMobileMenuOpen(false); }}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
+                    activeTab === 'dashboard'
+                      ? 'bg-gradient-to-r from-red-600 to-red-700 text-white shadow-md shadow-red-600/25'
+                      : 'text-slate-600 dark:text-slate-300 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-700 dark:hover:text-red-400'
+                  }`}
+                >
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z" />
+                  </svg>
+                  <span>{dict.sidebar.navDashboard}</span>
+                </button>
+
+                <button
+                  onClick={() => { setActiveTab('analytics'); setIsMobileMenuOpen(false); }}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
+                    activeTab === 'analytics'
+                      ? 'bg-gradient-to-r from-red-600 to-red-700 text-white shadow-md shadow-red-600/25'
+                      : 'text-slate-600 dark:text-slate-300 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-700 dark:hover:text-red-400'
+                  }`}
+                >
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z" />
+                  </svg>
+                  <span>{dict.sidebar.navAnalytics}</span>
+                </button>
+
+                <button
+                  onClick={() => { setActiveTab('registration'); setIsMobileMenuOpen(false); }}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
+                    activeTab === 'registration'
+                      ? 'bg-gradient-to-r from-red-600 to-red-700 text-white shadow-md shadow-red-600/25'
+                      : 'text-slate-600 dark:text-slate-300 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-700 dark:hover:text-red-400'
+                  }`}
+                >
+                  <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <span>{dict.sidebar.navRegistration}</span>
+                </button>
+
+                <button
+                  onClick={() => { setActiveTab('settings'); setIsMobileMenuOpen(false); }}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
+                    activeTab === 'settings'
+                      ? 'bg-gradient-to-r from-red-600 to-red-700 text-white shadow-md shadow-red-600/25'
+                      : 'text-slate-600 dark:text-slate-300 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-700 dark:hover:text-red-400'
+                  }`}
+                >
+                  <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <span>{dict.sidebar.navSettings}</span>
+                </button>
+              </nav>
+            </div>
+
+            {/* Mobile Drawer Footer */}
+            <div className="pt-4 border-t border-slate-200 dark:border-slate-800 space-y-3">
+              {currentUser && (
+                <div className="p-2.5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 overflow-hidden">
+                    <div className="w-7 h-7 rounded-xl bg-gradient-to-tr from-red-600 to-red-700 text-white font-black text-xs flex items-center justify-center shrink-0">
+                      {currentUser.fullName.charAt(0)}
+                    </div>
+                    <div className="overflow-hidden">
+                      <div className="text-xs font-bold text-slate-900 dark:text-white truncate">{currentUser.fullName}</div>
+                      <div className="text-[9px] text-red-600 dark:text-red-400 font-extrabold uppercase truncate">
+                        {currentUser.position || currentUser.department || 'Staff'}
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleLogout}
+                    title={dict.sidebar.logout}
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-red-600"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                  </button>
+                </div>
+              )}
+
+              <div className="flex items-center justify-between p-1 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+                <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 pl-3">
+                  {dict.sidebar.language}
+                </span>
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => toggleLanguage('ms')}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-bold ${!isEn ? 'bg-red-600 text-white' : 'text-slate-600 dark:text-slate-300'}`}
+                  >
+                    BM 🇲🇾
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => toggleLanguage('en')}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-bold ${isEn ? 'bg-red-600 text-white' : 'text-slate-600 dark:text-slate-300'}`}
+                  >
+                    EN 🇬🇧
+                  </button>
+                </div>
+              </div>
+
+              <button
+                onClick={toggleTheme}
+                className="w-full flex items-center justify-between px-4 py-2 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200"
+              >
+                <span>{theme === 'light' ? dict.sidebar.lightMode : dict.sidebar.darkMode}</span>
+                <span>{theme === 'light' ? '☀️' : '🌙'}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 1. DESKTOP LEFT SIDEBAR NAVIGATION (Hidden on mobile phones/tablets) */}
+      <aside className="hidden md:flex md:w-64 h-full bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex-col justify-between shrink-0 shadow-sm z-10 print:hidden">
         <div>
           {/* Logo Brand Header */}
           <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center gap-3">
@@ -296,8 +513,8 @@ export default function DashboardOverviewPage() {
         </div>
       </aside>
 
-      {/* 2. MAIN CONTENT AREA */}
-      <main id="dashboard-main" className="flex-1 p-6 sm:p-10 space-y-8 overflow-y-auto h-full w-full bg-slate-50/60 dark:bg-slate-950 text-slate-900 dark:text-slate-100 print:p-0 print:m-0 print:overflow-visible print:h-auto print:block print:bg-white print:space-y-0">
+      {/* 2. MAIN CONTENT AREA (Responsive padding & smooth scroll) */}
+      <main id="dashboard-main" className="flex-1 min-w-0 p-3 sm:p-6 md:p-8 space-y-6 sm:space-y-8 overflow-y-auto h-full w-full bg-slate-50/60 dark:bg-slate-950 text-slate-900 dark:text-slate-100 print:p-0 print:m-0 print:overflow-visible print:h-auto print:block print:bg-white print:space-y-0">
         
         {/* VIEW 1: DASHBOARD OVERVIEW */}
         {activeTab === 'dashboard' && (
@@ -305,14 +522,14 @@ export default function DashboardOverviewPage() {
             {/* Header info */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-5">
               <div>
-                <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">{dict.header.title}</h1>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">{dict.header.title}</h1>
+                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
                   {dict.header.subtitle}
                 </p>
               </div>
 
               {/* Data Ingestion Mode Status & Manual Entry Trigger */}
-              <div className="flex flex-wrap items-center gap-3">
+              <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
                 <div className="flex items-center gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs px-3.5 py-2 rounded-xl shadow-sm">
                   <span className="relative flex h-2.5 w-2.5">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -355,7 +572,7 @@ export default function DashboardOverviewPage() {
                   <p className="text-xs text-slate-500 dark:text-slate-400">{dict.kpi.subtitle}</p>
                 </div>
 
-                <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
+                <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700 max-w-full overflow-x-auto no-scrollbar">
                   {(['all', 'daily', 'weekly', 'monthly', 'yearly'] as TimeRange[]).map((range) => {
                     const rangeLabel = dict.timeFilters[range] || range;
                     return (
@@ -407,13 +624,13 @@ export default function DashboardOverviewPage() {
           <div className="space-y-8 animate-fadeIn">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-5">
               <div>
-                <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">{analyticsDict.header.title}</h1>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">{analyticsDict.header.title}</h1>
+                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
                   {analyticsDict.header.subtitle}
                 </p>
               </div>
 
-              <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
+              <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700 max-w-full overflow-x-auto no-scrollbar">
                 {(['all', 'daily', 'weekly', 'monthly', 'yearly'] as TimeRange[]).map((range) => {
                   const rangeLabel = dict.timeFilters[range] || range;
                   return (

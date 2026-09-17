@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 export default function LoginPage() {
   const router = useRouter();
   const [lang, setLang] = useState<'en' | 'ms'>('en');
-  const [username, setUsername] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -24,7 +24,7 @@ export default function LoginPage() {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: username.trim(), password }),
+        body: JSON.stringify({ identifier: identifier.trim(), password }),
       });
 
       let data: any = {};
@@ -42,8 +42,8 @@ export default function LoginPage() {
         throw new Error(
           data.error ||
             (isEn
-              ? 'Invalid Username or Password.'
-              : 'Nama Pengguna atau Kata Laluan tidak sah.')
+              ? 'Invalid Email/Username or Password.'
+              : 'E-mel/Nama Pengguna atau Kata Laluan tidak sah.')
         );
       }
 
@@ -66,42 +66,44 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="min-h-screen w-full bg-slate-950 flex flex-col items-center justify-center p-4 relative overflow-hidden select-none">
+    <main className="min-h-[100dvh] w-full bg-slate-950 flex flex-col items-center justify-center p-3.5 sm:p-6 md:p-8 relative overflow-x-hidden overflow-y-auto select-none safe-top safe-bottom">
       {/* Background ambient lighting */}
       <div className="absolute top-1/4 -left-32 w-96 h-96 bg-red-600/15 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-red-800/15 rounded-full blur-3xl pointer-events-none" />
 
       {/* Language Switcher in Top Right */}
-      <div className="absolute top-6 right-6 z-20">
+      <div className="absolute top-3 right-3 sm:top-6 sm:right-6 z-20">
         <div className="flex items-center bg-slate-900/90 backdrop-blur-md p-1 rounded-xl border border-slate-800 shadow-lg">
           <button
             type="button"
             onClick={() => setLang('en')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+            className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 sm:gap-1.5 ${
               isEn ? 'bg-red-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'
             }`}
           >
             <span>🇬🇧</span>
-            <span>English</span>
+            <span className="hidden xs:inline sm:inline">English</span>
+            <span className="xs:hidden sm:hidden inline">EN</span>
           </button>
           <button
             type="button"
             onClick={() => setLang('ms')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+            className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 sm:gap-1.5 ${
               !isEn ? 'bg-red-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'
             }`}
           >
             <span>🇲🇾</span>
-            <span>BM</span>
+            <span className="hidden xs:inline sm:inline">BM</span>
+            <span className="xs:hidden sm:hidden inline">BM</span>
           </button>
         </div>
       </div>
 
       {/* Main Login Card */}
-      <div className="relative z-10 w-full max-w-md bg-slate-900/90 backdrop-blur-xl p-8 sm:p-10 rounded-3xl border border-slate-800 shadow-2xl shadow-black/80 animate-in fade-in zoom-in-95 duration-300">
+      <div className="relative z-10 w-full max-w-md bg-slate-900/90 backdrop-blur-xl p-5 sm:p-8 md:p-10 rounded-2xl sm:rounded-3xl border border-slate-800 shadow-2xl shadow-black/80 animate-in fade-in zoom-in-95 duration-300 my-6 sm:my-8">
         
         {/* Brand Header */}
-        <div className="flex flex-col items-center text-center mb-8">
+        <div className="flex flex-col items-center text-center mb-6">
           <div className="w-20 h-20 rounded-full bg-white p-2 flex items-center justify-center border-2 border-red-600 shadow-lg shadow-red-600/20 ring-4 ring-red-600/10 mb-4 transition-transform hover:scale-105">
             <Image
               src="/logo-circle.png"
@@ -114,8 +116,19 @@ export default function LoginPage() {
           </div>
           <h1 className="text-2xl font-black tracking-tight text-white uppercase">Legacy Cuisine</h1>
           <p className="text-xs text-red-500 font-extrabold tracking-widest uppercase mt-1">
-            {isEn ? 'Authorized Staff & Admin Portal' : 'Portal Pentadbir & Staf Sah'}
+            {isEn ? 'Staff & Field Agent Portal' : 'Portal Staf & Ejen Medan'}
           </p>
+        </div>
+
+        {/* Portal Information Pill */}
+        <div className="mb-6 p-3 rounded-xl bg-slate-950/80 border border-slate-800 text-[11px] text-slate-400 flex items-start gap-2.5">
+          <span className="text-sm shrink-0">🔐</span>
+          <div className="leading-relaxed">
+            <span className="text-slate-200 font-semibold">{isEn ? 'Portal Access:' : 'Akses Portal:'}</span>{' '}
+            {isEn
+              ? 'Agents use your registered email with default password Default123!. Internal staff use your assigned credentials.'
+              : 'Ejen gunakan e-mel yang didaftarkan dengan kata laluan lalai Default123!. Staf dalaman gunakan kelayakan yang ditetapkan.'}
+          </div>
         </div>
 
         {/* Login Form */}
@@ -129,15 +142,15 @@ export default function LoginPage() {
 
           <div>
             <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
-              {isEn ? 'Username' : 'Nama Pengguna'}
+              {isEn ? 'Email or Username' : 'E-mel atau Nama Pengguna'}
             </label>
             <input
               type="text"
               required
               autoFocus
-              placeholder={isEn ? 'Enter Username' : 'Masukkan Nama Pengguna'}
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              placeholder={isEn ? 'Enter your email or username' : 'Masukkan e-mel atau nama pengguna'}
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
               className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600 transition-all"
             />
           </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Locale } from '../../lib/i18n';
 import { formatDateToDDMMYYYY } from '../../lib/dateUtils';
@@ -96,6 +96,22 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
   const [agentSignatureName, setAgentSignatureName] = useState('');
   const [agentSignatureId, setAgentSignatureId] = useState('');
   const [agentSignatureDate, setAgentSignatureDate] = useState(new Date().toISOString().split('T')[0]);
+  const [isLoggedInAgent, setIsLoggedInAgent] = useState(false);
+
+  // Auto-bind logged in agent on mount
+  useEffect(() => {
+    try {
+      const savedUser = typeof window !== 'undefined' ? localStorage.getItem('lc_user') : null;
+      if (savedUser) {
+        const u = JSON.parse(savedUser);
+        if (u.role === 'AGENT') {
+          setIsLoggedInAgent(true);
+          setAgentSignatureName(u.fullName || '');
+          setAgentSignatureId(u.username || u.email || '');
+        }
+      }
+    } catch {}
+  }, []);
 
   const [reviewerName, setReviewerName] = useState('');
   const [reviewerRole, setReviewerRole] = useState(isEn ? 'Audit Supervisor' : 'Penyelia Audit');
@@ -193,6 +209,8 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
         agentSignatureName,
         agentSignatureId,
         agentSignatureDate,
+        agentUserId: typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('lc_user') || '{}')?.id : undefined,
+        agentEmail: typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('lc_user') || '{}')?.email : undefined,
         reviewerName,
         reviewerRole,
         reviewerDate,
@@ -225,14 +243,14 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
     : ['Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu', 'Ahad'];
 
   return (
-    <div className="max-w-4xl mx-auto bg-white dark:bg-[#0d1117] text-slate-900 dark:text-slate-100 p-6 sm:p-10 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800 print:border-none print:shadow-none print:p-0 printable-card">
+    <div className="max-w-4xl mx-auto bg-white dark:bg-[#0d1117] text-slate-900 dark:text-slate-100 p-4 sm:p-8 md:p-10 rounded-2xl sm:rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800 print:border-none print:shadow-none print:p-0 printable-card">
       
       {/* 📄 DOCUMENT HEADER */}
-      <div className="border-b-2 border-red-600 pb-6 mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 print-doc-header">
+      <div className="border-b-2 border-red-600 pb-5 mb-6 sm:mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 print-doc-header">
         <div>
           <div className="flex items-center gap-3 mb-2">
             <div className="inline-block px-3 py-1 bg-red-600 text-white font-extrabold text-xs tracking-widest rounded-md uppercase">
-              {isEn ? 'MERCHANT FORM' : 'BORANG PENIAGA'}
+              {isEn ? 'MERCHANT REGISTRATION' : 'PENDAFTARAN PENIAGA'}
             </div>
             <button
               type="button"
@@ -244,7 +262,7 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
             </button>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">
-            {isEn ? 'MERCHANT RECRUITMENT & REGISTRATION CHECKLIST' : 'SENARAI SEMAK PEREKRUTAN & PENDAFTARAN PENIAGA'}
+            {isEn ? 'MERCHANT REGISTRATION' : 'PENDAFTARAN PENIAGA'}
           </h1>
           <p className="text-sm font-bold text-red-600 dark:text-red-400 mt-1">
             Foodpanda, GrabFood and ShopeeFood — Malaysia
@@ -631,13 +649,13 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Document Checklist Table */}
-          <div className="overflow-x-auto print:overflow-visible rounded-2xl border border-slate-200 dark:border-slate-800 print:border-slate-300">
+          <div className="overflow-x-auto no-scrollbar print:overflow-visible rounded-2xl border border-slate-200 dark:border-slate-800 print:border-slate-300">
             <table className="w-full text-left text-xs text-slate-800 dark:text-slate-200 print:text-black">
               <thead className="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-white font-bold uppercase tracking-wider border-b border-slate-200 dark:border-slate-800">
                 <tr>
-                  <th className="py-3 px-4">{isEn ? 'Document' : 'Dokumen'}</th>
-                  <th className="py-3 px-3 w-28 text-center">{isEn ? 'Received' : 'Diterima'}</th>
-                  <th className="py-3 px-3 w-28 text-center">{isEn ? 'Not Received' : 'Belum'}</th>
+                  <th className="py-3 px-3 sm:px-4">{isEn ? 'Document' : 'Dokumen'}</th>
+                  <th className="py-3 px-2 sm:px-3 w-20 sm:w-28 text-center">{isEn ? 'Received' : 'Diterima'}</th>
+                  <th className="py-3 px-2 sm:px-3 w-20 sm:w-28 text-center">{isEn ? 'Not Received' : 'Belum'}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
@@ -646,14 +664,14 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
                   const isReceived = statusVal === 'Received' || statusVal === 'Diterima';
                   return (
                     <tr key={item.id} className="hover:bg-slate-50 dark:hover:bg-slate-900/50">
-                      <td className="py-2.5 px-4 font-semibold text-slate-700 dark:text-slate-300">
+                      <td className="py-2.5 px-3 sm:px-4 font-semibold text-slate-700 dark:text-slate-300 text-xs">
                         {item.label}
                       </td>
-                      <td className="py-2.5 px-3 text-center">
+                      <td className="py-2.5 px-1.5 sm:px-3 text-center">
                         <button
                           type="button"
                           onClick={() => toggleDocChecklist(item.id, isEn ? 'Received' : 'Diterima')}
-                          className={`px-3 py-1 rounded-lg font-extrabold transition-all border ${
+                          className={`px-2 sm:px-3 py-1 rounded-lg font-extrabold text-[11px] sm:text-xs transition-all border ${
                             isReceived
                               ? 'bg-emerald-500 text-slate-950 border-emerald-500 shadow-sm'
                               : 'bg-slate-100 dark:bg-slate-900 text-slate-400 border-slate-300 dark:border-slate-800'
@@ -662,11 +680,11 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
                           ✓ {isEn ? 'Received' : 'Diterima'}
                         </button>
                       </td>
-                      <td className="py-2.5 px-3 text-center">
+                      <td className="py-2.5 px-1.5 sm:px-3 text-center">
                         <button
                           type="button"
                           onClick={() => toggleDocChecklist(item.id, isEn ? 'Not Received' : 'Belum')}
-                          className={`px-3 py-1 rounded-lg font-extrabold transition-all border ${
+                          className={`px-2 sm:px-3 py-1 rounded-lg font-extrabold text-[11px] sm:text-xs transition-all border ${
                             !isReceived
                               ? 'bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 border-red-300 dark:border-red-800'
                               : 'bg-slate-100 dark:bg-slate-900 text-slate-400 border-slate-300 dark:border-slate-800'
@@ -934,9 +952,16 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
 
             {/* Agent Signature Box */}
             <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-3">
-              <h4 className="font-bold text-xs uppercase tracking-wider text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-800 pb-2">
-                {isEn ? 'Agent Confirmation' : 'Pengesahan Ejen'}
-              </h4>
+              <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
+                <h4 className="font-bold text-xs uppercase tracking-wider text-slate-900 dark:text-white">
+                  {isEn ? 'Agent Confirmation' : 'Pengesahan Ejen'}
+                </h4>
+                {isLoggedInAgent && (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-red-100 dark:bg-red-950/60 text-red-600 dark:text-red-400 border border-red-300 dark:border-red-800">
+                    {isEn ? 'Verified Agent' : 'Ejen Disahkan'}
+                  </span>
+                )}
+              </div>
 
               <div>
                 <label className="block text-[11px] font-semibold text-slate-500 mb-1">{isEn ? 'Name:' : 'Nama Ejen:'}</label>
@@ -945,18 +970,28 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
                   placeholder={isEn ? "Agent Name" : "Nama Ejen Pengesah"}
                   value={agentSignatureName}
                   onChange={(e) => setAgentSignatureName(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs focus:ring-1 focus:ring-red-600"
+                  readOnly={isLoggedInAgent}
+                  className={`w-full px-3 py-2 rounded-xl border text-xs transition-all ${
+                    isLoggedInAgent
+                      ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 cursor-not-allowed'
+                      : 'bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white focus:ring-1 focus:ring-red-600'
+                  }`}
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-slate-500 mb-1">{isEn ? 'Agent ID No.:' : 'No. ID Ejen:'}</label>
+                <label className="block text-[11px] font-semibold text-slate-500 mb-1">{isEn ? 'Agent ID No. / Email:' : 'No. ID / E-mel Ejen:'}</label>
                 <input
                   type="text"
                   placeholder={isEn ? "Agent ID No. (e.g. AGT-8821)" : "ID Ejen (Contoh: AGT-8821)"}
                   value={agentSignatureId}
                   onChange={(e) => setAgentSignatureId(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs focus:ring-1 focus:ring-red-600"
+                  readOnly={isLoggedInAgent}
+                  className={`w-full px-3 py-2 rounded-xl border text-xs transition-all ${
+                    isLoggedInAgent
+                      ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 cursor-not-allowed'
+                      : 'bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white focus:ring-1 focus:ring-red-600'
+                  }`}
                 />
               </div>
 

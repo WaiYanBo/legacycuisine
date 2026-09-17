@@ -111,21 +111,13 @@ export class DashboardService {
         storefrontsPerformance,
       };
     } catch (dbErr: any) {
-      console.warn('[DashboardService] Database query error, returning demo fallback metrics:', dbErr.message);
+      console.warn('[DashboardService] Database query error, returning empty metrics:', dbErr.message);
       return {
-        totalRevenue: 14850.50,
-        totalPayouts: 11200.00,
-        netProfit: 3650.50,
-        chartData: [
-          { date: '2026-08-20', merchantPayouts: 2100.00, clientProfit: 650.00 },
-          { date: '2026-08-21', merchantPayouts: 2850.00, clientProfit: 890.00 },
-          { date: '2026-08-22', merchantPayouts: 3100.00, clientProfit: 980.00 },
-          { date: '2026-08-23', merchantPayouts: 3150.00, clientProfit: 1130.50 }
-        ],
-        storefrontsPerformance: [
-          { name: 'Legacy Nasi Lemak (Bangsar)', email: 'bangsar@legacycuisine.com', revenue: 8400.00, payout: 6200.00, profit: 2200.00, count: 42 },
-          { name: 'Legacy Hainan Chicken (PJ)', email: 'pj@legacycuisine.com', revenue: 6450.50, payout: 5000.00, profit: 1450.50, count: 31 }
-        ],
+        totalRevenue: 0.00,
+        totalPayouts: 0.00,
+        netProfit: 0.00,
+        chartData: [],
+        storefrontsPerformance: [],
       };
     }
   }

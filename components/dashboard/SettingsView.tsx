@@ -523,30 +523,9 @@ export function SettingsView({ lang: propLang, initialLang = 'en', onLangChange 
                 </p>
               </div>
             ) : (
-              <table className="w-full min-w-[900px] text-left text-xs border-collapse">
-                <thead className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 text-slate-500 font-bold uppercase text-[11px]">
-                  <tr>
-                    <th className="py-3.5 px-5 whitespace-nowrap">
-                      {isMs ? 'Nama & Pengguna' : 'Name & Username'}
-                    </th>
-                    <th className="py-3.5 px-4 whitespace-nowrap">
-                      {isMs ? 'Jabatan' : 'Department'}
-                    </th>
-                    <th className="py-3.5 px-4 whitespace-nowrap">
-                      {isMs ? 'Jawatan / Posisi' : 'Job Title / Position'}
-                    </th>
-                    <th className="py-3.5 px-4 whitespace-nowrap">
-                      {isMs ? 'Hak Akses' : 'Permissions'}
-                    </th>
-                    <th className="py-3.5 px-4 text-center whitespace-nowrap">
-                      {isMs ? 'Status' : 'Status'}
-                    </th>
-                    <th className="py-3.5 px-5 text-right whitespace-nowrap">
-                      {isMs ? 'Tindakan' : 'Actions'}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
+              <>
+                {/* 📱 Mobile Card View (< 768px) */}
+                <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-800/80">
                   {filteredUsers.map((user) => {
                     const perms = Array.isArray(user.permissions) ? user.permissions : [];
                     const isIT = user.department === 'IT & Systems Administration' || user.department === 'IT Department';
@@ -554,52 +533,23 @@ export function SettingsView({ lang: propLang, initialLang = 'en', onLangChange 
                     const isFullAccess = (isIT && !isIntern) || perms.includes('admin:all') || user.role === 'SUPER_ADMIN';
 
                     return (
-                      <tr key={user.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-900/40 transition-colors">
-                        <td className="py-4 px-5 whitespace-nowrap">
-                          <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center font-bold text-slate-700 dark:text-slate-300 text-xs flex-shrink-0">
+                      <div key={user.id} className="p-4 space-y-3 hover:bg-slate-50/60 dark:hover:bg-slate-900/30 transition-colors">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex items-center gap-3 min-w-0">
+                            <div className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center font-bold text-slate-700 dark:text-slate-300 text-sm shrink-0">
                               {user.fullName.charAt(0).toUpperCase()}
                             </div>
-                            <div>
-                              <div className="font-extrabold text-slate-900 dark:text-white text-xs sm:text-sm whitespace-nowrap">
+                            <div className="min-w-0">
+                              <div className="font-extrabold text-slate-900 dark:text-white text-sm truncate">
                                 {user.fullName}
                               </div>
-                              <div className="text-[11px] text-slate-400 font-mono whitespace-nowrap">
+                              <div className="text-[11px] text-slate-400 font-mono truncate">
                                 @{user.username} {user.email ? `• ${user.email}` : ''}
                               </div>
                             </div>
                           </div>
-                        </td>
-
-                        <td className="py-4 px-4 whitespace-nowrap">
-                          <span className={`inline-flex items-center whitespace-nowrap px-3 py-1 rounded-full text-[11px] font-extrabold border ${getDeptColor(user.department)}`}>
-                            {user.department || 'Operations'}
-                          </span>
-                        </td>
-
-                        <td className="py-4 px-4 whitespace-nowrap font-bold text-slate-800 dark:text-slate-200">
-                          {user.position || 'Staff Member'}
-                        </td>
-
-                        <td className="py-4 px-4 whitespace-nowrap">
-                          {isFullAccess ? (
-                            <span className="inline-flex items-center whitespace-nowrap px-3 py-1 rounded-full bg-red-600 text-white font-bold text-[10px] shadow-sm">
-                              👑 {isMs ? 'Akses Penuh' : 'Full Access'} {isIT && !isIntern ? '(IT)' : ''}
-                            </span>
-                          ) : perms.length === 0 ? (
-                            <span className="text-slate-400 italic text-[11px] whitespace-nowrap">
-                              {isMs ? 'Tiada kebenaran diberikan' : 'No permissions granted'}
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center whitespace-nowrap px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-[11px]">
-                              {perms.length} {isMs ? 'Kebenaran Aktif' : 'Permissions Active'}
-                            </span>
-                          )}
-                        </td>
-
-                        <td className="py-4 px-4 text-center whitespace-nowrap">
                           <span
-                            className={`inline-flex items-center whitespace-nowrap px-3 py-1 rounded-full text-[10px] font-bold ${
+                            className={`inline-flex items-center shrink-0 px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
                               user.isActive
                                 ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800'
                                 : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
@@ -607,10 +557,35 @@ export function SettingsView({ lang: propLang, initialLang = 'en', onLangChange 
                           >
                             {user.isActive ? (isMs ? 'Aktif' : 'Active') : (isMs ? 'Nyahaktif' : 'Inactive')}
                           </span>
-                        </td>
+                        </div>
 
-                        <td className="py-4 px-5 text-right whitespace-nowrap">
-                          <div className="flex items-center justify-end gap-2">
+                        <div className="flex flex-wrap items-center gap-2 text-xs">
+                          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-extrabold border ${getDeptColor(user.department)}`}>
+                            {user.department || 'Operations'}
+                          </span>
+                          <span className="text-slate-600 dark:text-slate-400 font-semibold text-[11px]">
+                            {user.position || 'Staff Member'}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center justify-between gap-2 pt-1 border-t border-slate-100 dark:border-slate-800/60">
+                          <div>
+                            {isFullAccess ? (
+                              <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-red-600 text-white font-bold text-[10px] shadow-sm">
+                                👑 {isMs ? 'Akses Penuh' : 'Full Access'} {isIT && !isIntern ? '(IT)' : ''}
+                              </span>
+                            ) : perms.length === 0 ? (
+                              <span className="text-slate-400 italic text-[10px]">
+                                {isMs ? 'Tiada kebenaran' : 'No permissions'}
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-[10px]">
+                                {perms.length} {isMs ? 'Kebenaran' : 'Perms'}
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="flex items-center gap-1.5">
                             <button
                               onClick={() => {
                                 setEditTarget(user);
@@ -621,7 +596,7 @@ export function SettingsView({ lang: propLang, initialLang = 'en', onLangChange 
                                 setEditPermissions(Array.isArray(user.permissions) ? [...user.permissions] : []);
                                 setEditActive(user.isActive);
                               }}
-                              className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-red-50 hover:text-red-600 text-slate-700 dark:text-slate-300 font-bold text-xs transition-colors"
+                              className="px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-red-50 hover:text-red-600 text-slate-700 dark:text-slate-300 font-bold text-xs transition-colors"
                             >
                               {isMs ? 'Edit' : 'Edit'}
                             </button>
@@ -630,25 +605,153 @@ export function SettingsView({ lang: propLang, initialLang = 'en', onLangChange 
                                 setResetTarget(user);
                                 setResetPass('');
                               }}
-                              className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-amber-50 hover:text-amber-600 text-slate-700 dark:text-slate-300 font-bold text-xs transition-colors"
+                              className="px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-amber-50 hover:text-amber-600 text-slate-700 dark:text-slate-300 font-bold text-xs transition-colors"
                             >
-                              {isMs ? 'Set Laluan' : 'Reset Pass'}
+                              {isMs ? 'Set Laluan' : 'Reset'}
                             </button>
                             {user.id !== currentUser?.id && (
                               <button
                                 onClick={() => handleDeleteUser(user)}
-                                className="p-1.5 px-2.5 rounded-xl bg-red-50 dark:bg-red-950/40 hover:bg-red-600 hover:text-white text-red-600 font-bold text-xs transition-colors"
+                                className="p-1.5 px-2 rounded-xl bg-red-50 dark:bg-red-950/40 hover:bg-red-600 hover:text-white text-red-600 font-bold text-xs transition-colors"
                               >
                                 🗑️
                               </button>
                             )}
                           </div>
-                        </td>
-                      </tr>
+                        </div>
+                      </div>
                     );
                   })}
-                </tbody>
-              </table>
+                </div>
+
+                {/* 🖥️ Desktop / Tablet Table (>= 768px) */}
+                <table className="hidden md:table w-full min-w-[900px] text-left text-xs border-collapse">
+                  <thead className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 text-slate-500 font-bold uppercase text-[11px]">
+                    <tr>
+                      <th className="py-3.5 px-5 whitespace-nowrap">
+                        {isMs ? 'Nama & Pengguna' : 'Name & Username'}
+                      </th>
+                      <th className="py-3.5 px-4 whitespace-nowrap">
+                        {isMs ? 'Jabatan' : 'Department'}
+                      </th>
+                      <th className="py-3.5 px-4 whitespace-nowrap">
+                        {isMs ? 'Jawatan / Posisi' : 'Job Title / Position'}
+                      </th>
+                      <th className="py-3.5 px-4 whitespace-nowrap">
+                        {isMs ? 'Hak Akses' : 'Permissions'}
+                      </th>
+                      <th className="py-3.5 px-4 text-center whitespace-nowrap">
+                        {isMs ? 'Status' : 'Status'}
+                      </th>
+                      <th className="py-3.5 px-5 text-right whitespace-nowrap">
+                        {isMs ? 'Tindakan' : 'Actions'}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
+                    {filteredUsers.map((user) => {
+                      const perms = Array.isArray(user.permissions) ? user.permissions : [];
+                      const isIT = user.department === 'IT & Systems Administration' || user.department === 'IT Department';
+                      const isIntern = user.position?.toLowerCase().includes('intern');
+                      const isFullAccess = (isIT && !isIntern) || perms.includes('admin:all') || user.role === 'SUPER_ADMIN';
+
+                      return (
+                        <tr key={user.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-900/40 transition-colors">
+                          <td className="py-4 px-5 whitespace-nowrap">
+                            <div className="flex items-center gap-3">
+                              <div className="w-9 h-9 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center font-bold text-slate-700 dark:text-slate-300 text-xs flex-shrink-0">
+                                {user.fullName.charAt(0).toUpperCase()}
+                              </div>
+                              <div>
+                                <div className="font-extrabold text-slate-900 dark:text-white text-xs sm:text-sm whitespace-nowrap">
+                                  {user.fullName}
+                                </div>
+                                <div className="text-[11px] text-slate-400 font-mono whitespace-nowrap">
+                                  @{user.username} {user.email ? `• ${user.email}` : ''}
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+
+                          <td className="py-4 px-4 whitespace-nowrap">
+                            <span className={`inline-flex items-center whitespace-nowrap px-3 py-1 rounded-full text-[11px] font-extrabold border ${getDeptColor(user.department)}`}>
+                              {user.department || 'Operations'}
+                            </span>
+                          </td>
+
+                          <td className="py-4 px-4 whitespace-nowrap font-bold text-slate-800 dark:text-slate-200">
+                            {user.position || 'Staff Member'}
+                          </td>
+
+                          <td className="py-4 px-4 whitespace-nowrap">
+                            {isFullAccess ? (
+                              <span className="inline-flex items-center whitespace-nowrap px-3 py-1 rounded-full bg-red-600 text-white font-bold text-[10px] shadow-sm">
+                                👑 {isMs ? 'Akses Penuh' : 'Full Access'} {isIT && !isIntern ? '(IT)' : ''}
+                              </span>
+                            ) : perms.length === 0 ? (
+                              <span className="text-slate-400 italic text-[11px] whitespace-nowrap">
+                                {isMs ? 'Tiada kebenaran diberikan' : 'No permissions granted'}
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center whitespace-nowrap px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-[11px]">
+                                {perms.length} {isMs ? 'Kebenaran Aktif' : 'Permissions Active'}
+                              </span>
+                            )}
+                          </td>
+
+                          <td className="py-4 px-4 text-center whitespace-nowrap">
+                            <span
+                              className={`inline-flex items-center whitespace-nowrap px-3 py-1 rounded-full text-[10px] font-bold ${
+                                user.isActive
+                                  ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800'
+                                  : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
+                              }`}
+                            >
+                              {user.isActive ? (isMs ? 'Aktif' : 'Active') : (isMs ? 'Nyahaktif' : 'Inactive')}
+                            </span>
+                          </td>
+
+                          <td className="py-4 px-5 text-right whitespace-nowrap">
+                            <div className="flex items-center justify-end gap-2">
+                              <button
+                                onClick={() => {
+                                  setEditTarget(user);
+                                  setEditFullName(user.fullName);
+                                  setEditEmail(user.email || '');
+                                  setEditDepartment(user.department || 'Operations & Reconciliation');
+                                  setEditPosition(user.position || 'Staff Member');
+                                  setEditPermissions(Array.isArray(user.permissions) ? [...user.permissions] : []);
+                                  setEditActive(user.isActive);
+                                }}
+                                className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-red-50 hover:text-red-600 text-slate-700 dark:text-slate-300 font-bold text-xs transition-colors"
+                              >
+                                {isMs ? 'Edit' : 'Edit'}
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setResetTarget(user);
+                                  setResetPass('');
+                                }}
+                                className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-amber-50 hover:text-amber-600 text-slate-700 dark:text-slate-300 font-bold text-xs transition-colors"
+                              >
+                                {isMs ? 'Set Laluan' : 'Reset Pass'}
+                              </button>
+                              {user.id !== currentUser?.id && (
+                                <button
+                                  onClick={() => handleDeleteUser(user)}
+                                  className="p-1.5 px-2.5 rounded-xl bg-red-50 dark:bg-red-950/40 hover:bg-red-600 hover:text-white text-red-600 font-bold text-xs transition-colors"
+                                >
+                                  🗑️
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </>
             )}
           </div>
         </div>
@@ -743,8 +846,8 @@ export function SettingsView({ lang: propLang, initialLang = 'en', onLangChange 
       {isAddModalOpen &&
         typeof document !== 'undefined' &&
         createPortal(
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-            <div className="bg-white dark:bg-[#0d1117] border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-xl max-h-[90vh] overflow-y-auto p-6 shadow-2xl space-y-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm">
+            <div className="bg-white dark:bg-[#0d1117] border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl w-full max-w-xl max-h-[92dvh] overflow-y-auto p-4 sm:p-6 shadow-2xl space-y-4">
               <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
                 <h3 className="font-extrabold text-base text-slate-900 dark:text-white">
                   ➕ {isMs ? 'Tambah Staf / Ejen Baharu' : 'Add New Staff / Agent'}
@@ -932,8 +1035,8 @@ export function SettingsView({ lang: propLang, initialLang = 'en', onLangChange 
       {editTarget &&
         typeof document !== 'undefined' &&
         createPortal(
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-            <div className="bg-white dark:bg-[#0d1117] border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-xl max-h-[90vh] overflow-y-auto p-6 shadow-2xl space-y-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm">
+            <div className="bg-white dark:bg-[#0d1117] border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl w-full max-w-xl max-h-[92dvh] overflow-y-auto p-4 sm:p-6 shadow-2xl space-y-4">
               <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
                 <h3 className="font-extrabold text-base text-slate-900 dark:text-white">
                   ✏️ {isMs ? 'Kemaskini Staf:' : 'Edit Staff:'} {editTarget.fullName}
@@ -1117,8 +1220,8 @@ export function SettingsView({ lang: propLang, initialLang = 'en', onLangChange 
       {resetTarget &&
         typeof document !== 'undefined' &&
         createPortal(
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-            <div className="bg-white dark:bg-[#0d1117] border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-sm p-6 shadow-2xl space-y-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm">
+            <div className="bg-white dark:bg-[#0d1117] border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl w-full max-w-sm max-h-[92dvh] overflow-y-auto p-4 sm:p-6 shadow-2xl space-y-4">
               <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
                 <h3 className="font-extrabold text-base text-slate-900 dark:text-white">
                   🔑 {isMs ? 'Set Semula Kata Laluan' : 'Reset Password'}

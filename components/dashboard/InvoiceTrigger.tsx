@@ -73,14 +73,14 @@ export const InvoiceTrigger: React.FC<InvoiceTriggerProps> = ({ lang = 'en' }) =
   };
 
   return (
-    <div className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-sm text-slate-900 dark:text-white">
+    <div className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-8 shadow-sm text-slate-900 dark:text-white min-w-0">
       <div>
-        <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">{dict.title}</h3>
+        <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight">{dict.title}</h3>
         <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{dict.subtitle}</p>
       </div>
 
-      <form onSubmit={handleGenerate} className="mt-6 space-y-5">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+      <form onSubmit={handleGenerate} className="mt-5 sm:mt-6 space-y-4 sm:space-y-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
           <div>
             <label htmlFor="merchant-select" className="block text-xs font-extrabold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">{dict.selectMerchant}</label>
             <select
@@ -88,7 +88,7 @@ export const InvoiceTrigger: React.FC<InvoiceTriggerProps> = ({ lang = 'en' }) =
               value={selectedMerchantId}
               onChange={(e) => setSelectedMerchantId(e.target.value)}
               disabled={status === 'loading'}
-              className="w-full px-4 py-2.5 text-xs font-medium bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 text-slate-900 dark:text-white transition-all"
+              className="w-full px-3.5 sm:px-4 py-2.5 text-xs font-medium bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 text-slate-900 dark:text-white transition-all"
             >
               <option value="">{dict.chooseMerchantPlaceholder}</option>
               {merchants.map((m) => (
@@ -99,7 +99,7 @@ export const InvoiceTrigger: React.FC<InvoiceTriggerProps> = ({ lang = 'en' }) =
             </select>
           </div>
           <div>
-            <label htmlFor="billing-date" className="block text-xs font-extrabold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">{dict.billingDate}</label>
+            <label htmlFor="billing-date" className="block text-xs font-extrabold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">{dict.billingDate} (DD/MM/YYYY)</label>
             <input
               type="date"
               lang="en-GB"
