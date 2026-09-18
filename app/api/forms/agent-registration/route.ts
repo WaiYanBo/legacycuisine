@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../../src/prisma';
 import { hashPassword } from '../../../../src/utils/security';
+import { archiveAgentForm } from '../../../../src/services/storage.service';
 import { Pool } from 'pg';
 
 export const dynamic = 'force-dynamic';
@@ -135,15 +136,17 @@ export async function POST(request: NextRequest) {
       });
 
       if (existingUser) {
+        const isPrivileged = (existingUser.role as string) === 'SUPER_ADMIN' || (existingUser.role as string) === 'ADMIN' || (existingUser.role as string) === 'MANAGER';
         await prisma.user.update({
           where: { id: existingUser.id },
           data: {
-            fullName: trimmedAgentName,
-            passwordHash: defaultPasswordHash,
-            role: 'AGENT',
-            department: 'Field Recruitment',
-            position: 'Agent',
-            permissions: JSON.stringify(['forms:submit']),
+            fullName: trimmedAgentName || existingUser.fullName,
+            // Preserve existing password if user already has one
+            passwordHash: existingUser.passwordHash || defaultPasswordHash,
+            // Retain high-privilege role if existing user is SUPER_ADMIN, ADMIN or MANAGER
+            role: isPrivileged ? existingUser.role : (existingUser.role || ('AGENT' as any)),
+            department: existingUser.department || 'Field Recruitment',
+            position: existingUser.position || 'Agent',
             isActive: true,
           },
         });
@@ -171,12 +174,11 @@ export async function POST(request: NextRequest) {
           connectionTimeoutMillis: 5000,
         });
         await pool.query(
-          `INSERT INTO users (username, email, full_name, password_hash, department, position, role, permissions, is_active, created_at, updated_at)
-           VALUES ($1, $2, $3, $4, 'Field Recruitment', 'Agent', 'AGENT', '["forms:submit"]', true, NOW(), NOW())
+          `INSERT INTO users (id, username, email, full_name, password_hash, department, position, role, permissions, is_active, created_at, updated_at)
+           VALUES (gen_random_uuid(), $1, $2, $3, $4, 'Field Recruitment', 'Agent', 'AGENT', '["forms:submit"]', true, NOW(), NOW())
            ON CONFLICT (email) DO UPDATE
-           SET full_name = EXCLUDED.full_name,
-               password_hash = EXCLUDED.password_hash,
-               role = 'AGENT',
+           SET full_name = COALESCE(NULLIF(EXCLUDED.full_name, ''), users.full_name),
+               role = CASE WHEN users.role IN ('ADMIN', 'MANAGER') THEN users.role ELSE 'AGENT' END,
                is_active = true,
                updated_at = NOW()`,
           [trimmedEmail, trimmedEmail, trimmedAgentName, defaultPasswordHash]
@@ -187,10 +189,17 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // 3. Archive form snapshot to Supabase Cloud Storage
+    let storageResult = null;
+    if (record) {
+      storageResult = await archiveAgentForm(record);
+    }
+
     return NextResponse.json({
       success: true,
       message: `Agent registration submitted and portal account provisioned for ${trimmedEmail} with default password Default123!.`,
       data: record,
+      storage: storageResult,
     });
   } catch (error: any) {
     console.error('[POST /api/forms/agent-registration] Unhandled error:', error);

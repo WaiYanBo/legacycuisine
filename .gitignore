@@ -36,3 +36,7 @@ lerna-debug.log*
 # Operating System files
 .DS_Store
 Thumbs.db
+
+# Scratch and audit test scripts
+scratch/
+

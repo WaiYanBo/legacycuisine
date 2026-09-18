@@ -361,5 +361,6 @@ enum UserRole {
   MANAGER
   STAFF
   AGENT
+  MERCHANT
 }
 

@@ -9,6 +9,7 @@ import { RegistrationFormsView } from '../../components/dashboard/RegistrationFo
 import { ManualOrderModal } from '../../components/dashboard/ManualOrderModal';
 import { SettingsView } from '../../components/dashboard/SettingsView';
 import { AgentPortalView } from '../../components/dashboard/AgentPortalView';
+import MerchantPortalView from '../../components/dashboard/MerchantPortalView';
 import { DashboardMetrics } from '../../types/dashboard';
 import { getDictionary, Locale } from '../../lib/i18n';
 
@@ -147,6 +148,20 @@ export default function DashboardOverviewPage() {
   if (currentUser && currentUser.role === 'AGENT') {
     return (
       <AgentPortalView
+        user={currentUser}
+        lang={lang}
+        theme={theme}
+        onToggleLang={toggleLanguage}
+        onToggleTheme={toggleTheme}
+        onLogout={handleLogout}
+      />
+    );
+  }
+
+  // 🛡️ ROLE SEPARATION: MERCHANTS ARE DIRECTED TO THE DEDICATED MERCHANT PORTAL
+  if (currentUser && currentUser.role === 'MERCHANT') {
+    return (
+      <MerchantPortalView
         user={currentUser}
         lang={lang}
         theme={theme}

@@ -4,14 +4,6 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { Locale } from '../../lib/i18n';
 
-interface MerchantEntry {
-  bil: number;
-  namaPeniaga: string;
-  platform: string;
-  tarikhDidaftarkan: string;
-  catatan: string;
-}
-
 interface AgentRegistrationFormProps {
   lang?: Locale;
 }
@@ -39,30 +31,15 @@ export default function AgentRegistrationForm({ lang = 'ms' }: AgentRegistration
   const [bankName, setBankName] = useState('');
   const [bankAccountNumber, setBankAccountNumber] = useState('');
 
-  // 3. Senarai 5 Nama Peniaga / List of 5 Successfully Registered Merchants
-  const [merchants, setMerchants] = useState<MerchantEntry[]>([
-    { bil: 1, namaPeniaga: '', platform: 'GrabFood', tarikhDidaftarkan: '', catatan: '' },
-    { bil: 2, namaPeniaga: '', platform: 'Foodpanda', tarikhDidaftarkan: '', catatan: '' },
-    { bil: 3, namaPeniaga: '', platform: 'ShopeeFood', tarikhDidaftarkan: '', catatan: '' },
-    { bil: 4, namaPeniaga: '', platform: 'GrabFood', tarikhDidaftarkan: '', catatan: '' },
-    { bil: 5, namaPeniaga: '', platform: 'ShopeeFood', tarikhDidaftarkan: '', catatan: '' },
-  ]);
-
-  // 4. Pengakuan Ejen & Terma Perkhidmatan / Declaration & Terms of Engagement
+  // 3. Pengakuan Ejen & Terma Perkhidmatan / Declaration & Terms of Engagement
   const [agreedToTerms, setAgreedToTerms] = useState(true);
   const [showTermsModal, setShowTermsModal] = useState(false);
 
-  // 5. Pengesahan & Tandatangan / Confirmation & Signature
+  // 4. Pengesahan & Tandatangan / Confirmation & Signature
   const [agentSignatureName, setAgentSignatureName] = useState('');
   const [agentSignatureDate, setAgentSignatureDate] = useState(new Date().toISOString().split('T')[0]);
   const [supervisorName, setSupervisorName] = useState('');
   const [supervisorDate, setSupervisorDate] = useState('');
-
-  const handleMerchantChange = (index: number, field: keyof MerchantEntry, value: string) => {
-    const updated = [...merchants];
-    updated[index] = { ...updated[index], [field]: value };
-    setMerchants(updated);
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -93,7 +70,7 @@ export default function AgentRegistrationForm({ lang = 'ms' }: AgentRegistration
         bankAccountName: bankAccountName || agentName,
         bankName,
         bankAccountNumber,
-        registeredMerchants: JSON.stringify(merchants),
+        registeredMerchants: JSON.stringify([]),
         prospectSource: 'Declaration Signed & Confirmed',
         prospectSourceOther: null,
         approachedByOtherAgents: 'Tidak',
@@ -132,7 +109,7 @@ export default function AgentRegistrationForm({ lang = 'ms' }: AgentRegistration
   return (
     <div className="max-w-4xl mx-auto bg-white dark:bg-[#0d1117] text-slate-900 dark:text-slate-100 p-4 sm:p-8 md:p-10 rounded-2xl sm:rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800 print:border-none print:shadow-none print:p-0 printable-card">
 
-      {/* 📄 DOCUMENT HEADER */}
+      {/* DOCUMENT HEADER */}
       <div className="border-b-2 border-red-600 pb-5 mb-6 sm:mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 print-doc-header">
         <div>
           <div className="flex items-center gap-3 mb-2">
@@ -144,7 +121,6 @@ export default function AgentRegistrationForm({ lang = 'ms' }: AgentRegistration
               onClick={() => window.print()}
               className="px-3 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-red-50 dark:hover:bg-red-950/40 text-slate-700 dark:text-slate-200 hover:text-red-600 dark:hover:text-red-400 rounded-lg text-xs font-bold border border-slate-300 dark:border-slate-700 hover:border-red-300 transition-all flex items-center gap-1.5 shadow-sm print:hidden"
             >
-              <span>🖨️</span>
               <span>{isEn ? 'Print Form' : 'Cetak Borang'}</span>
             </button>
           </div>
@@ -169,12 +145,12 @@ export default function AgentRegistrationForm({ lang = 'ms' }: AgentRegistration
       {/* Alert Messages */}
       {successMsg && (
         <div className="mb-6 p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-sm font-semibold rounded-2xl animate-fadeIn print:hidden">
-          ✅ {successMsg}
+          {successMsg}
         </div>
       )}
       {errorMsg && (
         <div className="mb-6 p-4 bg-red-50 dark:bg-red-950/40 border border-red-300 dark:border-red-800 text-red-800 dark:text-red-300 text-sm font-semibold rounded-2xl animate-fadeIn print:hidden">
-          ⚠️ {errorMsg}
+          {errorMsg}
         </div>
       )}
 
@@ -184,7 +160,7 @@ export default function AgentRegistrationForm({ lang = 'ms' }: AgentRegistration
         {/* SECTION 1: AGENT'S PERSONAL INFORMATION */}
         {/* ------------------------------------------------------------- */}
         <div className="bg-gradient-to-r from-red-600 to-red-700 text-white p-3 rounded-xl font-extrabold text-sm uppercase tracking-wider shadow-sm">
-          {isEn ? "AGENT'S PERSONAL INFORMATION" : 'MAKLUMAT PERIBADI EJEN'}
+          {isEn ? "SECTION 1: AGENT'S PERSONAL INFORMATION" : 'SEKSYEN 1: MAKLUMAT PERIBADI EJEN'}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -243,13 +219,10 @@ export default function AgentRegistrationForm({ lang = 'ms' }: AgentRegistration
               onChange={(e) => setEmail(e.target.value)}
               className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600 transition-all"
             />
-            <p className="text-[11px] text-red-600 dark:text-red-400 font-medium mt-1 flex items-center gap-1.5">
-              <span>ℹ️</span>
-              <span>
-                {isEn
-                  ? 'This email will be your portal login username with initial default password: Default123!'
-                  : 'E-mel ini akan digunakan sebagai nama pengguna log masuk portal dengan kata laluan lalai: Default123!'}
-              </span>
+            <p className="text-[11px] text-red-600 dark:text-red-400 font-medium mt-1">
+              {isEn
+                ? 'This email will be your portal login username with initial default password: Default123!'
+                : 'E-mel ini akan digunakan sebagai nama pengguna log masuk portal dengan kata laluan lalai: Default123!'}
             </p>
           </div>
 
@@ -323,10 +296,10 @@ export default function AgentRegistrationForm({ lang = 'ms' }: AgentRegistration
         </div>
 
         {/* ------------------------------------------------------------- */}
-        {/* SECTION 2: BANKING INFORMATION (FOR COMMISSION PAYMENT) */}
+        {/* SECTION 2: BANKING INFORMATION */}
         {/* ------------------------------------------------------------- */}
         <div className="bg-gradient-to-r from-red-600 to-red-700 text-white p-3 rounded-xl font-extrabold text-sm uppercase tracking-wider shadow-sm mt-8">
-          {isEn ? 'BANKING INFORMATION (FOR COMMISSION PAYMENT)' : 'MAKLUMAT PERBANKAN (UNTUK PEMBAYARAN KOMISEN)'}
+          {isEn ? 'SECTION 2: BANKING INFORMATION' : 'SEKSYEN 2: MAKLUMAT PERBANKAN'}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -381,87 +354,18 @@ export default function AgentRegistrationForm({ lang = 'ms' }: AgentRegistration
         </p>
 
         {/* ------------------------------------------------------------- */}
-        {/* SECTION 3: LIST OF 5 SUCCESSFULLY REGISTERED MERCHANTS */}
+        {/* SECTION 3: AGENT'S DECLARATION / SEKSYEN 3: PENGAKUAN EJEN */}
         {/* ------------------------------------------------------------- */}
-        <div className="bg-gradient-to-r from-red-600 to-red-700 text-white p-3 rounded-xl font-extrabold text-sm uppercase tracking-wider shadow-sm mt-8">
-          {isEn ? 'LIST OF 5 SUCCESSFULLY REGISTERED MERCHANTS' : 'SENARAI 5 NAMA PENIAGA YANG BERJAYA DIDAFTARKAN'}
-        </div>
-
-        <div className="overflow-x-auto print:overflow-visible rounded-2xl border border-slate-200 dark:border-slate-800 print:border-slate-300">
-          <table className="w-full min-w-[620px] text-left text-xs text-slate-800 dark:text-slate-200 print:text-black">
-            <thead className="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-white font-bold uppercase tracking-wider border-b border-slate-200 dark:border-slate-800">
-              <tr>
-                <th className="py-3 px-3 w-12 text-center">{isEn ? 'No.' : 'Bil.'}</th>
-                <th className="py-3 px-3">{isEn ? 'Merchant Name' : 'Nama Peniaga'}</th>
-                <th className="py-3 px-3 w-40">Platform</th>
-                <th className="py-3 px-3 w-36">{isEn ? 'Date Registered (DD/MM/YYYY)' : 'Tarikh Didaftarkan (DD/MM/YYYY)'}</th>
-                <th className="py-3 px-3">{isEn ? 'Remarks' : 'Catatan'}</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
-              {merchants.map((merchant, idx) => (
-                <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-slate-900/50">
-                  <td className="py-2.5 px-3 text-center font-bold text-slate-500">{merchant.bil}</td>
-                  <td className="py-2.5 px-3">
-                    <input
-                      type="text"
-                      placeholder={isEn ? 'Store / Merchant Name' : 'Nama Kedai / Peniaga'}
-                      value={merchant.namaPeniaga}
-                      onChange={(e) => handleMerchantChange(idx, 'namaPeniaga', e.target.value)}
-                      className="w-full px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs focus:outline-none focus:ring-1 focus:ring-red-600"
-                    />
-                  </td>
-                  <td className="py-2.5 px-3">
-                    <select
-                      value={merchant.platform}
-                      onChange={(e) => handleMerchantChange(idx, 'platform', e.target.value)}
-                      className="w-full px-2 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs focus:outline-none focus:ring-1 focus:ring-red-600"
-                    >
-                      <option value="GrabFood">GrabFood</option>
-                      <option value="Foodpanda">Foodpanda</option>
-                      <option value="ShopeeFood">ShopeeFood</option>
-                      <option value="All Platforms">{isEn ? 'All Platforms' : 'Semua Platform'}</option>
-                    </select>
-                  </td>
-                  <td className="py-2.5 px-3">
-                    <input
-                      type="date"
-                      lang="en-GB"
-                      placeholder="dd/mm/yyyy"
-                      value={merchant.tarikhDidaftarkan}
-                      onChange={(e) => handleMerchantChange(idx, 'tarikhDidaftarkan', e.target.value)}
-                      className="w-full px-2 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs focus:outline-none focus:ring-1 focus:ring-red-600"
-                    />
-                  </td>
-                  <td className="py-2.5 px-3">
-                    <input
-                      type="text"
-                      placeholder={isEn ? 'Status remarks' : 'Catatan status'}
-                      value={merchant.catatan}
-                      onChange={(e) => handleMerchantChange(idx, 'catatan', e.target.value)}
-                      className="w-full px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs focus:outline-none focus:ring-1 focus:ring-red-600"
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* ------------------------------------------------------------- */}
-        {/* PAGE 2 BLOCK: SECTION 4 & SECTION 5 (UNIFIED PAGE BLOCK) */}
-        {/* ------------------------------------------------------------- */}
-        <div className="print-break-before break-inside-avoid section-block">
-          {/* SECTION 4: AGENT'S DECLARATION / SEKSYEN 4: PENGAKUAN EJEN */}
-          <div className="bg-gradient-to-r from-red-600 to-red-700 text-white p-3 rounded-xl font-extrabold text-sm uppercase tracking-wider shadow-sm mt-8">
-            {isEn ? "SECTION 4: AGENT'S DECLARATION" : 'SEKSYEN 4: PENGAKUAN EJEN'}
+        <div className="break-inside-avoid section-block print:mt-1">
+          <div className="bg-gradient-to-r from-red-600 to-red-700 text-white p-3 print:p-1.5 rounded-xl font-extrabold text-sm uppercase tracking-wider shadow-sm mt-8 print:mt-0">
+            {isEn ? "SECTION 3: AGENT'S DECLARATION" : 'SEKSYEN 3: PENGAKUAN EJEN'}
           </div>
 
-          <div className="bg-slate-50 dark:bg-slate-950/60 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 text-xs mt-3 space-y-3">
+          <div className="bg-slate-50 dark:bg-slate-950/60 p-4 sm:p-5 print:p-2 rounded-2xl border border-slate-200 dark:border-slate-800 text-xs mt-3 print:mt-1 space-y-3 print:space-y-1">
             <p className="text-slate-700 dark:text-slate-300 leading-relaxed text-xs">
               {isEn ? (
                 <>
-                  I hereby solemnly declare that all personal particulars, banking information, and registered merchants submitted in this form are true, accurate, and complete to the best of my knowledge. I confirm that I have read, understood, and agreed to be bound by the official{' '}
+                  I hereby solemnly declare that all personal particulars and banking information submitted in this form are true, accurate, and complete to the best of my knowledge. I confirm that I have read, understood, and agreed to be bound by the official{' '}
                   <button
                     type="button"
                     onClick={() => setShowTermsModal(true)}
@@ -474,7 +378,7 @@ export default function AgentRegistrationForm({ lang = 'ms' }: AgentRegistration
                 </>
               ) : (
                 <>
-                  Saya dengan sesungguhnya memperakui bahawa semua butiran peribadi, maklumat perbankan, dan senarai peniaga yang dikemukakan dalam borang ini adalah benar, tepat, dan lengkap setakat pengetahuan saya. Saya mengesahkan bahawa saya telah membaca, memahami, dan bersetuju untuk terikat dengan{' '}
+                  Saya dengan sesungguhnya memperakui bahawa semua butiran peribadi dan maklumat perbankan yang dikemukakan dalam borang ini adalah benar, tepat, dan lengkap setakat pengetahuan saya. Saya mengesahkan bahawa saya telah membaca, memahami, dan bersetuju untuk terikat dengan{' '}
                   <button
                     type="button"
                     onClick={() => setShowTermsModal(true)}
@@ -488,7 +392,7 @@ export default function AgentRegistrationForm({ lang = 'ms' }: AgentRegistration
               )}
             </p>
 
-            <div className="pt-2.5 border-t border-slate-200 dark:border-slate-800">
+            <div className="pt-2.5 print:pt-1 border-t border-slate-200 dark:border-slate-800">
               <label className="flex items-start gap-2.5 cursor-pointer">
                 <input
                   type="checkbox"
@@ -505,21 +409,25 @@ export default function AgentRegistrationForm({ lang = 'ms' }: AgentRegistration
               </label>
             </div>
           </div>
+        </div>
 
-          {/* SECTION 5: CONFIRMATION & SIGNATURE */}
-          <div className="bg-gradient-to-r from-red-600 to-red-700 text-white p-3 rounded-xl font-extrabold text-sm uppercase tracking-wider shadow-sm mt-6">
-            {isEn ? 'CONFIRMATION & SIGNATURE' : 'PENGESAHAN & TANDATANGAN'}
+        {/* ------------------------------------------------------------- */}
+        {/* SECTION 4: CONFIRMATION & SIGNATURE */}
+        {/* ------------------------------------------------------------- */}
+        <div className="break-inside-avoid section-block print:mt-1">
+          <div className="bg-gradient-to-r from-red-600 to-red-700 text-white p-3 print:p-1.5 rounded-xl font-extrabold text-sm uppercase tracking-wider shadow-sm mt-6 print:mt-0">
+            {isEn ? 'SECTION 4: CONFIRMATION & SIGNATURE' : 'SEKSYEN 4: PENGESAHAN & TANDATANGAN'}
           </div>
 
-          <p className="text-xs text-slate-600 dark:text-slate-400 font-medium italic my-2">
+          <p className="text-xs text-slate-600 dark:text-slate-400 font-medium italic my-2 print:my-0.5">
             {isEn
               ? 'I confirm that all information stated in this form is true and accurate to the best of my knowledge.'
               : 'Saya mengesahkan bahawa semua maklumat yang dinyatakan dalam borang ini adalah benar dan tepat setakat pengetahuan saya.'}
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 print-grid-2 signature-grid gap-4 pt-2 border-t border-slate-200 dark:border-slate-800">
+          <div className="grid grid-cols-1 md:grid-cols-2 print-grid-2 signature-grid gap-4 print:gap-2 pt-2 print:pt-1 border-t border-slate-200 dark:border-slate-800">
             {/* Agent Signature Box */}
-            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-3 signature-box break-inside-avoid">
+            <div className="p-4 print:p-2 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-3 print:space-y-1 signature-box break-inside-avoid">
               <h4 className="font-bold text-xs uppercase tracking-wider text-slate-900 dark:text-white">
                 {isEn ? "Agent's Signature" : 'Tandatangan Ejen'}
               </h4>
@@ -551,7 +459,7 @@ export default function AgentRegistrationForm({ lang = 'ms' }: AgentRegistration
             </div>
 
             {/* Supervisor Signature Box */}
-            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-3 signature-box break-inside-avoid">
+            <div className="p-4 print:p-2 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-3 print:space-y-1 signature-box break-inside-avoid">
               <h4 className="font-bold text-xs uppercase tracking-wider text-slate-900 dark:text-white">
                 {isEn ? "Supervisor / Verifier's Signature" : 'Tandatangan Penyelia / Pengesah'}
               </h4>
@@ -605,7 +513,7 @@ export default function AgentRegistrationForm({ lang = 'ms' }: AgentRegistration
 
       </form>
 
-      {/* 📜 TERMS & CONDITIONS TEMPLATE MODAL (HIDDEN ON PRINT) */}
+      {/* TERMS & CONDITIONS TEMPLATE MODAL (HIDDEN ON PRINT) */}
       {showTermsModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/75 backdrop-blur-sm overflow-y-auto animate-fadeIn print:hidden">
           <div className="max-w-2xl w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 sm:p-7 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto text-slate-900 dark:text-slate-100">
