@@ -594,7 +594,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase mb-1">
-                    {dict.orderDateLabel}
+                    {dict.orderDateLabel} (DD/MM/YYYY)
                   </label>
                   <input
                     type="datetime-local"

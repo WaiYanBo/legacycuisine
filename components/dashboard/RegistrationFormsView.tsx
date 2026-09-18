@@ -25,7 +25,7 @@ export function RegistrationFormsView({ lang = 'ms' }: RegistrationFormsViewProp
   const isEn = selectedLang === 'en';
 
   return (
-    <div className="space-y-6 animate-fadeIn">
+    <div className="space-y-6 animate-fadeIn print:space-y-0 print:m-0 print:p-0">
       {/* View Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-5 print:hidden">
         <div>
@@ -52,7 +52,7 @@ export function RegistrationFormsView({ lang = 'ms' }: RegistrationFormsViewProp
                 : 'text-slate-600 dark:text-slate-300 hover:text-red-600'
             }`}
           >
-            BM 🇲🇾
+            BM
           </button>
           <button
             onClick={() => setSelectedLang('en')}
@@ -62,7 +62,7 @@ export function RegistrationFormsView({ lang = 'ms' }: RegistrationFormsViewProp
                 : 'text-slate-600 dark:text-slate-300 hover:text-red-600'
             }`}
           >
-            EN 🇬🇧
+            EN
           </button>
         </div>
       </div>
@@ -94,8 +94,8 @@ export function RegistrationFormsView({ lang = 'ms' }: RegistrationFormsViewProp
             </h3>
             <p className={`text-xs mt-1 ${formType === 'agent' ? 'text-red-100' : 'text-slate-500 dark:text-slate-400'}`}>
               {isEn
-                ? 'Personal details, banking, 5 registered merchants & agent audit survey'
-                : 'Rekod peribadi, perbankan, 5 peniaga didaftarkan & kaji selidik ejen'}
+                ? 'Personal details, banking credentials & appointment declaration'
+                : 'Rekod peribadi, maklumat perbankan & akuan pelantikan ejen'}
             </p>
           </div>
         </button>
@@ -125,8 +125,8 @@ export function RegistrationFormsView({ lang = 'ms' }: RegistrationFormsViewProp
             </h3>
             <p className={`text-xs mt-1 ${formType === 'merchant' ? 'text-red-100' : 'text-slate-500 dark:text-slate-400'}`}>
               {isEn
-                ? 'Store onboarding form, business profile & shop frontage photo'
-                : 'Borang onboarding profil kedai & muat naik gambar premis peniaga'}
+                ? 'Store onboarding, business details, supporting documents & premises photo'
+                : 'Borang onboarding kedai, dokumen sokongan & gambar premis'}
             </p>
           </div>
         </button>
@@ -164,7 +164,7 @@ export function RegistrationFormsView({ lang = 'ms' }: RegistrationFormsViewProp
       </div>
 
       {/* Render Selected Form */}
-      <div className="mt-6">
+      <div className="mt-6 print:mt-0 print:m-0 print:p-0">
         {formType === 'agent' && (
           <AgentRegistrationForm lang={selectedLang} />
         )}

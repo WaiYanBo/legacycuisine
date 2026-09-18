@@ -239,6 +239,14 @@
     line-height: 1.25;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   *, *::before, *::after {
@@ -255,21 +263,29 @@
   footer,
   .print\:hidden,
   .no-print,
-  button {
+  button,
+  next-route-announcer {
     display: none !important;
   }
 
   /* Reset outer dashboard containers to fluid flow */
+  main,
   #dashboard-root {
     display: block !important;
     height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
     overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
     background: #ffffff !important;
   }
 
   #dashboard-main {
     display: block !important;
     height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
     overflow: visible !important;
     padding: 0 !important;
     margin: 0 !important;
@@ -287,6 +303,27 @@
     border: none !important;
     box-shadow: none !important;
     background: transparent !important;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  /* Zero out large vertical spacing classes during print */
+  .space-y-6,
+  .space-y-8,
+  .mt-6,
+  .mt-8 {
+    margin-top: 0 !important;
+  }
+
+  /* Prevent trailing margins/paddings from generating a blank 2nd page */
+  body > *:last-child,
+  #dashboard-root > *:last-child,
+  #dashboard-main > *:last-child,
+  .printable-card > *:last-child,
+  form > *:last-child,
+  .section-block:last-child {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
   }
 
   /* 🖨️ Modal Print Reset: Removes dark backdrop, centered card borders & shadow */
@@ -328,7 +365,10 @@
   }
 
   .printable-card form {
-    space-y: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
   }
 
   .printable-card form > * + * {
@@ -492,13 +532,9 @@
     page-break-after: always !important;
   }
 
-  /* Avoid page breaks inside individual sections & signature boxes */
-  .section-block,
+  /* Avoid page breaks inside individual elements & signature boxes */
   .page-break-avoid,
   .break-inside-avoid,
-  .grid,
-  table,
-  tbody,
   tr,
   .signature-box {
     break-inside: avoid !important;
@@ -559,6 +595,36 @@
     display: grid !important;
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     gap: 4px 8px !important;
+  }
+
+  /* Compact 2-column layout for legal terms on paper */
+  .print-terms-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 1px 12px !important;
+    font-size: 6.2pt !important;
+    line-height: 1.15 !important;
+  }
+
+  .print-terms-grid li {
+    font-size: 6.2pt !important;
+    line-height: 1.15 !important;
+    margin-bottom: 2px !important;
+  }
+
+  .signature-box {
+    padding: 3px 6px !important;
+  }
+
+  .signature-box input {
+    height: 18px !important;
+    font-size: 6.8pt !important;
+    padding: 1px 4px !important;
+  }
+
+  .signature-box label {
+    font-size: 6pt !important;
+    margin-bottom: 0px !important;
   }
 
   /* Typography scale */

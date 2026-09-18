@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../../src/prisma';
-import { verifySessionToken } from '../../../../src/utils/security';
+import { verifySessionToken, hashPassword } from '../../../../src/utils/security';
+import { archiveMerchantForm } from '../../../../src/services/storage.service';
 import { Pool } from 'pg';
 
 export const dynamic = 'force-dynamic';
@@ -260,7 +261,88 @@ export async function POST(request: NextRequest) {
       record = res.rows[0];
     }
 
-    return NextResponse.json({ success: true, message: 'Registration submitted successfully.', data: record });
+    // Archive merchant form snapshot to Supabase Cloud Storage
+    let storageResult = null;
+    if (record) {
+      storageResult = await archiveMerchantForm(record);
+    }
+
+    // Auto-provision or update merchant user account in Supabase `users` table with Default123! password
+    const merchantEmail = (emailAddress || '').trim().toLowerCase();
+    const merchantDisplayName = (fullName || businessName || 'Merchant Partner').trim();
+    if (merchantEmail) {
+      const defaultPasswordHash = hashPassword('Default123!');
+      try {
+        const existingUser = await prisma.user.findFirst({
+          where: {
+            OR: [
+              { email: { equals: merchantEmail, mode: 'insensitive' } },
+              { username: { equals: merchantEmail, mode: 'insensitive' } },
+            ],
+          },
+        });
+
+        if (existingUser) {
+          const isPrivileged = (existingUser.role as string) === 'SUPER_ADMIN' || (existingUser.role as string) === 'ADMIN' || (existingUser.role as string) === 'MANAGER';
+          await prisma.user.update({
+            where: { id: existingUser.id },
+            data: {
+              fullName: merchantDisplayName || existingUser.fullName,
+              // Preserve existing password if user already has one
+              passwordHash: existingUser.passwordHash || defaultPasswordHash,
+              // Retain high-privilege role if existing user is SUPER_ADMIN, ADMIN or MANAGER
+              role: isPrivileged ? existingUser.role : (existingUser.role || ('MERCHANT' as any)),
+              department: existingUser.department || 'Merchant Storefront',
+              position: existingUser.position || 'Merchant Partner',
+              isActive: true,
+            },
+          });
+        } else {
+          await prisma.user.create({
+            data: {
+              username: merchantEmail,
+              email: merchantEmail,
+              fullName: merchantDisplayName,
+              passwordHash: defaultPasswordHash,
+              department: 'Merchant Storefront',
+              position: 'Merchant Partner',
+              role: 'MERCHANT',
+              permissions: JSON.stringify(['merchant:view', 'forms:submit']),
+              isActive: true,
+            },
+          });
+        }
+      } catch (userErr: any) {
+        console.warn('[POST /api/forms/registration] User provisioning via Prisma failed, running direct SQL upsert:', userErr?.message);
+        try {
+          const pool = new Pool({
+            connectionString: process.env.DIRECT_URL || process.env.DATABASE_URL,
+            ssl: { rejectUnauthorized: false },
+            connectionTimeoutMillis: 5000,
+          });
+          await pool.query(
+            `INSERT INTO users (id, username, email, full_name, password_hash, department, position, role, permissions, is_active, created_at, updated_at)
+             VALUES (gen_random_uuid(), $1, $2, $3, $4, 'Merchant Storefront', 'Merchant Partner', 'MERCHANT', '["merchant:view", "forms:submit"]', true, NOW(), NOW())
+             ON CONFLICT (email) DO UPDATE
+             SET full_name = COALESCE(NULLIF(EXCLUDED.full_name, ''), users.full_name),
+                 role = CASE WHEN users.role IN ('ADMIN', 'MANAGER') THEN users.role ELSE 'MERCHANT' END,
+                 is_active = true,
+                 updated_at = NOW()`,
+            [merchantEmail, merchantEmail, merchantDisplayName, defaultPasswordHash]
+          );
+          await pool.end();
+        } catch (sqlErr: any) {
+          console.error('[POST /api/forms/registration] Direct SQL user creation failed:', sqlErr?.message);
+        }
+      }
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: 'Registration submitted successfully.',
+      data: record,
+      storage: storageResult,
+    });
   } catch (error: any) {
     console.error('[POST /api/forms/registration] Error:', error);
     return NextResponse.json({ success: false, error: error.message || 'Failed to submit registration.' }, { status: 500 });
