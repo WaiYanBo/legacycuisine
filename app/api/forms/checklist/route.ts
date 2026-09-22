@@ -68,3 +68,27 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, error: error.message || 'Failed to submit checklist.' }, { status: 500 });
   }
 }
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    let id = searchParams.get('id');
+
+    if (!id) {
+      const body = await request.json().catch(() => ({}));
+      id = body?.id;
+    }
+
+    if (!id) {
+      return NextResponse.json({ success: false, error: 'Checklist ID is required' }, { status: 400 });
+    }
+
+    await prisma.merchantChecklist.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({ success: true, message: 'Checklist deleted successfully.' });
+  } catch (error: any) {
+    return NextResponse.json({ success: false, error: error.message || 'Failed to delete checklist.' }, { status: 500 });
+  }
+}

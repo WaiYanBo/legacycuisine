@@ -83,7 +83,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 4. Check active status
+    // 4. Role Authorization: Only internal staff and field agents can access the portal
+    if (user.role === 'MERCHANT') {
+      return NextResponse.json(
+        { success: false, error: 'Merchant portal access is not supported. Only internal staff and registration agents may log in. / Log masuk peniaga tidak disokong. Hanya kakitangan dalaman dan ejen pendaftaran dibenarkan.' },
+        { status: 403 }
+      );
+    }
+
+    // 5. Check active status
     if (!user.isActive) {
       return NextResponse.json(
         { success: false, error: 'Your account has been deactivated. Please contact support. / Akaun anda telah dinyahaktifkan.' },
@@ -91,7 +99,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 5. Update last_login timestamp (non-blocking)
+    // 6. Update last_login timestamp (non-blocking)
     try {
       prisma.user.update({
         where: { id: user.id },

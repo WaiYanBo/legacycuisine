@@ -269,6 +269,7 @@ model BusinessRegistration {
   agentSignatureId   String?   @map("agent_signature_id")
   agentSignatureDate DateTime? @map("agent_signature_date")
   agentUserId        String?   @map("agent_user_id") @db.Uuid
+  agentUser          User?     @relation(fields: [agentUserId], references: [id], onDelete: SetNull)
   agentEmail         String?   @map("agent_email")
 
   reviewerSignature String?   @map("reviewer_signature") @db.Text
@@ -350,6 +351,8 @@ model User {
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @updatedAt @map("updated_at")
 
+  businessRegistrations BusinessRegistration[]
+
   @@index([username])
   @@index([department])
   @@index([role])
@@ -361,6 +364,6 @@ enum UserRole {
   MANAGER
   STAFF
   AGENT
-  MERCHANT
+  MERCHANT // Deprecated: merchants do not have portal access
 }
 
