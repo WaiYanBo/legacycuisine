@@ -28,6 +28,70 @@ export default function SubmissionsViewer({ lang = 'en' }: SubmissionsViewerProp
     data: any;
   } | null>(null);
 
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const handleDeleteAgent = async (agent: any) => {
+    const confirmMsg = isEn
+      ? `Are you sure you want to delete agent "${agent.agentName}" (No: ${agent.agentNo})? This will also delete their agent login account. This action cannot be undone.`
+      : `Adakah anda pasti mahu memadam rekod ejen "${agent.agentName}" (No: ${agent.agentNo})? Ini juga akan memadam akaun log masuk ejen mereka. Tindakan ini tidak boleh diundur.`;
+    if (!window.confirm(confirmMsg)) return;
+
+    setDeletingId(agent.id);
+    try {
+      const res = await fetch(`/api/forms/agent-registration?id=${agent.id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || 'Failed to delete agent');
+      alert(isEn ? 'Agent deleted successfully.' : 'Rekod ejen berjaya dipadam.');
+      fetchSubmissions();
+    } catch (err: any) {
+      alert(err.message || 'Error deleting agent');
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  const handleDeleteMerchant = async (merchant: any) => {
+    const name = merchant.businessName || merchant.fullName || 'this merchant';
+    const confirmMsg = isEn
+      ? `Are you sure you want to delete merchant registration "${name}"? This action cannot be undone.`
+      : `Adakah anda pasti mahu memadam pendaftaran peniaga "${name}"? Tindakan ini tidak boleh diundur.`;
+    if (!window.confirm(confirmMsg)) return;
+
+    setDeletingId(merchant.id);
+    try {
+      const res = await fetch(`/api/forms/registration?id=${merchant.id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || 'Failed to delete merchant');
+      alert(isEn ? 'Merchant registration deleted successfully.' : 'Pendaftaran peniaga berjaya dipadam.');
+      fetchSubmissions();
+    } catch (err: any) {
+      alert(err.message || 'Error deleting merchant');
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  const handleDeleteChecklist = async (checklist: any) => {
+    const name = checklist.merchant || checklist.personInCharge || 'this checklist';
+    const confirmMsg = isEn
+      ? `Are you sure you want to delete checklist for "${name}"? This action cannot be undone.`
+      : `Adakah anda pasti mahu memadam senarai semak untuk "${name}"? Tindakan ini tidak boleh diundur.`;
+    if (!window.confirm(confirmMsg)) return;
+
+    setDeletingId(checklist.id);
+    try {
+      const res = await fetch(`/api/forms/checklist?id=${checklist.id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || 'Failed to delete checklist');
+      alert(isEn ? 'Checklist deleted successfully.' : 'Senarai semak berjaya dipadam.');
+      fetchSubmissions();
+    } catch (err: any) {
+      alert(err.message || 'Error deleting checklist');
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   useEffect(() => {
     fetchSubmissions();
   }, []);
@@ -378,6 +442,20 @@ export default function SubmissionsViewer({ lang = 'en' }: SubmissionsViewerProp
                           </svg>
                           <span>{isEn ? 'View Form' : 'Lihat Borang'}</span>
                         </button>
+
+                        {/* DELETE AGENT BUTTON */}
+                        <button
+                          type="button"
+                          disabled={deletingId === a.id}
+                          onClick={() => handleDeleteAgent(a)}
+                          className="px-3 py-1.5 rounded-lg bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-600 dark:hover:bg-rose-700 text-rose-600 dark:text-rose-400 hover:text-white font-bold text-xs flex items-center gap-1.5 border border-rose-200 dark:border-rose-800 hover:border-rose-600 transition-all disabled:opacity-50"
+                          title={isEn ? 'Delete this agent registration' : 'Padam pendaftaran ejen ini'}
+                        >
+                          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                          <span>{deletingId === a.id ? (isEn ? 'Deleting...' : 'Memadam...') : (isEn ? 'Delete' : 'Padam')}</span>
+                        </button>
                       </div>
                     </div>
 
@@ -487,6 +565,20 @@ export default function SubmissionsViewer({ lang = 'en' }: SubmissionsViewerProp
                         </svg>
                         <span>{isEn ? 'View Form' : 'Lihat Borang'}</span>
                       </button>
+
+                      {/* DELETE CHECKLIST BUTTON */}
+                      <button
+                        type="button"
+                        disabled={deletingId === c.id}
+                        onClick={() => handleDeleteChecklist(c)}
+                        className="px-3 py-1.5 rounded-lg bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-600 dark:hover:bg-rose-700 text-rose-600 dark:text-rose-400 hover:text-white font-bold text-xs flex items-center gap-1.5 border border-rose-200 dark:border-rose-800 hover:border-rose-600 transition-all disabled:opacity-50"
+                        title={isEn ? 'Delete this checklist' : 'Padam senarai semak ini'}
+                      >
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        <span>{deletingId === c.id ? (isEn ? 'Deleting...' : 'Memadam...') : (isEn ? 'Delete' : 'Padam')}</span>
+                      </button>
                     </div>
                   </div>
 
@@ -575,18 +667,34 @@ export default function SubmissionsViewer({ lang = 'en' }: SubmissionsViewerProp
                           <span>Safe in Supabase Storage</span>
                         </span>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => setViewingForm({ type: 'merchant', data: r })}
-                        className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm shadow-red-600/20 transition-all"
-                        title={isEn ? 'View official merchant onboarding form' : 'Lihat borang onboarding rasmi'}
-                      >
-                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
-                        <span>{isEn ? 'View Form' : 'Lihat Borang'}</span>
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setViewingForm({ type: 'merchant', data: r })}
+                          className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm shadow-red-600/20 transition-all"
+                          title={isEn ? 'View official merchant onboarding form' : 'Lihat borang onboarding rasmi'}
+                        >
+                          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          </svg>
+                          <span>{isEn ? 'View Form' : 'Lihat Borang'}</span>
+                        </button>
+
+                        {/* DELETE MERCHANT REGISTRATION BUTTON */}
+                        <button
+                          type="button"
+                          disabled={deletingId === r.id}
+                          onClick={() => handleDeleteMerchant(r)}
+                          className="px-3 py-1.5 rounded-lg bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-600 dark:hover:bg-rose-700 text-rose-600 dark:text-rose-400 hover:text-white font-bold text-xs flex items-center gap-1.5 border border-rose-200 dark:border-rose-800 hover:border-rose-600 transition-all disabled:opacity-50"
+                          title={isEn ? 'Delete this merchant registration' : 'Padam pendaftaran peniaga ini'}
+                        >
+                          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                          <span>{deletingId === r.id ? (isEn ? 'Deleting...' : 'Memadam...') : (isEn ? 'Delete' : 'Padam')}</span>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 );

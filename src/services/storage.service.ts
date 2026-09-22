@@ -86,3 +86,30 @@ export async function archiveMerchantForm(record: any): Promise<StorageArchiveRe
   const fileId = record.id || record.registrationNo || `merchant-${Date.now()}`;
   return uploadFormToSupabaseStorage('merchants', `${fileId}.json`, record);
 }
+
+/**
+ * Delete an archived registration form from Supabase Storage
+ */
+export async function deleteFormFromSupabaseStorage(
+  folder: 'agents' | 'merchants' | 'checklists',
+  fileName: string
+): Promise<boolean> {
+  try {
+    const cleanFileName = fileName.endsWith('.json') ? fileName : `${fileName}.json`;
+    const objectPath = `${folder}/${cleanFileName}`;
+    const targetUrl = `${SUPABASE_URL}/storage/v1/object/${BUCKET_NAME}/${objectPath}`;
+
+    const response = await fetch(targetUrl, {
+      method: 'DELETE',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+      },
+    });
+
+    return response.ok;
+  } catch (err) {
+    console.warn(`[SupabaseStorage] Warning deleting ${folder}/${fileName}:`, err);
+    return false;
+  }
+}

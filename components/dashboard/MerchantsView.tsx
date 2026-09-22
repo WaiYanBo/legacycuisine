@@ -34,6 +34,25 @@ export const MerchantsView: React.FC = () => {
   const [storefrontForm, setStorefrontForm] = useState({ merchantId: '', name: '', grabEmail: '' });
 
   const [submitting, setSubmitting] = useState<boolean>(false);
+  const [deletingMerchantId, setDeletingMerchantId] = useState<string | null>(null);
+
+  const handleDeleteMerchant = async (merchant: Merchant) => {
+    const confirmMsg = `Are you sure you want to delete merchant "${merchant.businessName}"? This will also remove any mapped storefront accounts. This action cannot be undone.`;
+    if (!window.confirm(confirmMsg)) return;
+
+    setDeletingMerchantId(merchant.id);
+    try {
+      const res = await fetch(`/api/merchants?id=${merchant.id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || 'Failed to delete merchant');
+      alert('Merchant deleted successfully.');
+      fetchMerchants();
+    } catch (err: any) {
+      alert(err.message || 'Error deleting merchant');
+    } finally {
+      setDeletingMerchantId(null);
+    }
+  };
 
   const fetchMerchants = async () => {
     try {
@@ -159,13 +178,26 @@ export const MerchantsView: React.FC = () => {
                     <h4 className="text-lg font-bold text-black dark:text-white">{merchant.businessName}</h4>
                     <span className="text-xs font-semibold text-[#b0712d]">Owned by: {merchant.name}</span>
                   </div>
-                  <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${
-                    merchant.status === 'ACTIVE'
-                      ? 'bg-[#b0712d]/15 text-black dark:text-white border-[#b0712d]'
-                      : 'bg-[#aa0505]/15 text-[#aa0505] border-[#aa0505]'
-                  }`}>
-                    {merchant.status}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${
+                      merchant.status === 'ACTIVE'
+                        ? 'bg-[#b0712d]/15 text-black dark:text-white border-[#b0712d]'
+                        : 'bg-[#aa0505]/15 text-[#aa0505] border-[#aa0505]'
+                    }`}>
+                      {merchant.status}
+                    </span>
+                    <button
+                      type="button"
+                      disabled={deletingMerchantId === merchant.id}
+                      onClick={() => handleDeleteMerchant(merchant)}
+                      className="p-1 rounded-md text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-all disabled:opacity-50"
+                      title="Delete this merchant"
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
 
                 <div className="mt-4 space-y-1.5 text-xs text-[#b0712d] border-t border-[#b0712d] pt-3">

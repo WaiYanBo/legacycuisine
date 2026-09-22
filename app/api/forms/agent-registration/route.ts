@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../../src/prisma';
 import { hashPassword } from '../../../../src/utils/security';
-import { archiveAgentForm } from '../../../../src/services/storage.service';
+import { archiveAgentForm, deleteFormFromSupabaseStorage } from '../../../../src/services/storage.service';
 import { Pool } from 'pg';
 
 export const dynamic = 'force-dynamic';
@@ -205,6 +205,81 @@ export async function POST(request: NextRequest) {
     console.error('[POST /api/forms/agent-registration] Unhandled error:', error);
     return NextResponse.json(
       { success: false, error: error.message || 'Failed to submit agent registration.' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    let id = searchParams.get('id');
+
+    if (!id) {
+      const body = await request.json().catch(() => ({}));
+      id = body?.id;
+    }
+
+    if (!id) {
+      return NextResponse.json({ success: false, error: 'Agent registration ID is required' }, { status: 400 });
+    }
+
+    // 1. Fetch agent record first to find associated email/user
+    let agentEmail: string | null = null;
+    try {
+      const agent = await prisma.agentRegistration.findUnique({
+        where: { id },
+        select: { email: true },
+      });
+      agentEmail = agent?.email || null;
+    } catch {}
+
+    // 2. Delete agent registration record
+    let deleted = false;
+    try {
+      await prisma.agentRegistration.delete({
+        where: { id },
+      });
+      deleted = true;
+    } catch (prismaErr: any) {
+      console.warn('[DELETE /api/forms/agent-registration] Prisma delete failed, trying direct PG pooler:', prismaErr?.message);
+    }
+
+    if (!deleted) {
+      const pool = new Pool({
+        connectionString: process.env.DIRECT_URL || process.env.DATABASE_URL,
+        ssl: { rejectUnauthorized: false },
+        connectionTimeoutMillis: 5000,
+      });
+      await pool.query('DELETE FROM agent_registrations WHERE id = $1', [id]);
+      await pool.end();
+    }
+
+    // 3. If there is an associated agent login account in `users` with this email, delete it as well
+    if (agentEmail) {
+      try {
+        await prisma.user.deleteMany({
+          where: {
+            email: { equals: agentEmail, mode: 'insensitive' },
+            role: 'AGENT',
+          },
+        });
+      } catch (userDelErr) {
+        console.warn('[DELETE /api/forms/agent-registration] Could not delete associated agent user account:', userDelErr);
+      }
+    }
+
+    // 4. Clean up storage snapshot asynchronously
+    deleteFormFromSupabaseStorage('agents', id).catch(() => {});
+
+    return NextResponse.json({
+      success: true,
+      message: 'Agent registration and associated agent user account deleted successfully.',
+    });
+  } catch (error: any) {
+    console.error('[DELETE /api/forms/agent-registration] Error:', error);
+    return NextResponse.json(
+      { success: false, error: error.message || 'Failed to delete agent registration.' },
       { status: 500 }
     );
   }

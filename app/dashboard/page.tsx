@@ -158,18 +158,10 @@ export default function DashboardOverviewPage() {
     );
   }
 
-  // 🛡️ ROLE SEPARATION: MERCHANTS ARE DIRECTED TO THE DEDICATED MERCHANT PORTAL
+  // 🛡️ ROLE SEPARATION: MERCHANTS DO NOT HAVE PORTAL ACCESS
   if (currentUser && currentUser.role === 'MERCHANT') {
-    return (
-      <MerchantPortalView
-        user={currentUser}
-        lang={lang}
-        theme={theme}
-        onToggleLang={toggleLanguage}
-        onToggleTheme={toggleTheme}
-        onLogout={handleLogout}
-      />
-    );
+    handleLogout();
+    return null;
   }
 
   return (
