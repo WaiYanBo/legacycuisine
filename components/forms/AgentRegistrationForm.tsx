@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Image from 'next/image';
 import { Locale } from '../../lib/i18n';
 
@@ -11,9 +11,35 @@ interface AgentRegistrationFormProps {
 export default function AgentRegistrationForm({ lang = 'ms' }: AgentRegistrationFormProps) {
   const isEn = lang === 'en';
 
+  const formTopRef = useRef<HTMLDivElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+
+  const scrollToTop = () => {
+    const performScroll = () => {
+      if (formTopRef.current) {
+        formTopRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      const dashboardMain = document.getElementById('dashboard-main');
+      if (dashboardMain) {
+        dashboardMain.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      const dashboardRoot = document.getElementById('dashboard-root');
+      if (dashboardRoot) {
+        dashboardRoot.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (typeof document !== 'undefined') {
+        document.documentElement?.scrollTo({ top: 0, behavior: 'smooth' });
+        document.body?.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    };
+
+    performScroll();
+    setTimeout(performScroll, 60);
+    setTimeout(performScroll, 180);
+  };
 
   // 1. Maklumat Peribadi Ejen / Agent's Personal Information
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
@@ -51,6 +77,27 @@ export default function AgentRegistrationForm({ lang = 'ms' }: AgentRegistration
           ? 'Please read and check the Declaration & Terms of Engagement confirmation box.'
           : 'Sila baca dan tanda kotak pengesahan Pengakuan & Terma Perkhidmatan Ejen.'
       );
+      scrollToTop();
+      return;
+    }
+
+    if (!agentName.trim()) {
+      setErrorMsg(
+        isEn
+          ? 'Please enter Agent Name.'
+          : 'Sila masukkan Nama Ejen.'
+      );
+      scrollToTop();
+      return;
+    }
+
+    if (!email.trim()) {
+      setErrorMsg(
+        isEn
+          ? 'Please enter Email Address for agent account login.'
+          : 'Sila masukkan Alamat E-mel untuk log masuk akaun ejen.'
+      );
+      scrollToTop();
       return;
     }
 
@@ -98,16 +145,17 @@ export default function AgentRegistrationForm({ lang = 'ms' }: AgentRegistration
           ? `Agent Registration submitted successfully! Portal account created for ${email}. You may log in with default password: Default123!`
           : `Borang Pendaftaran Ejen berjaya dihantar! Akaun portal telah dicipta untuk ${email}. Anda boleh log masuk dengan kata laluan lalai: Default123!`
       );
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      scrollToTop();
     } catch (err: any) {
       setErrorMsg(err.message || (isEn ? 'An error occurred while processing application.' : 'Ralat berlaku semasa memproses permohonan.'));
+      scrollToTop();
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto bg-white dark:bg-[#0d1117] text-slate-900 dark:text-slate-100 p-4 sm:p-8 md:p-10 rounded-2xl sm:rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800 print:border-none print:shadow-none print:p-0 printable-card">
+    <div ref={formTopRef} className="max-w-4xl mx-auto bg-white dark:bg-[#0d1117] text-slate-900 dark:text-slate-100 p-4 sm:p-8 md:p-10 rounded-2xl sm:rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800 print:border-none print:shadow-none print:p-0 printable-card">
 
       {/* DOCUMENT HEADER */}
       <div className="border-b-2 border-red-600 pb-5 mb-6 sm:mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 print-doc-header">
@@ -144,13 +192,23 @@ export default function AgentRegistrationForm({ lang = 'ms' }: AgentRegistration
 
       {/* Alert Messages */}
       {successMsg && (
-        <div className="mb-6 p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-sm font-semibold rounded-2xl animate-fadeIn print:hidden">
-          {successMsg}
+        <div id="form-alert-success" className="mb-6 p-4 sm:p-5 bg-emerald-50 dark:bg-emerald-950/50 border-2 border-emerald-500 dark:border-emerald-600 text-emerald-900 dark:text-emerald-100 text-sm font-semibold rounded-2xl animate-fadeIn print:hidden shadow-lg flex items-start gap-3.5">
+          <div className="p-1 rounded-full bg-emerald-600 text-white shrink-0 mt-0.5">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <div className="flex-1 text-sm leading-relaxed">{successMsg}</div>
         </div>
       )}
       {errorMsg && (
-        <div className="mb-6 p-4 bg-red-50 dark:bg-red-950/40 border border-red-300 dark:border-red-800 text-red-800 dark:text-red-300 text-sm font-semibold rounded-2xl animate-fadeIn print:hidden">
-          {errorMsg}
+        <div id="form-alert-error" className="mb-6 p-4 sm:p-5 bg-red-50 dark:bg-red-950/50 border-2 border-red-500 dark:border-red-600 text-red-900 dark:text-red-100 text-sm font-semibold rounded-2xl animate-fadeIn print:hidden shadow-lg flex items-start gap-3.5">
+          <div className="p-1 rounded-full bg-red-600 text-white shrink-0 mt-0.5">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </div>
+          <div className="flex-1 text-sm leading-relaxed">{errorMsg}</div>
         </div>
       )}
 
