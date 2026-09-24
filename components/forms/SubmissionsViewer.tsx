@@ -6,17 +6,25 @@ import { formatDateToDDMMYYYY } from '../../lib/dateUtils';
 
 interface SubmissionsViewerProps {
   lang: Locale;
+  initialTab?: 'agents' | 'registrations' | 'potential' | 'checklists';
 }
 
-export default function SubmissionsViewer({ lang = 'en' }: SubmissionsViewerProps) {
+export default function SubmissionsViewer({ lang = 'en', initialTab = 'potential' }: SubmissionsViewerProps) {
   const isEn = lang === 'en';
   const dict = getDictionary(lang).submissions;
 
-  const [activeTab, setActiveTab] = useState<'agents' | 'registrations' | 'checklists'>('agents');
+  const [activeTab, setActiveTab] = useState<'agents' | 'registrations' | 'potential' | 'checklists'>(initialTab);
   const [agents, setAgents] = useState<any[]>([]);
   const [checklists, setChecklists] = useState<any[]>([]);
   const [registrations, setRegistrations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Synchronize activeTab if initialTab changes
+  useEffect(() => {
+    if (initialTab) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab]);
 
   // Search & Alphabetical Sorting States
   const [searchTerm, setSearchTerm] = useState('');
@@ -27,6 +35,11 @@ export default function SubmissionsViewer({ lang = 'en' }: SubmissionsViewerProp
     type: 'agent' | 'merchant' | 'checklist';
     data: any;
   } | null>(null);
+
+  // Day-by-Day Update Modal State
+  const [editingClient, setEditingClient] = useState<any | null>(null);
+  const [isSavingEdit, setIsSavingEdit] = useState(false);
+  const [convertingId, setConvertingId] = useState<string | null>(null);
 
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
@@ -51,18 +64,22 @@ export default function SubmissionsViewer({ lang = 'en' }: SubmissionsViewerProp
   };
 
   const handleDeleteMerchant = async (merchant: any) => {
+    const isPotential = (merchant.status || '').toLowerCase() === 'potential';
     const name = merchant.businessName || merchant.fullName || 'this merchant';
     const confirmMsg = isEn
-      ? `Are you sure you want to delete merchant registration "${name}"? This action cannot be undone.`
-      : `Adakah anda pasti mahu memadam pendaftaran peniaga "${name}"? Tindakan ini tidak boleh diundur.`;
+      ? `Are you sure you want to delete ${isPotential ? 'potential client' : 'merchant registration'} "${name}"? This action cannot be undone.`
+      : `Adakah anda pasti mahu memadam ${isPotential ? 'klien berpotensi' : 'pendaftaran peniaga'} "${name}"? Tindakan ini tidak boleh diundur.`;
     if (!window.confirm(confirmMsg)) return;
 
     setDeletingId(merchant.id);
     try {
       const res = await fetch(`/api/forms/registration?id=${merchant.id}`, { method: 'DELETE' });
       const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.error || 'Failed to delete merchant');
-      alert(isEn ? 'Merchant registration deleted successfully.' : 'Pendaftaran peniaga berjaya dipadam.');
+      if (!res.ok || !data.success) throw new Error(data.error || 'Failed to delete record');
+      alert(isEn
+        ? `${isPotential ? 'Potential client' : 'Merchant registration'} deleted successfully.`
+        : `${isPotential ? 'Klien berpotensi' : 'Pendaftaran peniaga'} berjaya dipadam.`
+      );
       fetchSubmissions();
     } catch (err: any) {
       alert(err.message || 'Error deleting merchant');
@@ -89,6 +106,108 @@ export default function SubmissionsViewer({ lang = 'en' }: SubmissionsViewerProp
       alert(err.message || 'Error deleting checklist');
     } finally {
       setDeletingId(null);
+    }
+  };
+
+  // Day-by-Day Update Handler
+  const handleSaveEdit = async () => {
+    if (!editingClient) return;
+
+    if (!editingClient.businessName?.trim()) {
+      alert(isEn ? 'Store / Business Name is required.' : 'Nama Kedai / Syarikat adalah wajib.');
+      return;
+    }
+    if (!editingClient.fullName?.trim()) {
+      alert(isEn ? 'Merchant / Owner Name is required.' : 'Nama Peniaga / Pemilik adalah wajib.');
+      return;
+    }
+    if (!editingClient.contactNumber?.trim()) {
+      alert(isEn ? 'Phone Number (WhatsApp) is required.' : 'Nombor Telefon (WhatsApp) adalah wajib.');
+      return;
+    }
+
+    setIsSavingEdit(true);
+    try {
+      const res = await fetch('/api/forms/registration', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: editingClient.id,
+          updates: {
+            businessName: editingClient.businessName.trim(),
+            fullName: editingClient.fullName.trim(),
+            contactNumber: editingClient.contactNumber.trim(),
+            storeAddress: editingClient.storeAddress?.trim() || '',
+            mailingAddress: editingClient.mailingAddress?.trim() || '',
+            emailAddress: editingClient.emailAddress?.trim() || '',
+            registrationNo: editingClient.registrationNo?.trim() || null,
+            icPassportNo: editingClient.icPassportNo?.trim() || null,
+            typeOfFood: editingClient.typeOfFood?.trim() || '',
+            operatingDays: editingClient.operatingDays?.trim() || '',
+            operatingHours: editingClient.operatingHours?.trim() || '',
+            bankName: editingClient.bankName?.trim() || '',
+            bankAccountName: editingClient.bankAccountName?.trim() || '',
+            bankAccountNumber: editingClient.bankAccountNumber?.trim() || '',
+            rejectionReason: editingClient.rejectionReason?.trim() || null,
+          },
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || (isEn ? 'Failed to update potential client' : 'Gagal mengemaskini maklumat'));
+      }
+
+      alert(isEn ? 'Potential client details updated successfully!' : 'Maklumat klien berpotensi berjaya dikemaskini!');
+      setEditingClient(null);
+      await fetchSubmissions();
+    } catch (err: any) {
+      alert(err.message || 'Error updating potential client');
+    } finally {
+      setIsSavingEdit(false);
+    }
+  };
+
+  // Convert Potential Client to Real Merchant Handler
+  const handleConvertClient = async (client: any) => {
+    const displayName = client.businessName || client.fullName;
+    const confirmMsg = isEn
+      ? `Are you sure you want to finalize and convert "${displayName}" to an Official Real Merchant?\n\nThis will assign an official Merchant ID (MCH-xxxx), transition status to 'In Progress', and move them into the official Merchant Registrations tab.`
+      : `Adakah anda pasti mahu memuktamadkan dan menukar "${displayName}" kepada Peniaga Rasmi?\n\nTindakan ini akan menjana No. Ahli Peniaga rasmi (MCH-xxxx), menukar status kepada 'Dalam Proses', dan memindahkannya ke tab Pendaftaran Peniaga.`;
+
+    if (!window.confirm(confirmMsg)) return;
+
+    setConvertingId(client.id);
+    try {
+      const res = await fetch('/api/forms/registration', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: client.id,
+          action: 'convert',
+          updates: {
+            status: 'Dalam Proses',
+          },
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || (isEn ? 'Failed to convert potential client' : 'Gagal menukar klien berpotensi'));
+      }
+
+      alert(isEn
+        ? `Successfully converted "${displayName}" to Official Real Merchant!`
+        : `Berjaya menukar "${displayName}" kepada Peniaga Rasmi!`
+      );
+
+      if (editingClient) setEditingClient(null);
+      await fetchSubmissions();
+      setActiveTab('registrations');
+    } catch (err: any) {
+      alert(err.message || 'Error converting client');
+    } finally {
+      setConvertingId(null);
     }
   };
 
@@ -180,9 +299,62 @@ export default function SubmissionsViewer({ lang = 'en' }: SubmissionsViewerProp
     return result;
   }, [agents, searchTerm, sortOrder]);
 
-  // Filter & Alphabetically Sort Merchants (by businessName / fullName)
+  // Split registrations into Potential Clients and Real Merchants
+  const potentialClients = React.useMemo(() => {
+    return registrations.filter((r) => (r.status || '').toLowerCase() === 'potential');
+  }, [registrations]);
+
+  const realMerchants = React.useMemo(() => {
+    return registrations.filter((r) => (r.status || '').toLowerCase() !== 'potential');
+  }, [registrations]);
+
+  // Helper to compute profile completeness for potential clients
+  const getCompleteness = (client: any) => {
+    const items = [
+      { label: isEn ? 'Merchant Name' : 'Nama Peniaga', done: Boolean(client.fullName?.trim()) },
+      { label: isEn ? 'Store Name' : 'Nama Kedai', done: Boolean(client.businessName?.trim()) },
+      { label: isEn ? 'WhatsApp Phone' : 'No. Telefon', done: Boolean(client.contactNumber?.trim()) },
+      { label: isEn ? 'Store Address' : 'Alamat Premis', done: Boolean(client.storeAddress?.trim() || client.mailingAddress?.trim()) },
+      { label: isEn ? 'SSM Reg No' : 'No. SSM', done: Boolean(client.registrationNo?.trim()) },
+      { label: isEn ? 'IC / Passport' : 'No. IC', done: Boolean(client.icPassportNo?.trim()) },
+      { label: isEn ? 'Bank Account' : 'Akaun Bank', done: Boolean(client.bankName?.trim() && client.bankAccountNumber?.trim()) },
+      { label: isEn ? 'Operating Info' : 'Waktu Operasi', done: Boolean(client.operatingHours?.trim() || client.operatingDays?.trim()) },
+    ];
+    const completed = items.filter((i) => i.done).length;
+    const percent = Math.round((completed / items.length) * 100);
+    return { completed, total: items.length, percent, items };
+  };
+
+  // Filter & Alphabetically Sort Potential Clients
+  const filteredPotential = React.useMemo(() => {
+    let result = [...potentialClients];
+    const q = searchTerm.toLowerCase().trim();
+    if (q) {
+      result = result.filter((p) => {
+        const bName = (p.businessName || '').toLowerCase().includes(q);
+        const fName = (p.fullName || '').toLowerCase().includes(q);
+        const memNo = (p.memberNo || '').toLowerCase().includes(q);
+        const phone = (p.contactNumber || '').toLowerCase().includes(q);
+        const email = (p.emailAddress || '').toLowerCase().includes(q);
+        const addr = (p.storeAddress || '').toLowerCase().includes(q) || (p.mailingAddress || '').toLowerCase().includes(q);
+        const ssm = (p.registrationNo || '').toLowerCase().includes(q);
+        const notes = (p.rejectionReason || '').toLowerCase().includes(q);
+        return bName || fName || memNo || phone || email || addr || ssm || notes;
+      });
+    }
+
+    result.sort((a, b) => {
+      const nameA = (a.businessName || a.fullName || '').toLowerCase();
+      const nameB = (b.businessName || b.fullName || '').toLowerCase();
+      return sortOrder === 'asc' ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
+    });
+
+    return result;
+  }, [potentialClients, searchTerm, sortOrder]);
+
+  // Filter & Alphabetically Sort Real Merchants (by businessName / fullName)
   const filteredRegistrations = React.useMemo(() => {
-    let result = [...registrations];
+    let result = [...realMerchants];
     const q = searchTerm.toLowerCase().trim();
     if (q) {
       result = result.filter((r) => {
@@ -207,7 +379,7 @@ export default function SubmissionsViewer({ lang = 'en' }: SubmissionsViewerProp
     });
 
     return result;
-  }, [registrations, searchTerm, sortOrder]);
+  }, [realMerchants, searchTerm, sortOrder]);
 
   // Filter & Alphabetically Sort Checklists (by merchant / vendor)
   const filteredChecklists = React.useMemo(() => {
@@ -261,30 +433,60 @@ export default function SubmissionsViewer({ lang = 'en' }: SubmissionsViewerProp
 
         {/* Tabs Navigation (Horizontally scrollable on mobile) */}
         <div className="flex overflow-x-auto no-scrollbar pb-1 sm:flex-wrap gap-2 sm:gap-3 mb-6">
+          {/* TAB 1: POTENTIAL CLIENTS */}
+          <button
+            onClick={() => setActiveTab('potential')}
+            className={`px-3.5 sm:px-5 py-2 sm:py-2.5 whitespace-nowrap rounded-xl font-bold text-xs tracking-wider transition-all border flex items-center gap-2 ${
+              activeTab === 'potential'
+                ? 'bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 text-slate-950 border-amber-500 shadow-md shadow-amber-500/25 font-black'
+                : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-amber-50 dark:hover:bg-amber-950/30 hover:text-amber-700 dark:hover:text-amber-400'
+            }`}
+          >
+            <span className="text-sm leading-none">★</span>
+            <span>{isEn ? 'Potential Clients' : 'Klien Berpotensi'}</span>
+            <span
+              className={`px-2 py-0.5 rounded-full text-[10px] font-black ${
+                activeTab === 'potential'
+                  ? 'bg-slate-950 text-amber-300'
+                  : 'bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300'
+              }`}
+            >
+              {searchTerm ? `${filteredPotential.length}/${potentialClients.length}` : potentialClients.length}
+            </span>
+          </button>
+
+          {/* TAB 2: OFFICIAL MERCHANT REGISTRATIONS */}
+          <button
+            onClick={() => setActiveTab('registrations')}
+            className={`px-3.5 sm:px-5 py-2 sm:py-2.5 whitespace-nowrap rounded-xl font-bold text-xs tracking-wider transition-all border ${
+              activeTab === 'registrations'
+                ? 'bg-gradient-to-r from-red-600 to-red-700 text-white border-red-600 shadow-md shadow-red-600/25'
+                : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-700 dark:hover:text-red-400'
+            }`}
+          >
+            {isEn ? 'Merchant Registrations' : 'Pendaftaran Peniaga'} ({searchTerm ? `${filteredRegistrations.length}/${realMerchants.length}` : realMerchants.length})
+          </button>
+
+          {/* TAB 3: AGENT REGISTRATIONS */}
           <button
             onClick={() => setActiveTab('agents')}
-            className={`px-3.5 sm:px-5 py-2 sm:py-2.5 whitespace-nowrap rounded-xl font-bold text-xs tracking-wider transition-all border ${activeTab === 'agents'
-              ? 'bg-gradient-to-r from-red-600 to-red-700 text-white border-red-600 shadow-md shadow-red-600/25'
-              : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-700 dark:hover:text-red-400'
-              }`}
+            className={`px-3.5 sm:px-5 py-2 sm:py-2.5 whitespace-nowrap rounded-xl font-bold text-xs tracking-wider transition-all border ${
+              activeTab === 'agents'
+                ? 'bg-gradient-to-r from-red-600 to-red-700 text-white border-red-600 shadow-md shadow-red-600/25'
+                : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-700 dark:hover:text-red-400'
+            }`}
           >
             {isEn ? 'Agent Registrations' : 'Pendaftaran Ejen'} ({searchTerm ? `${filteredAgents.length}/${agents.length}` : agents.length})
           </button>
-          <button
-            onClick={() => setActiveTab('registrations')}
-            className={`px-3.5 sm:px-5 py-2 sm:py-2.5 whitespace-nowrap rounded-xl font-bold text-xs tracking-wider transition-all border ${activeTab === 'registrations'
-              ? 'bg-gradient-to-r from-red-600 to-red-700 text-white border-red-600 shadow-md shadow-red-600/25'
-              : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-700 dark:hover:text-red-400'
-              }`}
-          >
-            {isEn ? 'Merchant Registrations' : 'Pendaftaran Peniaga'} ({searchTerm ? `${filteredRegistrations.length}/${registrations.length}` : registrations.length})
-          </button>
+
+          {/* TAB 4: MERCHANT CHECKLISTS */}
           <button
             onClick={() => setActiveTab('checklists')}
-            className={`px-3.5 sm:px-5 py-2 sm:py-2.5 whitespace-nowrap rounded-xl font-bold text-xs tracking-wider transition-all border ${activeTab === 'checklists'
-              ? 'bg-gradient-to-r from-red-600 to-red-700 text-white border-red-600 shadow-md shadow-red-600/25'
-              : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-700 dark:hover:text-red-400'
-              }`}
+            className={`px-3.5 sm:px-5 py-2 sm:py-2.5 whitespace-nowrap rounded-xl font-bold text-xs tracking-wider transition-all border ${
+              activeTab === 'checklists'
+                ? 'bg-gradient-to-r from-red-600 to-red-700 text-white border-red-600 shadow-md shadow-red-600/25'
+                : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-700 dark:hover:text-red-400'
+            }`}
           >
             {isEn ? 'Merchant Checklists' : 'Senarai Semak Peniaga'} ({searchTerm ? `${filteredChecklists.length}/${checklists.length}` : checklists.length})
           </button>
@@ -293,8 +495,8 @@ export default function SubmissionsViewer({ lang = 'en' }: SubmissionsViewerProp
         {/* ------------------------------------------------------------- */}
         {/* SEARCH BOX & ALPHABETICAL SORT CONTROLS BAR */}
         {/* ------------------------------------------------------------- */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-2xl shadow-sm">
-          {/* Search Input Box (Searches both Agent & Merchant) */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-3 mb-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2.5 sm:p-3 rounded-2xl shadow-sm">
+          {/* Search Input Box (Searches across all tabs) */}
           <div className="relative flex-1">
             <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -307,10 +509,10 @@ export default function SubmissionsViewer({ lang = 'en' }: SubmissionsViewerProp
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder={
                 isEn
-                  ? 'Search agents & merchants (name, IC, SSM, cuisine, contact, or bank)...'
-                  : 'Cari ejen & peniaga (nama, IC, SSM, masakan, no. telefon, atau bank)...'
+                  ? 'Search clients, merchants & agents (name, IC, SSM, cuisine, contact, notes, or bank)...'
+                  : 'Cari klien, peniaga & ejen (nama, IC, SSM, masakan, no. telefon, catatan, atau bank)...'
               }
-              className="w-full pl-10 pr-10 py-2.5 text-xs rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600 transition-all"
+              className="w-full pl-10 pr-10 py-2.5 text-base sm:text-xs rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600 transition-all"
             />
             {searchTerm && (
               <button
@@ -324,10 +526,10 @@ export default function SubmissionsViewer({ lang = 'en' }: SubmissionsViewerProp
           </div>
 
           {/* Alphabetical Sort Button & Counter */}
-          <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
+          <div className="flex items-center justify-between sm:justify-start gap-2 w-full sm:w-auto shrink-0">
             <button
-              onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
-              className="px-3.5 py-2.5 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-700 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400 hover:border-red-300 transition-all flex items-center gap-1.5 shadow-sm"
+              onClick={() => setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))}
+              className="flex-1 sm:flex-none justify-center px-3.5 py-2.5 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-700 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400 hover:border-red-300 transition-all flex items-center gap-1.5 shadow-sm"
               title={isEn ? 'Toggle Alphabetical Sorting' : 'Tukar Susunan Abjad'}
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -338,12 +540,14 @@ export default function SubmissionsViewer({ lang = 'en' }: SubmissionsViewerProp
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </button>
-            <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700">
-              {activeTab === 'agents'
+            <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 shrink-0">
+              {activeTab === 'potential'
+                ? `${filteredPotential.length} ${isEn ? 'of' : 'daripada'} ${potentialClients.length}`
+                : activeTab === 'agents'
                 ? `${filteredAgents.length} ${isEn ? 'of' : 'daripada'} ${agents.length}`
                 : activeTab === 'registrations'
-                  ? `${filteredRegistrations.length} ${isEn ? 'of' : 'daripada'} ${registrations.length}`
-                  : `${filteredChecklists.length} ${isEn ? 'of' : 'daripada'} ${checklists.length}`}
+                ? `${filteredRegistrations.length} ${isEn ? 'of' : 'daripada'} ${realMerchants.length}`
+                : `${filteredChecklists.length} ${isEn ? 'of' : 'daripada'} ${checklists.length}`}
             </div>
           </div>
         </div>
@@ -356,31 +560,44 @@ export default function SubmissionsViewer({ lang = 'en' }: SubmissionsViewerProp
                 {isEn ? 'Search results for' : 'Keputusan carian untuk'} <strong className="text-red-600 dark:text-red-400">"{searchTerm}"</strong>:
               </span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <button
-                onClick={() => setActiveTab('agents')}
-                className={`px-3 py-1 rounded-xl font-bold text-xs transition-all ${activeTab === 'agents'
-                  ? 'bg-red-600 text-white shadow-sm'
-                  : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-red-600'
-                  }`}
+                onClick={() => setActiveTab('potential')}
+                className={`px-3 py-1 rounded-xl font-bold text-xs transition-all ${
+                  activeTab === 'potential'
+                    ? 'bg-amber-500 text-slate-950 shadow-sm font-black'
+                    : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-amber-600'
+                }`}
               >
-                {isEn ? 'Agents:' : 'Ejen:'} {filteredAgents.length}
+                ★ {isEn ? 'Potential:' : 'Berpotensi:'} {filteredPotential.length}
               </button>
               <button
                 onClick={() => setActiveTab('registrations')}
-                className={`px-3 py-1 rounded-xl font-bold text-xs transition-all ${activeTab === 'registrations'
-                  ? 'bg-red-600 text-white shadow-sm'
-                  : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-red-600'
-                  }`}
+                className={`px-3 py-1 rounded-xl font-bold text-xs transition-all ${
+                  activeTab === 'registrations'
+                    ? 'bg-red-600 text-white shadow-sm'
+                    : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-red-600'
+                }`}
               >
                 {isEn ? 'Merchants:' : 'Peniaga:'} {filteredRegistrations.length}
               </button>
               <button
+                onClick={() => setActiveTab('agents')}
+                className={`px-3 py-1 rounded-xl font-bold text-xs transition-all ${
+                  activeTab === 'agents'
+                    ? 'bg-red-600 text-white shadow-sm'
+                    : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-red-600'
+                }`}
+              >
+                {isEn ? 'Agents:' : 'Ejen:'} {filteredAgents.length}
+              </button>
+              <button
                 onClick={() => setActiveTab('checklists')}
-                className={`px-3 py-1 rounded-xl font-bold text-xs transition-all ${activeTab === 'checklists'
-                  ? 'bg-red-600 text-white shadow-sm'
-                  : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-red-600'
-                  }`}
+                className={`px-3 py-1 rounded-xl font-bold text-xs transition-all ${
+                  activeTab === 'checklists'
+                    ? 'bg-red-600 text-white shadow-sm'
+                    : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-red-600'
+                }`}
               >
                 {isEn ? 'Checklists:' : 'Senarai Semak:'} {filteredChecklists.length}
               </button>
@@ -391,6 +608,242 @@ export default function SubmissionsViewer({ lang = 'en' }: SubmissionsViewerProp
         {loading ? (
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-12 text-center text-slate-500 dark:text-slate-400 text-sm">
             {dict.loading}
+          </div>
+        ) : activeTab === 'potential' ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {filteredPotential.length === 0 ? (
+              <div className="md:col-span-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-12 text-center text-slate-500 dark:text-slate-400 text-sm">
+                <div className="w-12 h-12 rounded-2xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center mx-auto mb-3">
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                  </svg>
+                </div>
+                {searchTerm
+                  ? (isEn ? 'No potential clients match your search.' : 'Tiada klien berpotensi sepadan dengan carian anda.')
+                  : (isEn ? 'No potential clients registered yet. Use the "Potential Clients" form to onboard flexible leads.' : 'Belum ada klien berpotensi didaftarkan. Gunakan borang "Klien Berpotensi" untuk mendaftarkan prospek yang fleksibel.')}
+              </div>
+            ) : (
+              filteredPotential.map((p) => {
+                const { completed, total, percent, items } = getCompleteness(p);
+                const rawPhone = (p.contactNumber || '').replace(/[^0-9]/g, '');
+                const waPhone = rawPhone.startsWith('0') ? '60' + rawPhone.slice(1) : rawPhone;
+                const waText = encodeURIComponent(
+                  isEn
+                    ? `Hello ${p.fullName || ''}, this is Legacy Cuisine following up regarding your store registration (${p.businessName || ''}).`
+                    : `Salam ${p.fullName || ''}, kami dari Legacy Cuisine berhubung mengenai pendaftaran kedai anda (${p.businessName || ''}).`
+                );
+
+                return (
+                  <div
+                    key={p.id}
+                    className="bg-white dark:bg-[#0d1117] border border-amber-200/80 dark:border-amber-900/40 rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col justify-between space-y-4 text-slate-900 dark:text-slate-100 hover:border-amber-400 dark:hover:border-amber-600 transition-all relative overflow-hidden"
+                  >
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600" />
+
+                    <div>
+                      {/* Header Row */}
+                      <div className="flex items-start justify-between gap-2 mb-3">
+                        <div>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <h3 className="text-xl font-bold text-slate-900 dark:text-white">
+                              {p.businessName || p.fullName}
+                            </h3>
+                            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800 flex items-center gap-1">
+                              <span>★</span>
+                              <span>{isEn ? 'Potential Client' : 'Klien Berpotensi'}</span>
+                            </span>
+                          </div>
+                          <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                            {isEn ? 'Owner / PIC:' : 'Pemilik / PIC:'} <strong className="text-slate-700 dark:text-slate-200">{p.fullName || 'N/A'}</strong>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col items-end gap-1 shrink-0">
+                          <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400 font-semibold bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-700">
+                            {p.memberNo || 'POT-LEAD'}
+                          </span>
+                          <span className="text-[10px] text-slate-400">
+                            {formatDateToDDMMYYYY(p.createdAt)}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Completeness Progress Bar */}
+                      <div className="mb-4 bg-amber-50/60 dark:bg-amber-950/20 p-3 rounded-xl border border-amber-200/60 dark:border-amber-900/30">
+                        <div className="flex items-center justify-between text-xs mb-1.5 font-bold">
+                          <span className="text-amber-900 dark:text-amber-300 flex items-center gap-1.5">
+                            <svg className="w-3.5 h-3.5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span>{isEn ? 'Profile Completeness' : 'Kelengkapan Profil'}</span>
+                          </span>
+                          <span className="text-amber-700 dark:text-amber-400 font-mono text-xs">
+                            {completed} / {total} ({percent}%)
+                          </span>
+                        </div>
+                        <div className="w-full h-2 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
+                          <div
+                            className={`h-full transition-all duration-500 ${
+                              percent === 100
+                                ? 'bg-emerald-500'
+                                : percent >= 60
+                                ? 'bg-amber-500'
+                                : 'bg-amber-400'
+                            }`}
+                            style={{ width: `${percent}%` }}
+                          />
+                        </div>
+                        {/* Quick Checklist Badges */}
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {items.map((item, idx) => (
+                            <span
+                              key={idx}
+                              className={`text-[9px] px-1.5 py-0.5 rounded-md font-semibold ${
+                                item.done
+                                  ? 'bg-emerald-100 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800'
+                                  : 'bg-slate-100 dark:bg-slate-800 text-slate-400 border border-slate-200 dark:border-slate-700'
+                              }`}
+                            >
+                              {item.done ? '✓' : '○'} {item.label}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Info Details Box */}
+                      <div className="space-y-1.5 text-xs text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
+                        {/* WhatsApp / Phone Row with Direct Chat Button */}
+                        <div className="flex items-center justify-between gap-2 pb-1 border-b border-slate-100 dark:border-slate-800">
+                          <div>
+                            <strong className="text-slate-900 dark:text-white">{isEn ? 'WhatsApp Phone:' : 'Telefon / WhatsApp:'}</strong>{' '}
+                            <span className="font-mono font-bold text-slate-800 dark:text-slate-200">{p.contactNumber}</span>
+                          </div>
+                          {waPhone && (
+                            <a
+                              href={`https://wa.me/${waPhone}?text=${waText}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] shadow-sm transition-all"
+                            >
+                              <span>WhatsApp</span>
+                              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                              </svg>
+                            </a>
+                          )}
+                        </div>
+
+                        <div>
+                          <strong className="text-slate-900 dark:text-white">{isEn ? 'Store Address:' : 'Alamat Premis:'}</strong>{' '}
+                          <span className={p.storeAddress ? '' : 'text-slate-400 italic'}>
+                            {p.storeAddress || (isEn ? 'Pending / Not provided yet' : 'Belum disediakan')}
+                          </span>
+                        </div>
+
+                        <div>
+                          <strong className="text-slate-900 dark:text-white">{isEn ? 'SSM Number:' : 'No. SSM:'}</strong>{' '}
+                          <span className={p.registrationNo ? 'font-mono' : 'text-slate-400 italic'}>
+                            {p.registrationNo || (isEn ? 'Optional / Pending' : 'Pilihan / Belum ada')}
+                          </span>
+                        </div>
+
+                        <div>
+                          <strong className="text-slate-900 dark:text-white">{isEn ? 'Bank Account:' : 'Akaun Bank:'}</strong>{' '}
+                          <span className={p.bankName ? '' : 'text-slate-400 italic'}>
+                            {p.bankName ? `${p.bankName} — ${p.bankAccountNumber || ''} (${p.bankAccountName || p.fullName || ''})` : (isEn ? 'Pending / Not provided yet' : 'Belum disediakan')}
+                          </span>
+                        </div>
+
+                        {p.operatingHours && (
+                          <div>
+                            <strong className="text-slate-900 dark:text-white">{isEn ? 'Hours:' : 'Waktu Operasi:'}</strong>{' '}
+                            <span>{p.operatingHours} {p.operatingDays ? `(${p.operatingDays})` : ''}</span>
+                          </div>
+                        )}
+
+                        {/* Discussion Notes / Follow-up Status */}
+                        {p.rejectionReason && (
+                          <div className="mt-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400 block mb-0.5">
+                              {isEn ? 'Discussion Notes & Follow-up:' : 'Catatan Perbincangan & Status Susulan:'}
+                            </span>
+                            <p className="text-slate-700 dark:text-slate-300 italic whitespace-pre-line text-[11px] bg-amber-50/50 dark:bg-amber-950/20 p-2 rounded-lg border border-amber-200/50 dark:border-amber-900/30">
+                              {p.rejectionReason}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Bottom Action Buttons Bar */}
+                    <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
+                      {/* Left: View Form & Delete */}
+                      <div className="flex items-center justify-between sm:justify-start gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setViewingForm({ type: 'merchant', data: p })}
+                          className="flex-1 sm:flex-none px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center justify-center gap-1.5 transition-all"
+                          title={isEn ? 'View summary layout' : 'Lihat paparan ringkasan'}
+                        >
+                          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          </svg>
+                          <span>{isEn ? 'View' : 'Lihat'}</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          disabled={deletingId === p.id}
+                          onClick={() => handleDeleteMerchant(p)}
+                          className="px-2.5 py-1.5 rounded-lg bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-600 text-rose-600 dark:text-rose-400 hover:text-white transition-all disabled:opacity-50 flex items-center justify-center gap-1"
+                          title={isEn ? 'Delete potential client' : 'Padam klien berpotensi'}
+                        >
+                          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                          <span className="sm:hidden text-xs font-bold">{isEn ? 'Delete' : 'Padam'}</span>
+                        </button>
+                      </div>
+
+                      {/* Right: Update Info & Convert Buttons */}
+                      <div className="grid grid-cols-2 sm:flex items-center gap-2">
+                        {/* UPDATE INFO BUTTON (Day-by-Day) */}
+                        <button
+                          type="button"
+                          onClick={() => setEditingClient({ ...p })}
+                          className="w-full sm:w-auto px-3 py-2 sm:py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs flex items-center justify-center gap-1.5 shadow-sm transition-all text-center"
+                          title={isEn ? 'Update details day-by-day' : 'Kemaskini maklumat dari hari ke hari'}
+                        >
+                          <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                          <span>{isEn ? 'Update Info' : 'Kemaskini'}</span>
+                        </button>
+
+                        {/* CONVERT TO REAL MERCHANT BUTTON */}
+                        <button
+                          type="button"
+                          disabled={convertingId === p.id}
+                          onClick={() => handleConvertClient(p)}
+                          className="w-full sm:w-auto px-3.5 py-2 sm:py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-sm shadow-emerald-600/20 transition-all disabled:opacity-50 text-center"
+                          title={isEn ? 'Convert to Official Real Merchant' : 'Tukar kepada Peniaga Rasmi'}
+                        >
+                          <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                          <span>
+                            {convertingId === p.id
+                              ? (isEn ? 'Converting...' : 'Menukar...')
+                              : (isEn ? 'Convert' : 'Tukar Rasmi')}
+                          </span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
         ) : activeTab === 'agents' ? (
           <div className="space-y-4">
@@ -705,6 +1158,329 @@ export default function SubmissionsViewer({ lang = 'en' }: SubmissionsViewerProp
       </div>
 
       {/* ------------------------------------------------------------- */}
+      {/* DAY-BY-DAY POTENTIAL CLIENT UPDATE & ALTER MODAL */}
+      {/* ------------------------------------------------------------- */}
+      {editingClient && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-6 bg-black/75 backdrop-blur-sm overflow-y-auto animate-fadeIn">
+          <div className="max-w-3xl w-full bg-white dark:bg-[#0d1117] border border-amber-300 dark:border-amber-800/60 rounded-2xl sm:rounded-3xl p-3.5 sm:p-8 max-h-[94dvh] overflow-y-auto shadow-2xl space-y-5 sm:space-y-6 text-slate-900 dark:text-slate-100">
+            {/* Modal Header */}
+            <div className="flex items-start justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3 sm:pb-4">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-500 text-slate-950">
+                    ★ {isEn ? 'POTENTIAL CLIENT UPDATE' : 'KEMASKINI KLIEN BERPOTENSI'}
+                  </span>
+                  <span className="text-xs font-mono text-slate-400 font-bold">
+                    {editingClient.memberNo || 'POT-LEAD'}
+                  </span>
+                </div>
+                <h2 className="text-lg sm:text-2xl font-black text-slate-900 dark:text-white mt-1">
+                  {editingClient.businessName || editingClient.fullName}
+                </h2>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                  {isEn
+                    ? 'Update or alter details day-by-day. Only the 3 core fields are mandatory.'
+                    : 'Kemaskini maklumat dari semasa ke semasa. Hanya 3 maklumat teras yang wajib.'}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditingClient(null)}
+                className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-all text-sm shrink-0"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal Form Content */}
+            <div className="space-y-4 sm:space-y-6">
+              {/* Section 1: Core 3 Requirements */}
+              <div className="p-3.5 sm:p-5 rounded-2xl bg-amber-50/70 dark:bg-amber-950/20 border border-amber-300 dark:border-amber-800/50 space-y-3.5 sm:space-y-4">
+                <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-amber-900 dark:text-amber-400">
+                  <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0"></span>
+                  <span>{isEn ? '1. Core Requirements (Mandatory)' : '1. Maklumat Asas (Wajib Diisi)'}</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
+                  <div className="sm:col-span-2">
+                    <label className="block text-xs font-bold mb-1 text-slate-900 dark:text-slate-100">
+                      {isEn ? 'Store / Business Name *' : 'Nama Kedai / Syarikat *'}
+                    </label>
+                    <input
+                      type="text"
+                      value={editingClient.businessName || ''}
+                      onChange={(e) => setEditingClient({ ...editingClient, businessName: e.target.value })}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-base sm:text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold mb-1 text-slate-900 dark:text-slate-100">
+                      {isEn ? 'Merchant / Owner Full Name *' : 'Nama Penuh Peniaga / Pemilik *'}
+                    </label>
+                    <input
+                      type="text"
+                      value={editingClient.fullName || ''}
+                      onChange={(e) => setEditingClient({ ...editingClient, fullName: e.target.value })}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-base sm:text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold mb-1 text-slate-900 dark:text-slate-100">
+                      {isEn ? 'Phone Number (WhatsApp) *' : 'Nombor Telefon (WhatsApp) *'}
+                    </label>
+                    <input
+                      type="tel"
+                      value={editingClient.contactNumber || ''}
+                      onChange={(e) => setEditingClient({ ...editingClient, contactNumber: e.target.value })}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-base sm:text-xs font-mono font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 2: Discussion / Follow-up Notes (Day-by-Day log) */}
+              <div className="p-3.5 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                  <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                    <svg className="w-4 h-4 text-amber-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                    </svg>
+                    <span>{isEn ? '2. Discussion Notes & Follow-up Status' : '2. Catatan Perbincangan & Status Susulan'}</span>
+                  </div>
+                  <span className="text-[10px] text-slate-400 font-medium">
+                    {isEn ? 'Log meetings, owner discussions, objections' : 'Catat perjumpaan, bincang pemilik, dsb'}
+                  </span>
+                </div>
+                <textarea
+                  rows={3}
+                  value={editingClient.rejectionReason || ''}
+                  onChange={(e) => setEditingClient({ ...editingClient, rejectionReason: e.target.value })}
+                  placeholder={
+                    isEn
+                      ? 'e.g. Owner interested, discussed on Monday. Waiting for partner agreement on POS setup...'
+                      : 'cth: Pemilik berminat, jumpa hari Isnin. Menunggu kelulusan rakan kongsi untuk sistem POS...'
+                  }
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-base sm:text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                />
+              </div>
+
+              {/* Section 3: Premise & Contact (Optional) */}
+              <div className="p-3.5 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-3.5 sm:space-y-4">
+                <div className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                  {isEn ? '3. Premise & Contact Details (Optional)' : '3. Maklumat Premis & Maklumat Perhubungan (Pilihan)'}
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
+                  <div className="sm:col-span-2">
+                    <label className="block text-xs font-bold mb-1 text-slate-900 dark:text-slate-100">
+                      {isEn ? 'Store / Premise Address' : 'Alamat Premis Kedai'}
+                    </label>
+                    <textarea
+                      rows={2}
+                      value={editingClient.storeAddress || ''}
+                      onChange={(e) => setEditingClient({ ...editingClient, storeAddress: e.target.value })}
+                      placeholder={isEn ? 'No. 12, Jalan Komersial...' : 'No. 12, Jalan Komersial...'}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-base sm:text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold mb-1 text-slate-900 dark:text-slate-100">
+                      {isEn ? 'Email Address' : 'Alamat Emel'}
+                    </label>
+                    <input
+                      type="email"
+                      value={editingClient.emailAddress || ''}
+                      onChange={(e) => setEditingClient({ ...editingClient, emailAddress: e.target.value })}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-base sm:text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold mb-1 text-slate-900 dark:text-slate-100">
+                      {isEn ? 'Mailing / Alternate Address' : 'Alamat Surat-Menyurat'}
+                    </label>
+                    <input
+                      type="text"
+                      value={editingClient.mailingAddress || ''}
+                      onChange={(e) => setEditingClient({ ...editingClient, mailingAddress: e.target.value })}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-base sm:text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 4: Registration & Identity (Optional) */}
+              <div className="p-3.5 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-3.5 sm:space-y-4">
+                <div className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                  {isEn ? '4. Business Registration & Identity (Optional)' : '4. Pendaftaran Perniagaan & Pengenalan (Pilihan)'}
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
+                  <div>
+                    <label className="block text-xs font-bold mb-1 text-slate-900 dark:text-slate-100">
+                      {isEn ? 'SSM Registration No (Optional)' : 'No. Pendaftaran SSM (Pilihan)'}
+                    </label>
+                    <input
+                      type="text"
+                      value={editingClient.registrationNo || ''}
+                      onChange={(e) => setEditingClient({ ...editingClient, registrationNo: e.target.value })}
+                      placeholder="e.g. 202301029384 (1519307-X)"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-base sm:text-xs font-mono focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold mb-1 text-slate-900 dark:text-slate-100">
+                      {isEn ? 'IC / Passport No (Optional)' : 'No. Kad Pengenalan / Pasport (Pilihan)'}
+                    </label>
+                    <input
+                      type="text"
+                      value={editingClient.icPassportNo || ''}
+                      onChange={(e) => setEditingClient({ ...editingClient, icPassportNo: e.target.value })}
+                      placeholder="e.g. 880101-14-5566"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-base sm:text-xs font-mono focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 5: Operations (Optional) */}
+              <div className="p-3.5 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-3.5 sm:space-y-4">
+                <div className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                  {isEn ? '5. Operations & Cuisine (Optional)' : '5. Operasi & Jenis Masakan (Pilihan)'}
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-4">
+                  <div>
+                    <label className="block text-xs font-bold mb-1 text-slate-900 dark:text-slate-100">
+                      {isEn ? 'Food / Cuisine Type' : 'Jenis Masakan / Makanan'}
+                    </label>
+                    <input
+                      type="text"
+                      value={editingClient.typeOfFood || ''}
+                      onChange={(e) => setEditingClient({ ...editingClient, typeOfFood: e.target.value })}
+                      placeholder={isEn ? 'e.g. Malay Cuisine' : 'cth: Masakan Melayu'}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-base sm:text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold mb-1 text-slate-900 dark:text-slate-100">
+                      {isEn ? 'Operating Days' : 'Hari Operasi'}
+                    </label>
+                    <input
+                      type="text"
+                      value={editingClient.operatingDays || ''}
+                      onChange={(e) => setEditingClient({ ...editingClient, operatingDays: e.target.value })}
+                      placeholder={isEn ? 'e.g. Mon - Sat' : 'cth: Isnin - Sabtu'}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-base sm:text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold mb-1 text-slate-900 dark:text-slate-100">
+                      {isEn ? 'Operating Hours' : 'Waktu Operasi'}
+                    </label>
+                    <input
+                      type="text"
+                      value={editingClient.operatingHours || ''}
+                      onChange={(e) => setEditingClient({ ...editingClient, operatingHours: e.target.value })}
+                      placeholder="e.g. 10:00 AM - 10:00 PM"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-base sm:text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 6: Bank Account (Optional) */}
+              <div className="p-3.5 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-3.5 sm:space-y-4">
+                <div className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                  {isEn ? '6. Bank Account Details (Optional)' : '6. Maklumat Akaun Bank (Pilihan)'}
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-4">
+                  <div>
+                    <label className="block text-xs font-bold mb-1 text-slate-900 dark:text-slate-100">
+                      {isEn ? 'Bank Name' : 'Nama Bank'}
+                    </label>
+                    <input
+                      type="text"
+                      value={editingClient.bankName || ''}
+                      onChange={(e) => setEditingClient({ ...editingClient, bankName: e.target.value })}
+                      placeholder="Maybank / CIMB / Bank Islam"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-base sm:text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold mb-1 text-slate-900 dark:text-slate-100">
+                      {isEn ? 'Account Number' : 'Nombor Akaun'}
+                    </label>
+                    <input
+                      type="text"
+                      value={editingClient.bankAccountNumber || ''}
+                      onChange={(e) => setEditingClient({ ...editingClient, bankAccountNumber: e.target.value })}
+                      placeholder="e.g. 164010293847"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-base sm:text-xs font-mono focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold mb-1 text-slate-900 dark:text-slate-100">
+                      {isEn ? 'Account Holder Name' : 'Nama Pemegang Akaun'}
+                    </label>
+                    <input
+                      type="text"
+                      value={editingClient.bankAccountName || ''}
+                      onChange={(e) => setEditingClient({ ...editingClient, bankAccountName: e.target.value })}
+                      placeholder={editingClient.fullName || 'Name as in bank'}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-base sm:text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Bottom Actions */}
+            <div className="pt-4 border-t border-slate-200 dark:border-slate-800 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
+              <button
+                type="button"
+                onClick={() => setEditingClient(null)}
+                className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs transition-all text-center"
+              >
+                {isEn ? 'Cancel' : 'Batal'}
+              </button>
+
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
+                {/* Convert Button in Modal */}
+                <button
+                  type="button"
+                  disabled={isSavingEdit || convertingId === editingClient.id}
+                  onClick={() => handleConvertClient(editingClient)}
+                  className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-extrabold text-xs shadow-md shadow-emerald-600/25 flex items-center justify-center gap-2 transition-all disabled:opacity-50 text-center"
+                >
+                  <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span>
+                    {convertingId === editingClient.id
+                      ? (isEn ? 'Converting...' : 'Menukar...')
+                      : (isEn ? 'Convert to Real Merchant' : 'Tukar ke Peniaga Rasmi')}
+                  </span>
+                </button>
+
+                {/* Save Changes Button */}
+                <button
+                  type="button"
+                  disabled={isSavingEdit}
+                  onClick={handleSaveEdit}
+                  className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs shadow-md shadow-amber-500/25 flex items-center justify-center gap-2 transition-all disabled:opacity-50 text-center"
+                >
+                  <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                  </svg>
+                  <span>
+                    {isSavingEdit ? (isEn ? 'Saving...' : 'Menyimpan...') : (isEn ? 'Save Changes' : 'Simpan Perubahan')}
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ------------------------------------------------------------- */}
       {/* OFFICIAL FORM VIEWING MODAL (AGENT, MERCHANT, OR CHECKLIST) */}
       {/* ------------------------------------------------------------- */}
       {viewingForm && (
@@ -714,11 +1490,17 @@ export default function SubmissionsViewer({ lang = 'en' }: SubmissionsViewerProp
             {/* Modal Top Bar (On-screen controls only, hidden on paper) */}
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-800 pb-3 sm:pb-4 print:hidden">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="px-2.5 sm:px-3 py-1 bg-red-600 text-white font-extrabold text-[11px] sm:text-xs tracking-wider rounded-lg uppercase">
+                <span className={`px-2.5 sm:px-3 py-1 text-white font-extrabold text-[11px] sm:text-xs tracking-wider rounded-lg uppercase ${
+                  viewingForm.type === 'merchant' && (viewingForm.data.status || '').toLowerCase() === 'potential'
+                    ? 'bg-amber-500 text-slate-950 font-black'
+                    : 'bg-red-600'
+                }`}>
                   {viewingForm.type === 'agent'
                     ? (isEn ? 'AGENT REGISTRATION' : 'PENDAFTARAN EJEN')
                     : viewingForm.type === 'merchant'
-                      ? (isEn ? 'MERCHANT REGISTRATION' : 'PENDAFTARAN PENIAGA')
+                      ? ((viewingForm.data.status || '').toLowerCase() === 'potential'
+                          ? (isEn ? '★ POTENTIAL CLIENT PROFILE' : '★ PROFAIL KLIEN BERPOTENSI')
+                          : (isEn ? 'MERCHANT REGISTRATION' : 'PENDAFTARAN PENIAGA'))
                       : (isEn ? 'RECRUITMENT CHECKLIST' : 'SENARAI SEMAK PEREKRUTAN')}
                 </span>
                 <span className="text-xs text-slate-500 dark:text-slate-400 font-mono">

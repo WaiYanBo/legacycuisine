@@ -136,6 +136,31 @@ export async function POST(request: NextRequest) {
       language,
     } = body;
 
+    // Validation for Potential Clients vs Full Merchant Registrations
+    const isPotential = status === 'Potential';
+    if (isPotential) {
+      if (!businessName?.trim()) {
+        return NextResponse.json(
+          { success: false, error: 'Store / Business Name is required for potential client registration.' },
+          { status: 400 }
+        );
+      }
+      if (!fullName?.trim() && !merchantSignatureName?.trim()) {
+        return NextResponse.json(
+          { success: false, error: 'Merchant / Owner Name is required for potential client registration.' },
+          { status: 400 }
+        );
+      }
+      if (!contactNumber?.trim()) {
+        return NextResponse.json(
+          { success: false, error: 'Phone number (WhatsApp) is required for potential client registration.' },
+          { status: 400 }
+        );
+      }
+    }
+
+    const resolvedMemberNo = memberNo || (isPotential ? `POT-${Math.floor(1000 + Math.random() * 9000)}` : null);
+
     // Automatically bind to agent if logged in as AGENT
     const isAgent = session?.role === 'AGENT';
     const resolvedAgentUserId = isAgent ? session.id : (body.agentUserId || null);
@@ -148,7 +173,7 @@ export async function POST(request: NextRequest) {
       record = await prisma.businessRegistration.create({
         data: {
           date: date ? new Date(date) : new Date(),
-          memberNo: memberNo || null,
+          memberNo: resolvedMemberNo,
           fullName: fullName || merchantSignatureName || 'Unknown Merchant',
           mailingAddress: mailingAddress || '',
           storeAddress: storeAddress || mailingAddress || '',
@@ -282,6 +307,151 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('[POST /api/forms/registration] Error:', error);
     return NextResponse.json({ success: false, error: error.message || 'Failed to submit registration.' }, { status: 500 });
+  }
+}
+
+export async function PUT(request: NextRequest) {
+  try {
+    const session = getSessionUser(request);
+    if (!session) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized: Authentication required.' },
+        { status: 401 }
+      );
+    }
+
+    const body = await request.json();
+    const { id, action, ...updates } = body;
+
+    if (!id) {
+      return NextResponse.json(
+        { success: false, error: 'Registration ID is required for update.' },
+        { status: 400 }
+      );
+    }
+
+    // Ownership check for AGENT role
+    if (session.role === 'AGENT') {
+      let isOwner = false;
+      try {
+        const existing = await prisma.businessRegistration.findUnique({ where: { id } });
+        if (existing) {
+          isOwner = existing.agentUserId === session.id ||
+            (Boolean(existing.agentEmail) && Boolean(session.email) && existing.agentEmail?.toLowerCase() === session.email?.toLowerCase()) ||
+            !existing.agentUserId;
+        }
+      } catch {
+        isOwner = true;
+      }
+      if (!isOwner) {
+        return NextResponse.json(
+          { success: false, error: 'Forbidden: You can only update registrations associated with your agent account.' },
+          { status: 403 }
+        );
+      }
+    }
+
+    // Handle Convert to Real Merchant
+    let newStatus = updates.status;
+    let newMemberNo = updates.memberNo;
+    if (action === 'convert') {
+      newStatus = updates.status && updates.status !== 'Potential' ? updates.status : 'Dalam Proses';
+      if (!newMemberNo || newMemberNo.startsWith('POT-')) {
+        newMemberNo = `MCH-${Math.floor(1000 + Math.random() * 9000)}`;
+      }
+    }
+
+    // Build update data
+    const updateData: any = {};
+    if (updates.fullName !== undefined) updateData.fullName = updates.fullName;
+    if (updates.businessName !== undefined) updateData.businessName = updates.businessName;
+    if (updates.contactNumber !== undefined) updateData.contactNumber = updates.contactNumber;
+    if (updates.emailAddress !== undefined) updateData.emailAddress = updates.emailAddress;
+    if (updates.storeAddress !== undefined) updateData.storeAddress = updates.storeAddress;
+    if (updates.mailingAddress !== undefined) updateData.mailingAddress = updates.mailingAddress;
+    if (updates.registrationNo !== undefined) updateData.registrationNo = updates.registrationNo || null;
+    if (updates.icPassportNo !== undefined) updateData.icPassportNo = updates.icPassportNo || null;
+    if (updates.dateOfBirth !== undefined) updateData.dateOfBirth = updates.dateOfBirth ? String(updates.dateOfBirth) : null;
+    if (updates.age !== undefined) updateData.age = updates.age ? String(updates.age) : null;
+    if (updates.religion !== undefined) updateData.religion = updates.religion || null;
+    if (updates.race !== undefined) updateData.race = updates.race || null;
+    if (updates.nationality !== undefined) updateData.nationality = updates.nationality || null;
+    if (updates.gender !== undefined) updateData.gender = updates.gender || null;
+    if (updates.personInCharge !== undefined) updateData.personInCharge = updates.personInCharge || null;
+    if (updates.typeOfFood !== undefined) updateData.typeOfFood = updates.typeOfFood || null;
+    if (updates.operatingDays !== undefined) {
+      updateData.operatingDays = Array.isArray(updates.operatingDays) ? updates.operatingDays.join(', ') : String(updates.operatingDays || '');
+    }
+    if (updates.operatingHours !== undefined) updateData.operatingHours = updates.operatingHours || null;
+    if (updates.bankName !== undefined) updateData.bankName = updates.bankName || null;
+    if (updates.bankAccountName !== undefined) updateData.bankAccountName = updates.bankAccountName || null;
+    if (updates.bankAccountNumber !== undefined) updateData.bankAccountNumber = updates.bankAccountNumber || null;
+    if (updates.documentsChecklist !== undefined) {
+      updateData.documentsChecklist = typeof updates.documentsChecklist === 'object' ? JSON.stringify(updates.documentsChecklist) : String(updates.documentsChecklist || '{}');
+    }
+    if (updates.shopPhotoUrl !== undefined) updateData.shopPhotoUrl = updates.shopPhotoUrl || null;
+    if (updates.rejectionReason !== undefined) updateData.rejectionReason = updates.rejectionReason || null;
+    if (newStatus !== undefined) updateData.status = newStatus;
+    if (newMemberNo !== undefined) updateData.memberNo = newMemberNo;
+    if (updates.processingOfficer !== undefined) updateData.processingOfficer = updates.processingOfficer;
+    if (updates.agreedToTerms !== undefined) updateData.agreedToTerms = Boolean(updates.agreedToTerms);
+    if (updates.merchantSignatureName !== undefined) updateData.merchantSignatureName = updates.merchantSignatureName;
+    if (updates.merchantSignatureIc !== undefined) updateData.merchantSignatureIc = updates.merchantSignatureIc;
+    if (updates.merchantSignatureDate !== undefined) updateData.merchantSignatureDate = updates.merchantSignatureDate ? new Date(updates.merchantSignatureDate) : null;
+
+    let updatedRecord: any = null;
+    try {
+      updatedRecord = await prisma.businessRegistration.update({
+        where: { id },
+        data: updateData,
+      });
+    } catch (prismaErr: any) {
+      console.warn('[PUT /api/forms/registration] Prisma update failed, using PG pool fallback:', prismaErr?.message);
+      const pool = new Pool({
+        connectionString: process.env.DIRECT_URL || process.env.DATABASE_URL,
+        ssl: { rejectUnauthorized: false },
+        connectionTimeoutMillis: 5000,
+      });
+
+      const setClauses: string[] = [];
+      const values: any[] = [];
+      let idx = 1;
+
+      for (const [key, val] of Object.entries(updateData)) {
+        const snakeKey = key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+        setClauses.push(`${snakeKey} = $${idx}`);
+        values.push(val);
+        idx++;
+      }
+      setClauses.push(`updated_at = NOW()`);
+      values.push(id);
+
+      const updateQuery = `
+        UPDATE business_registrations
+        SET ${setClauses.join(', ')}
+        WHERE id = $${idx}
+        RETURNING *
+      `;
+      const res = await pool.query(updateQuery, values);
+      await pool.end();
+      updatedRecord = res.rows[0];
+    }
+
+    if (updatedRecord) {
+      archiveMerchantForm(updatedRecord).catch(() => {});
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: action === 'convert' ? 'Successfully converted potential client to real merchant!' : 'Registration updated successfully.',
+      data: updatedRecord,
+    });
+  } catch (error: any) {
+    console.error('[PUT /api/forms/registration] Error:', error);
+    return NextResponse.json(
+      { success: false, error: error.message || 'Failed to update registration.' },
+      { status: 500 }
+    );
   }
 }
 
