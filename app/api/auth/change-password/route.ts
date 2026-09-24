@@ -29,24 +29,28 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'New password must be at least 8 characters long.' }, { status: 400 });
     }
 
-    if (sessionUser && sessionUser.id) {
-      try {
-        const user = await prisma.user.findUnique({ where: { id: sessionUser.id } });
-        if (user && user.passwordHash) {
-          const isMatch = verifyPassword(currentPassword, user.passwordHash);
-          if (!isMatch) {
-            return NextResponse.json({ success: false, error: 'Current password is incorrect.' }, { status: 400 });
-          }
-          const newHash = hashPassword(newPassword);
-          await prisma.user.update({
-            where: { id: user.id },
-            data: { passwordHash: newHash },
-          });
-        }
-      } catch (e) {
-        console.warn('Fallback update password');
-      }
+    if (!sessionUser || !sessionUser.id) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized: Please log in to change your password.' },
+        { status: 401 }
+      );
     }
+
+    const user = await prisma.user.findUnique({ where: { id: sessionUser.id } });
+    if (!user || !user.passwordHash) {
+      return NextResponse.json({ success: false, error: 'User account not found.' }, { status: 404 });
+    }
+
+    const isMatch = verifyPassword(currentPassword, user.passwordHash);
+    if (!isMatch) {
+      return NextResponse.json({ success: false, error: 'Current password is incorrect.' }, { status: 400 });
+    }
+
+    const newHash = hashPassword(newPassword);
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { passwordHash: newHash },
+    });
 
     return NextResponse.json({ success: true, message: 'Password updated successfully.' });
   } catch (error: any) {

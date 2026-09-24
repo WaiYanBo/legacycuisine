@@ -1,11 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../../src/prisma';
 import { Prisma } from '@prisma/client';
+import { verifySessionToken, hasPermission } from '../../../../src/utils/security';
 
 export const dynamic = 'force-dynamic';
 
+function getSessionUser(request: NextRequest) {
+  const authCookie = request.cookies.get('lc_session')?.value;
+  const authHeader = request.headers.get('authorization');
+  let token = authCookie;
+  if (!token && authHeader?.startsWith('Bearer ')) {
+    token = authHeader.substring(7);
+  }
+  if (!token) return null;
+  const verified = verifySessionToken(token);
+  return verified.valid ? verified.user : null;
+}
+
 export async function POST(request: NextRequest) {
   try {
+    const session = getSessionUser(request);
+    if (!session || (!hasPermission(session, 'reconciliation:process') && !hasPermission(session, 'admin:all') && session.role !== 'SUPER_ADMIN' && session.role !== 'MANAGER')) {
+      return NextResponse.json({ error: 'Access denied: Reconciliation permission required.' }, { status: 403 });
+    }
+
     const body = await request.json();
     const {
       storefrontId,

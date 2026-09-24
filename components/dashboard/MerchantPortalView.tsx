@@ -438,7 +438,7 @@ export default function MerchantPortalView({
                         : (val === true || val === 'Received' || val === 'Diterima');
 
                       const docName = docKey === 'ic' ? (isEn ? 'Identity Card' : 'Kad Pengenalan')
-                        : docKey === 'ssm' ? 'SSM'
+                        : docKey === 'ssm' ? (isEn ? 'SSM (Optional)' : 'SSM (Pilihan)')
                         : docKey === 'pbt' ? (isEn ? 'PBT Licence' : 'Lesen PBT')
                         : docKey === 'bank' ? (isEn ? 'Bank Statement' : 'Penyata Bank')
                         : docKey === 'logo' ? 'Logo'

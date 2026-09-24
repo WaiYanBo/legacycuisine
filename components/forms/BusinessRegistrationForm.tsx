@@ -132,11 +132,11 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
     {
       id: 'ssm',
       label: isEn ? 'SSM Certificate' : 'Sijil Pendaftaran SSM',
-      sublabel: isEn ? 'SSM Borang D/E / Corporate Profile' : 'SSM Borang D / E / Maklumat Perniagaan',
-      required: true,
+      sublabel: isEn ? 'SSM Borang D/E / Corporate Profile (Optional)' : 'SSM Borang D / E / Maklumat Perniagaan (Pilihan)',
+      required: false,
       guidance: isEn
-        ? 'Full official SSM business registration certificate or corporate profile displaying valid 12-digit registration number and expiry date.'
-        : 'Sijil perakuan pendaftaran SSM atau profil syarikat rasmi yang memaparkan nombor pendaftaran 12-digit dan tarikh luput sah.',
+        ? 'Official SSM business registration certificate or corporate profile displaying valid 12-digit registration number and expiry date (Optional - leave blank if not applicable or operating as home kitchen/individual).'
+        : 'Sijil perakuan pendaftaran SSM atau profil syarikat rasmi yang memaparkan nombor pendaftaran 12-digit dan tarikh luput sah (Pilihan - boleh dikosongkan sekiranya tiada SSM atau perniagaan dari rumah/individu).',
     },
     {
       id: 'pbt',
@@ -627,11 +627,11 @@ export default function BusinessRegistrationForm({ lang = 'ms' }: BusinessRegist
           {/* Row 3: Registration No & IC/Passport */}
           <div>
             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1 print:mb-0.5">
-              {isEn ? 'Registration No.' : 'No. Pendaftaran Syarikat (SSM)'}
+              {isEn ? 'Registration No. / SSM (Optional)' : 'No. Pendaftaran Syarikat / SSM (Pilihan)'}
             </label>
             <input
               type="text"
-              placeholder={isEn ? 'e.g. 202301099882 (150992-X)' : 'Contoh: 202301099882 (150992-X)'}
+              placeholder={isEn ? 'e.g. 202301099882 (Optional)' : 'Contoh: 202301099882 (Pilihan)'}
               value={registrationNo}
               onChange={(e) => setRegistrationNo(e.target.value)}
               className="w-full px-4 py-2.5 print:px-2 print:py-0.5 rounded-xl print:rounded-md bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white text-sm print:text-[7.5pt] focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600 transition-all"

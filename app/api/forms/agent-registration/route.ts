@@ -1,13 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../../src/prisma';
-import { hashPassword } from '../../../../src/utils/security';
+import { hashPassword, verifySessionToken, hasPermission } from '../../../../src/utils/security';
 import { archiveAgentForm, deleteFormFromSupabaseStorage } from '../../../../src/services/storage.service';
 import { Pool } from 'pg';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+function getSessionUser(request: NextRequest) {
+  const authCookie = request.cookies.get('lc_session')?.value;
+  const authHeader = request.headers.get('authorization');
+  let token = authCookie;
+  if (!token && authHeader?.startsWith('Bearer ')) {
+    token = authHeader.substring(7);
+  }
+  if (!token) return null;
+  const verified = verifySessionToken(token);
+  return verified.valid ? verified.user : null;
+}
+
+export async function GET(request: NextRequest) {
   try {
+    const session = getSessionUser(request);
+    if (!session || (!hasPermission(session, 'users:manage') && !hasPermission(session, 'forms:review') && !hasPermission(session, 'admin:all') && session.role !== 'SUPER_ADMIN' && session.role !== 'MANAGER')) {
+      return NextResponse.json(
+        { success: false, data: [], error: 'Access denied: Staff administrator permission required.' },
+        { status: 403 }
+      );
+    }
+
     const records = await prisma.agentRegistration.findMany({
       orderBy: { createdAt: 'desc' },
     });
@@ -19,6 +39,14 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    const session = getSessionUser(request);
+    if (!session || (!hasPermission(session, 'users:manage') && !hasPermission(session, 'forms:review') && !hasPermission(session, 'admin:all') && session.role !== 'SUPER_ADMIN' && session.role !== 'MANAGER')) {
+      return NextResponse.json(
+        { success: false, error: 'Access denied: Staff administrator permission required to register field agents.' },
+        { status: 403 }
+      );
+    }
+
     const body = await request.json();
     const {
       date,
@@ -212,6 +240,14 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
+    const session = getSessionUser(request);
+    if (!session || (!hasPermission(session, 'users:manage') && !hasPermission(session, 'admin:all') && session.role !== 'SUPER_ADMIN')) {
+      return NextResponse.json(
+        { success: false, error: 'Access denied: Only Super Admins can delete agent registrations.' },
+        { status: 403 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     let id = searchParams.get('id');
 

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../../src/prisma';
-import { verifySessionToken } from '../../../../src/utils/security';
+import { verifySessionToken, hasPermission } from '../../../../src/utils/security';
 import { Pool } from 'pg';
 
 export const dynamic = 'force-dynamic';
@@ -20,13 +20,21 @@ function getSessionUser(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const session = getSessionUser(request);
-    const { searchParams } = new URL(request.url);
-    const queryEmail = searchParams.get('email')?.trim().toLowerCase();
-    const queryId = searchParams.get('id');
+    if (!session) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized: Authentication required.' },
+        { status: 401 }
+      );
+    }
 
-    const emailToSearch = (session?.email || queryEmail || '').toLowerCase();
-    const usernameToSearch = (session?.username || '').toLowerCase();
-    const nameToSearch = session?.fullName || '';
+    const isPrivileged = session.role === 'SUPER_ADMIN' || session.role === 'MANAGER' || hasPermission(session, 'users:manage') || hasPermission(session, 'forms:review');
+    const { searchParams } = new URL(request.url);
+    const queryEmail = isPrivileged ? searchParams.get('email')?.trim().toLowerCase() : null;
+    const queryId = isPrivileged ? searchParams.get('id') : null;
+
+    const emailToSearch = (queryEmail || session.email || '').toLowerCase();
+    const usernameToSearch = (session.username || '').toLowerCase();
+    const nameToSearch = session.fullName || '';
 
     let record: any = null;
 
