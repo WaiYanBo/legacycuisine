@@ -152,3 +152,22 @@ export function verifySessionToken(token: string): { valid: boolean; user?: Sess
   }
 }
 
+/**
+ * Extracts and verifies the authenticated user session from a Next.js request.
+ * Checks both the HTTP-only cookie and the Authorization Bearer header.
+ */
+export function getSessionUser(request: {
+  cookies: { get: (name: string) => { value: string } | undefined };
+  headers: { get: (name: string) => string | null };
+}): SessionPayload | null {
+  const authCookie = request.cookies.get('lc_session')?.value;
+  const authHeader = request.headers.get('authorization');
+  let token = authCookie;
+  if (!token && authHeader?.startsWith('Bearer ')) {
+    token = authHeader.substring(7);
+  }
+  if (!token) return null;
+  const verified = verifySessionToken(token);
+  return verified.valid && verified.user ? verified.user : null;
+}
+

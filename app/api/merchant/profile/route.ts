@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../../src/prisma';
-import { verifySessionToken } from '../../../../src/utils/security';
+import { verifySessionToken, hasPermission } from '../../../../src/utils/security';
 import { Pool } from 'pg';
 
 export const dynamic = 'force-dynamic';
@@ -20,24 +20,44 @@ function getSessionUser(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const session = getSessionUser(request);
+    if (!session) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized: Authentication required.' },
+        { status: 401 }
+      );
+    }
+
+    const isPrivileged = session.role === 'SUPER_ADMIN' || session.role === 'MANAGER' || hasPermission(session, 'forms:review') || hasPermission(session, 'admin:all');
     const { searchParams } = new URL(request.url);
-    const queryEmail = searchParams.get('email')?.trim().toLowerCase();
+    const queryEmail = isPrivileged ? searchParams.get('email')?.trim().toLowerCase() : null;
     const queryId = searchParams.get('id')?.trim();
     const queryRegNo = searchParams.get('registrationNo')?.trim();
 
-    const emailToSearch = (session?.email || queryEmail || '').toLowerCase();
-    const usernameToSearch = (session?.username || '').toLowerCase();
+    const emailToSearch = (queryEmail || session.email || '').toLowerCase();
+    const usernameToSearch = (session.username || '').toLowerCase();
+
+    // If requester is an agent, restrict search to only merchants registered under this agent
+    const agentFilter = session.role === 'AGENT' ? [
+      { agentUserId: session.id },
+      ...(session.email ? [{ agentEmail: { equals: session.email, mode: 'insensitive' as const } }] : []),
+      ...(session.fullName ? [{ agentSignatureName: { equals: session.fullName, mode: 'insensitive' as const } }] : []),
+    ] : [];
 
     let record: any = null;
 
     try {
+      const orConditions: any[] = [
+        ...(emailToSearch ? [{ emailAddress: { equals: emailToSearch, mode: 'insensitive' as const } }] : []),
+        ...(usernameToSearch ? [{ registrationNo: { equals: usernameToSearch, mode: 'insensitive' as const } }] : []),
+        ...(queryId ? [{ id: queryId }] : []),
+        ...(queryRegNo ? [{ registrationNo: { equals: queryRegNo, mode: 'insensitive' as const } }] : []),
+      ];
+
       record = await prisma.businessRegistration.findFirst({
         where: {
-          OR: [
-            ...(emailToSearch ? [{ emailAddress: { equals: emailToSearch, mode: 'insensitive' as const } }] : []),
-            ...(usernameToSearch ? [{ registrationNo: { equals: usernameToSearch, mode: 'insensitive' as const } }] : []),
-            ...(queryId ? [{ id: queryId }] : []),
-            ...(queryRegNo ? [{ registrationNo: { equals: queryRegNo, mode: 'insensitive' as const } }] : []),
+          AND: [
+            ...(agentFilter.length > 0 ? [{ OR: agentFilter }] : []),
+            ...(orConditions.length > 0 ? [{ OR: orConditions }] : []),
           ],
         },
         orderBy: { createdAt: 'desc' },
@@ -55,15 +75,21 @@ export async function GET(request: NextRequest) {
           connectionTimeoutMillis: 5000,
         });
 
-        const res = await pool.query(
-          `SELECT * FROM business_registrations 
-           WHERE (email_address IS NOT NULL AND LOWER(email_address) = LOWER($1))
-              OR (registration_no IS NOT NULL AND LOWER(registration_no) = LOWER($2))
-              OR (id::text = $3)
-           ORDER BY created_at DESC
-           LIMIT 1`,
-          [emailToSearch, usernameToSearch || queryRegNo || '', queryId || '00000000-0000-0000-0000-000000000000']
-        );
+        let query = `
+          SELECT * FROM business_registrations 
+          WHERE ((email_address IS NOT NULL AND LOWER(email_address) = LOWER($1))
+             OR (registration_no IS NOT NULL AND LOWER(registration_no) = LOWER($2))
+             OR (id::text = $3))
+        `;
+        const params: any[] = [emailToSearch, usernameToSearch || queryRegNo || '', queryId || '00000000-0000-0000-0000-000000000000'];
+
+        if (session.role === 'AGENT') {
+          query += ` AND (agent_user_id = $4 OR (agent_email IS NOT NULL AND LOWER(agent_email) = LOWER($5)) OR (agent_signature_name IS NOT NULL AND LOWER(agent_signature_name) = LOWER($6)))`;
+          params.push(session.id, session.email || '', session.fullName || '');
+        }
+
+        query += ` ORDER BY created_at DESC LIMIT 1`;
+        const res = await pool.query(query, params);
         await pool.end();
         if (res.rows.length > 0) {
           record = res.rows[0];

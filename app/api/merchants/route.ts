@@ -1,7 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../src/prisma';
+import { verifySessionToken, hasPermission } from '../../../src/utils/security';
 
 export const dynamic = 'force-dynamic';
+
+function getSessionUser(request: NextRequest) {
+  const authCookie = request.cookies.get('lc_session')?.value;
+  const authHeader = request.headers.get('authorization');
+  let token = authCookie;
+  if (!token && authHeader?.startsWith('Bearer ')) {
+    token = authHeader.substring(7);
+  }
+  if (!token) return null;
+  const verified = verifySessionToken(token);
+  return verified.valid ? verified.user : null;
+}
 
 export async function GET() {
   try {
@@ -29,6 +42,14 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    const session = getSessionUser(request);
+    if (!session || (!hasPermission(session, 'forms:review') && !hasPermission(session, 'admin:all') && session.role !== 'SUPER_ADMIN' && session.role !== 'MANAGER')) {
+      return NextResponse.json(
+        { success: false, error: 'Access denied: Manager or Administrator permission required.' },
+        { status: 403 }
+      );
+    }
+
     const body = await request.json();
     const { name, businessName, contactEmail, contactPhone } = body;
 
@@ -60,6 +81,14 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
+    const session = getSessionUser(request);
+    if (!session || (!hasPermission(session, 'forms:review') && !hasPermission(session, 'admin:all') && session.role !== 'SUPER_ADMIN' && session.role !== 'MANAGER')) {
+      return NextResponse.json(
+        { success: false, error: 'Access denied: Manager or Administrator permission required.' },
+        { status: 403 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     let id = searchParams.get('id');
 

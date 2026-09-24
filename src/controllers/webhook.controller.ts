@@ -7,6 +7,14 @@ export class WebhookController {
    */
   static async handleGrabReceipt(req: Request, res: Response): Promise<void> {
     try {
+      if (process.env.WEBHOOK_SECRET) {
+        const providedSecret = req.headers['x-webhook-secret'] || req.headers['x-api-key'];
+        if (providedSecret !== process.env.WEBHOOK_SECRET) {
+          res.status(401).json({ error: 'Unauthorized: Invalid webhook secret.' });
+          return;
+        }
+      }
+
       const {
         storeIdentifier,
         grabOrderId,
@@ -87,6 +95,14 @@ export class WebhookController {
    */
   static async handleBatchGrabReceipts(req: Request, res: Response): Promise<void> {
     try {
+      if (process.env.WEBHOOK_SECRET) {
+        const providedSecret = req.headers['x-webhook-secret'] || req.headers['x-api-key'];
+        if (providedSecret !== process.env.WEBHOOK_SECRET) {
+          res.status(401).json({ error: 'Unauthorized: Invalid webhook secret.' });
+          return;
+        }
+      }
+
       const { orders } = req.body;
 
       if (!Array.isArray(orders) || orders.length === 0) {

@@ -8,25 +8,7 @@ export async function GET(request: NextRequest) {
     const token = request.cookies.get('lc_session')?.value || request.headers.get('authorization')?.replace(/^Bearer\s+/i, '');
 
     if (!token) {
-      // Backwards compatible default session if lc_auth cookie exists
-      const authCookie = request.cookies.get('lc_auth')?.value;
-      if (authCookie === 'authenticated') {
-        return NextResponse.json({
-          success: true,
-          user: {
-            id: '00000000-0000-0000-0000-000000000001',
-            username: 'Wai Yan Bo',
-            fullName: 'Wai Yan Bo',
-            email: 'admin@legacycuisine.com',
-            department: 'IT & Systems Administration',
-            position: 'IT Lead',
-            permissions: ['admin:all', 'dashboard:view', 'analytics:view', 'reconciliation:process', 'invoices:generate', 'products:edit', 'forms:submit', 'forms:review', 'users:manage'],
-            role: 'SUPER_ADMIN',
-            isActive: true,
-          },
-        });
-      }
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ success: false, error: 'Unauthorized: No session token provided.' }, { status: 401 });
     }
 
     const result = verifySessionToken(token);

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../../src/prisma';
-import { verifySessionToken } from '../../../../src/utils/security';
+import { verifySessionToken, hasPermission } from '../../../../src/utils/security';
 import { archiveMerchantForm, deleteFormFromSupabaseStorage } from '../../../../src/services/storage.service';
 import { Pool } from 'pg';
 
@@ -21,6 +21,12 @@ function getSessionUser(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const session = getSessionUser(request);
+    if (!session) {
+      return NextResponse.json(
+        { success: false, data: [], error: 'Unauthorized: Authentication required.' },
+        { status: 401 }
+      );
+    }
 
     // If requester is an AGENT, restrict results to only merchants registered under this agent
     let whereClause: any = undefined;
@@ -281,6 +287,14 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
+    const session = getSessionUser(request);
+    if (!session || (!hasPermission(session, 'forms:review') && !hasPermission(session, 'admin:all') && session.role !== 'SUPER_ADMIN' && session.role !== 'MANAGER')) {
+      return NextResponse.json(
+        { success: false, error: 'Access denied: You do not have permission to delete merchant registrations.' },
+        { status: 403 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     let id = searchParams.get('id');
 

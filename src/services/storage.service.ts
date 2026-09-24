@@ -24,7 +24,8 @@ export async function uploadFormToSupabaseStorage(
   formData: any
 ): Promise<StorageArchiveResult> {
   try {
-    const cleanFileName = fileName.endsWith('.json') ? fileName : `${fileName}.json`;
+    const safeFileName = fileName.replace(/\.json$/i, '').replace(/[^a-zA-Z0-9_\-]/g, '_');
+    const cleanFileName = `${safeFileName}.json`;
     const objectPath = `${folder}/${cleanFileName}`;
     const targetUrl = `${SUPABASE_URL}/storage/v1/object/${BUCKET_NAME}/${objectPath}`;
 
@@ -95,7 +96,8 @@ export async function deleteFormFromSupabaseStorage(
   fileName: string
 ): Promise<boolean> {
   try {
-    const cleanFileName = fileName.endsWith('.json') ? fileName : `${fileName}.json`;
+    const safeFileName = fileName.replace(/\.json$/i, '').replace(/[^a-zA-Z0-9_\-]/g, '_');
+    const cleanFileName = `${safeFileName}.json`;
     const objectPath = `${folder}/${cleanFileName}`;
     const targetUrl = `${SUPABASE_URL}/storage/v1/object/${BUCKET_NAME}/${objectPath}`;
 
