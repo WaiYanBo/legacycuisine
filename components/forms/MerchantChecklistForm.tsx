@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { getDictionary, Locale } from '../../lib/i18n';
 
 interface MerchantChecklistFormProps {
@@ -32,9 +32,35 @@ export default function MerchantChecklistForm({ lang = 'en' }: MerchantChecklist
   // Section 2 response state
   const [qualification, setQualification] = useState<Record<string, 'YES' | 'NO' | 'NA'>>({});
 
+  const formTopRef = useRef<HTMLDivElement>(null);
   // Submission UI state
   const [submitting, setSubmitting] = useState(false);
   const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  const scrollToTop = () => {
+    const performScroll = () => {
+      if (formTopRef.current) {
+        formTopRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      const dashboardMain = document.getElementById('dashboard-main');
+      if (dashboardMain) {
+        dashboardMain.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      const dashboardRoot = document.getElementById('dashboard-root');
+      if (dashboardRoot) {
+        dashboardRoot.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (typeof document !== 'undefined') {
+        document.documentElement?.scrollTo({ top: 0, behavior: 'smooth' });
+        document.body?.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    };
+
+    performScroll();
+    setTimeout(performScroll, 60);
+    setTimeout(performScroll, 180);
+  };
 
   // Score Calculations
   const yesScore = Object.values(qualification).filter((val) => val === 'YES').length;
@@ -56,8 +82,18 @@ export default function MerchantChecklistForm({ lang = 'en' }: MerchantChecklist
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitting(true);
     setStatusMessage(null);
+
+    if (!formData.merchant.trim()) {
+      setStatusMessage({
+        type: 'error',
+        text: lang === 'ms' ? 'Sila masukkan Nama Peniaga / Premis.' : 'Please enter the Merchant / Outlet Name.',
+      });
+      scrollToTop();
+      return;
+    }
+
+    setSubmitting(true);
 
     try {
       const payload = {
@@ -86,16 +122,17 @@ export default function MerchantChecklistForm({ lang = 'en' }: MerchantChecklist
         text: dict.successMsg,
       });
 
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      scrollToTop();
     } catch (err: any) {
       setStatusMessage({ type: 'error', text: err.message || 'Error submitting form.' });
+      scrollToTop();
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8 print:p-0 print:border-none print:shadow-none printable-card">
+    <div ref={formTopRef} className="max-w-5xl mx-auto px-4 py-8 print:p-0 print:border-none print:shadow-none printable-card">
       {/* Title Header Card */}
       <div className="bg-white dark:bg-[#0d1117] border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 mb-8 shadow-md">
         <div>
@@ -125,15 +162,33 @@ export default function MerchantChecklistForm({ lang = 'en' }: MerchantChecklist
 
       {statusMessage && (
         <div
-          className={`p-4 rounded-2xl mb-6 font-medium text-sm flex items-center justify-between shadow-md print:hidden ${
+          id="form-alert-checklist"
+          className={`p-4 sm:p-5 rounded-2xl mb-6 font-semibold text-sm flex items-start justify-between shadow-lg print:hidden border-2 gap-3.5 ${
             statusMessage.type === 'success'
-              ? 'bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-700 text-emerald-800 dark:text-emerald-200'
-              : 'bg-red-50 dark:bg-red-950/80 border border-red-300 dark:border-red-700 text-red-800 dark:text-red-200'
+              ? 'bg-emerald-50 dark:bg-emerald-950/50 border-emerald-500 dark:border-emerald-600 text-emerald-900 dark:text-emerald-100'
+              : 'bg-red-50 dark:bg-red-950/50 border-red-500 dark:border-red-600 text-red-900 dark:text-red-100'
           }`}
         >
-          <span>{statusMessage.text}</span>
-          <button onClick={() => setStatusMessage(null)} className="text-xs underline opacity-70 hover:opacity-100 font-bold">
-            Dismiss
+          <div className="flex items-start gap-3.5 flex-1">
+            <div className={`p-1 rounded-full text-white shrink-0 mt-0.5 ${statusMessage.type === 'success' ? 'bg-emerald-600' : 'bg-red-600'}`}>
+              {statusMessage.type === 'success' ? (
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                </svg>
+              ) : (
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              )}
+            </div>
+            <span className="leading-relaxed">{statusMessage.text}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setStatusMessage(null)}
+            className="text-xs font-bold underline ml-3 opacity-75 hover:opacity-100 shrink-0"
+          >
+            {lang === 'ms' ? 'Tutup' : 'Dismiss'}
           </button>
         </div>
       )}

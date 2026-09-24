@@ -24,6 +24,15 @@ export function RegistrationFormsView({ lang = 'ms' }: RegistrationFormsViewProp
 
   const isEn = selectedLang === 'en';
 
+  const handleSelectFormType = (type: FormType) => {
+    setFormType(type);
+    const dashboardMain = document.getElementById('dashboard-main');
+    if (dashboardMain) {
+      dashboardMain.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div className="space-y-6 animate-fadeIn print:space-y-0 print:m-0 print:p-0">
       {/* View Header */}
@@ -71,7 +80,7 @@ export function RegistrationFormsView({ lang = 'ms' }: RegistrationFormsViewProp
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 print:hidden">
         {/* AGENT FORM CARD */}
         <button
-          onClick={() => setFormType('agent')}
+          onClick={() => handleSelectFormType('agent')}
           className={`p-4 sm:p-5 rounded-2xl border text-left transition-all flex flex-col justify-between ${
             formType === 'agent'
               ? 'bg-gradient-to-r from-red-600 to-red-700 text-white shadow-md shadow-red-600/25 border-red-600'
@@ -102,7 +111,7 @@ export function RegistrationFormsView({ lang = 'ms' }: RegistrationFormsViewProp
 
         {/* MERCHANT FORM CARD */}
         <button
-          onClick={() => setFormType('merchant')}
+          onClick={() => handleSelectFormType('merchant')}
           className={`p-4 sm:p-5 rounded-2xl border text-left transition-all flex flex-col justify-between ${
             formType === 'merchant'
               ? 'bg-gradient-to-r from-red-600 to-red-700 text-white shadow-md shadow-red-600/25 border-red-600'
@@ -133,7 +142,7 @@ export function RegistrationFormsView({ lang = 'ms' }: RegistrationFormsViewProp
 
         {/* SUBMISSIONS CARD */}
         <button
-          onClick={() => setFormType('submissions')}
+          onClick={() => handleSelectFormType('submissions')}
           className={`p-4 sm:p-5 rounded-2xl border text-left transition-all flex flex-col justify-between ${
             formType === 'submissions'
               ? 'bg-gradient-to-r from-red-600 to-red-700 text-white shadow-md shadow-red-600/25 border-red-600'

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import * as XLSX from 'xlsx';
 
@@ -42,6 +42,13 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
   lang = 'en'
 }) => {
   const [mounted, setMounted] = useState(false);
+  const singleFormRef = useRef<HTMLFormElement>(null);
+
+  const scrollModalToTop = () => {
+    if (singleFormRef.current) {
+      singleFormRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -176,18 +183,21 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
     if (!storeIdentifier) {
       setStatus('error');
       setErrorMessage('Please select or specify a Storefront Email / Identifier.');
+      scrollModalToTop();
       return;
     }
 
     if (!grabOrderId.trim()) {
       setStatus('error');
       setErrorMessage('Please enter a valid Grab Order ID.');
+      scrollModalToTop();
       return;
     }
 
     if (lineItems.some((item) => !item.itemName.trim())) {
       setStatus('error');
       setErrorMessage('All line items must have a non-empty name.');
+      scrollModalToTop();
       return;
     }
 
@@ -231,6 +241,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
     } catch (err: any) {
       setStatus('error');
       setErrorMessage(err.message || 'Server error occurred during manual data entry.');
+      scrollModalToTop();
     }
   };
 
@@ -518,7 +529,7 @@ export const ManualOrderModal: React.FC<ManualOrderModalProps> = ({
 
         {/* TAB 1: SINGLE ORDER FORM */}
         {activeTab === 'single' && (
-          <form onSubmit={handleSubmitSingle} className="flex-1 overflow-y-auto p-6 space-y-6">
+          <form ref={singleFormRef} onSubmit={handleSubmitSingle} className="flex-1 overflow-y-auto p-6 space-y-6">
             {status === 'error' && (
               <div className="bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/30 text-rose-800 dark:text-rose-400 text-sm p-3.5 rounded-xl flex items-center gap-2">
                 <svg className="w-5 h-5 text-rose-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
