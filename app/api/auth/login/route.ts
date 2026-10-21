@@ -20,7 +20,8 @@ export async function POST(request: NextRequest) {
 
     const identifier = String(rawIdentifier).trim();
 
-    // 1. Try finding user in Supabase via Prisma (matches email or username, case-insensitive)
+    // 1. Try finding user in Supabase via Prisma (matches email, username, or @lcgroup.com.my suffix)
+    const lcEmailCandidate = identifier.includes('@') ? identifier : `${identifier}@lcgroup.com.my`;
     let user: any = null;
     try {
       user = await prisma.user.findFirst({
@@ -28,6 +29,8 @@ export async function POST(request: NextRequest) {
           OR: [
             { email: { equals: identifier, mode: 'insensitive' } },
             { username: { equals: identifier, mode: 'insensitive' } },
+            { email: { equals: lcEmailCandidate, mode: 'insensitive' } },
+            { username: { equals: lcEmailCandidate, mode: 'insensitive' } },
           ],
         },
       });
@@ -46,9 +49,12 @@ export async function POST(request: NextRequest) {
         const res = await pool.query(
           `SELECT id, username, email, full_name as "fullName", password_hash as "passwordHash", department, position, permissions, role, is_active as "isActive"
            FROM users
-           WHERE LOWER(email) = LOWER($1) OR LOWER(username) = LOWER($1)
+           WHERE LOWER(email) = LOWER($1)
+              OR LOWER(username) = LOWER($1)
+              OR LOWER(email) = LOWER($2)
+              OR LOWER(username) = LOWER($2)
            LIMIT 1`,
-          [identifier]
+          [identifier, lcEmailCandidate]
         );
         await pool.end();
         if (res.rows.length > 0) {

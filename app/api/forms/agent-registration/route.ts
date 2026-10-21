@@ -21,9 +21,18 @@ function getSessionUser(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const session = getSessionUser(request);
-    if (!session || (!hasPermission(session, 'users:manage') && !hasPermission(session, 'forms:review') && !hasPermission(session, 'admin:all') && session.role !== 'SUPER_ADMIN' && session.role !== 'MANAGER')) {
+    const canView = session && (
+      session.role === 'SUPER_ADMIN' ||
+      session.role === 'MANAGER' ||
+      session.role === 'STAFF' ||
+      hasPermission(session, 'forms:submit') ||
+      hasPermission(session, 'forms:review') ||
+      hasPermission(session, 'users:manage') ||
+      hasPermission(session, 'admin:all')
+    );
+    if (!canView) {
       return NextResponse.json(
-        { success: false, data: [], error: 'Access denied: Staff administrator permission required.' },
+        { success: false, data: [], error: 'Access denied: Authentication required.' },
         { status: 403 }
       );
     }
@@ -40,9 +49,18 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = getSessionUser(request);
-    if (!session || (!hasPermission(session, 'users:manage') && !hasPermission(session, 'forms:review') && !hasPermission(session, 'admin:all') && session.role !== 'SUPER_ADMIN' && session.role !== 'MANAGER')) {
+    const canRegister = session && (
+      session.role === 'SUPER_ADMIN' ||
+      session.role === 'MANAGER' ||
+      session.role === 'STAFF' ||
+      hasPermission(session, 'forms:submit') ||
+      hasPermission(session, 'forms:review') ||
+      hasPermission(session, 'users:manage') ||
+      hasPermission(session, 'admin:all')
+    );
+    if (!canRegister) {
       return NextResponse.json(
-        { success: false, error: 'Access denied: Staff administrator permission required to register field agents.' },
+        { success: false, error: 'Access denied: Permission required to register field agents.' },
         { status: 403 }
       );
     }
