@@ -43,3 +43,6 @@ scratch/
 # Database dumps, batch creations, and manual maintenance scripts
 database/
 scripts/
+
+# Local data cache and runtime stores
+data/

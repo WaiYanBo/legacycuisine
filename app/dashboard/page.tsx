@@ -8,13 +8,14 @@ import { AnalyticsView } from '../../components/dashboard/AnalyticsView';
 import { RegistrationFormsView } from '../../components/dashboard/RegistrationFormsView';
 import { ManualOrderModal } from '../../components/dashboard/ManualOrderModal';
 import { SettingsView } from '../../components/dashboard/SettingsView';
+import { HRView } from '../../components/dashboard/HRView';
 import { AgentPortalView } from '../../components/dashboard/AgentPortalView';
 import MerchantPortalView from '../../components/dashboard/MerchantPortalView';
 import { DashboardMetrics } from '../../types/dashboard';
 import { getDictionary, Locale } from '../../lib/i18n';
 
 type TimeRange = 'daily' | 'weekly' | 'monthly' | 'yearly' | 'all';
-type TabName = 'dashboard' | 'analytics' | 'registration' | 'settings';
+type TabName = 'dashboard' | 'analytics' | 'registration' | 'hr' | 'settings';
 
 interface SessionUser {
   id: string;
@@ -187,7 +188,15 @@ export default function DashboardOverviewPage() {
             <div>
               <span className="font-black text-xs sm:text-sm text-slate-900 dark:text-white tracking-tight block leading-tight">Legacy Cuisine</span>
               <span className="text-[8.5pt] text-red-600 dark:text-red-400 font-extrabold uppercase tracking-wider block leading-none">
-                {activeTab === 'dashboard' ? dict.sidebar.navDashboard : activeTab === 'analytics' ? dict.sidebar.navAnalytics : activeTab === 'registration' ? dict.sidebar.navRegistration : dict.sidebar.navSettings}
+                {activeTab === 'dashboard'
+                  ? dict.sidebar.navDashboard
+                  : activeTab === 'analytics'
+                  ? dict.sidebar.navAnalytics
+                  : activeTab === 'registration'
+                  ? dict.sidebar.navRegistration
+                  : activeTab === 'hr'
+                  ? (dict.sidebar as any).navHr || (isEn ? 'Human Resources' : 'Sumber Manusia')
+                  : dict.sidebar.navSettings}
               </span>
             </div>
           </div>
@@ -288,6 +297,20 @@ export default function DashboardOverviewPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                   <span>{dict.sidebar.navRegistration}</span>
+                </button>
+
+                <button
+                  onClick={() => { setActiveTab('hr'); setIsMobileMenuOpen(false); }}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
+                    activeTab === 'hr'
+                      ? 'bg-gradient-to-r from-red-600 to-red-700 text-white shadow-md shadow-red-600/25'
+                      : 'text-slate-600 dark:text-slate-300 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-700 dark:hover:text-red-400'
+                  }`}
+                >
+                  <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                  <span>{(dict.sidebar as any).navHr || (isEn ? 'Human Resources' : 'Sumber Manusia')}</span>
                 </button>
 
                 <button
@@ -426,6 +449,20 @@ export default function DashboardOverviewPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
               <span>{dict.sidebar.navRegistration}</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('hr')}
+              className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                activeTab === 'hr'
+                  ? 'bg-gradient-to-r from-red-600 to-red-700 text-white shadow-md shadow-red-600/25'
+                  : 'text-slate-600 dark:text-slate-300 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-700 dark:hover:text-red-400'
+              }`}
+            >
+              <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              <span>{(dict.sidebar as any).navHr || (isEn ? 'Human Resources' : 'Sumber Manusia')}</span>
             </button>
 
             <button
@@ -668,7 +705,12 @@ export default function DashboardOverviewPage() {
           <RegistrationFormsView lang={lang} />
         )}
 
-        {/* VIEW 4: SETTINGS & ACCESS CONTROL */}
+        {/* VIEW 4: HUMAN RESOURCES SUITE */}
+        {activeTab === 'hr' && (
+          <HRView lang={lang === 'bm' ? 'ms' : (lang as 'en' | 'ms')} currentUser={currentUser} />
+        )}
+
+        {/* VIEW 5: SETTINGS & ACCESS CONTROL */}
         {activeTab === 'settings' && (
           <SettingsView lang={lang === 'bm' ? 'ms' : (lang as 'en' | 'ms')} onLangChange={(l) => toggleLanguage(l)} />
         )}

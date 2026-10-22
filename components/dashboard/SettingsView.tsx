@@ -105,6 +105,26 @@ export function SettingsView({ lang: propLang, initialLang = 'en', onLangChange 
       desc: isMs ? 'Boleh menambah pengguna & menetapkan kebenaran' : 'Can create users & grant permissions',
     },
     {
+      key: 'hr:view',
+      label: isMs ? '🏢 Lihat Rekod Sumber Manusia' : '🏢 View HR & Payroll Records',
+      desc: isMs ? 'Boleh melihat direktori staf & pampasan' : 'Can view staff directory & compensation',
+    },
+    {
+      key: 'hr:manage',
+      label: isMs ? '💼 Pengurusan HR, Gaji & Komisen' : '💼 Full HR Operations Management',
+      desc: isMs ? 'Boleh mengambil staf, laksana gaji & komisen' : 'Can onboard staff, process payroll & commissions',
+    },
+    {
+      key: 'finance:payout',
+      label: isMs ? '💳 Pengesahan Pembayaran Kewangan' : '💳 Authorize Financial Disbursements',
+      desc: isMs ? 'Boleh meluluskan bayaran gaji & tuntutan komisen' : 'Can approve salary & commission payouts',
+    },
+    {
+      key: 'audit:view',
+      label: isMs ? '🔒 Lihat & Eksport Log Audit' : '🔒 View & Export Compliance Audit Logs',
+      desc: isMs ? 'Boleh melihat log audit integriti sistem' : 'Can inspect immutable system audit records',
+    },
+    {
       key: 'admin:all',
       label: isMs ? '👑 Akses Penuh Pentadbir Utama' : '👑 Full Root Administrator (All Access)',
       desc: isMs ? 'Akses master tanpa sekatan' : 'Full unrestricted master access',

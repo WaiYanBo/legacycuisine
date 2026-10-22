@@ -199,6 +199,10 @@
       "forms_submit": "📝 Hantar Senarai Semak & Borang Pendaftaran Ejen",
       "forms_review": "📋 Semak & Luluskan Pendaftaran Peniaga",
       "users_manage": "👥 Urus Staf, Jabatan & Tetapkan Kebenaran Akses",
+      "hr_view": "🏢 Lihat Rekod Sumber Manusia & Pampasan Staf",
+      "hr_manage": "💼 Pengurusan HR, Kemasukan Staf, Gaji & Komisen",
+      "finance_payout": "💳 Pengesahan & Pengeluaran Gaji Serta Komisen",
+      "audit_view": "🔒 Lihat & Eksport Log Audit Pematuhan",
       "admin_all": "👑 Akses Penuh Pentadbir Utama (Root Override)"
     },
     "staffManagement": {
@@ -284,6 +288,7 @@
       "navDashboard": "Papan Pemuka",
       "navAnalytics": "Analisis Kewangan",
       "navRegistration": "Pendaftaran",
+      "navHr": "Sumber Manusia",
       "navSettings": "Tetapan & Akses",
       "logout": "Log Keluar",
       "lightMode": "Mod Cerah",

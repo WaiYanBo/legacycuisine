@@ -116,7 +116,19 @@ export function hasPermission(sessionUser: SessionPayload | null | undefined, pe
   if (sessionUser.role === 'SUPER_ADMIN') return true;
   if (sessionUser.permissions?.includes('admin:all')) return true;
 
-  // 3. Granular permission check
+  // 3. Manager elevated access for HR & staff operations
+  if (sessionUser.role === 'MANAGER') {
+    if (permissionKey === 'hr:view' || permissionKey === 'hr:manage' || permissionKey === 'users:manage' || permissionKey === 'audit:view') {
+      return true;
+    }
+  }
+
+  // 4. Backward-compatible mapping for existing managers/admins
+  if ((permissionKey === 'hr:view' || permissionKey === 'hr:manage') && sessionUser.permissions?.includes('users:manage')) {
+    return true;
+  }
+
+  // 5. Granular permission check
   return Boolean(sessionUser.permissions?.includes(permissionKey));
 }
 

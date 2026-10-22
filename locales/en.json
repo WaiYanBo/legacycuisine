@@ -199,6 +199,10 @@
       "forms_submit": "📝 Submit Merchant Checklists & Agent Registration Forms",
       "forms_review": "📋 Review & Audit Merchant Registrations",
       "users_manage": "👥 Manage Personnel, Departments & Grant Permissions",
+      "hr_view": "🏢 View Human Resources & Staff Compensation Records",
+      "hr_manage": "💼 Full HR Operations, Onboarding, Payroll & Commissions",
+      "finance_payout": "💳 Authorize & Disburse Payroll & Commissions",
+      "audit_view": "🔒 View & Export Compliance Audit Logs",
       "admin_all": "👑 Full Root Administrator Override (All Access)"
     },
     "staffManagement": {
@@ -284,6 +288,7 @@
       "navDashboard": "Dashboard",
       "navAnalytics": "Analytics",
       "navRegistration": "Registration",
+      "navHr": "Human Resources",
       "navSettings": "Settings & Access",
       "logout": "Logout",
       "lightMode": "Light Mode",
