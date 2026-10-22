@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-const SESSION_SECRET = process.env.SESSION_SECRET || 'legacy_cuisine_ultra_secure_jwt_secret_2026_!@#$%^';
+const SESSION_SECRET = process.env.SESSION_SECRET || 'dev_insecure_fallback_session_key';
 
 async function verifySessionTokenEdge(token: string): Promise<boolean> {
   if (!token || !token.includes('.')) return false;

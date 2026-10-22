@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 
-const SESSION_SECRET = process.env.SESSION_SECRET || 'legacy_cuisine_ultra_secure_jwt_secret_2026_!@#$%^';
+const SESSION_SECRET = process.env.SESSION_SECRET || 'dev_insecure_fallback_session_key';
 const TOKEN_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 
 /**
