@@ -40,3 +40,6 @@ Thumbs.db
 # Scratch and audit test scripts
 scratch/
 
+# Database dumps, batch creations, and manual maintenance scripts
+database/
+scripts/

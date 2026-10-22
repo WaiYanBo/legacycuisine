@@ -38,20 +38,24 @@ export async function ensureUsersTableAndSeed(): Promise<void> {
     });
 
     if (!existingAdmin) {
-      const defaultPassword = '[REDACTED]';
-      const defaultHash = hashPassword(defaultPassword);
+      const defaultPassword = process.env.ADMIN_INITIAL_PASSWORD;
+      if (defaultPassword) {
+        const defaultHash = hashPassword(defaultPassword);
 
-      await prisma.user.create({
-        data: {
-          username: 'Wai Yan Bo',
-          email: 'admin@legacycuisine.com',
-          fullName: 'Wai Yan Bo (Super Administrator)',
-          passwordHash: defaultHash,
-          role: 'SUPER_ADMIN',
-          isActive: true,
-        },
-      });
-      console.log('✅ [Auth] Default Super Admin account initialized: "Wai Yan Bo"');
+        await prisma.user.create({
+          data: {
+            username: 'Wai Yan Bo',
+            email: 'admin@legacycuisine.com',
+            fullName: 'Wai Yan Bo (Super Administrator)',
+            passwordHash: defaultHash,
+            role: 'SUPER_ADMIN',
+            isActive: true,
+          },
+        });
+        console.log('✅ [Auth] Default Super Admin account initialized: "Wai Yan Bo"');
+      } else {
+        console.log('ℹ️ [Auth] No default Super Admin created (ADMIN_INITIAL_PASSWORD not set).');
+      }
     }
   } catch (error) {
     console.error('⚠️ [Auth] Warning during user table initialization:', error);
