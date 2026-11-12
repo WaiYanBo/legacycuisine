@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../../../../src/prisma';
-import { hashPassword, verifySessionToken } from '../../../../../../src/utils/security';
+import { hashPassword, verifySessionToken, hasPermission } from '../../../../../../src/utils/security';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,9 +22,9 @@ export async function POST(
 ) {
   try {
     const session = getSessionUser(request);
-    if (!session || session.role !== 'SUPER_ADMIN') {
+    if (!session || !hasPermission(session, 'users:manage')) {
       return NextResponse.json(
-        { success: false, error: 'Access denied. Only Super Admins can reset user passwords.' },
+        { success: false, error: 'Access denied. You do not have permission to reset user passwords.' },
         { status: 403 }
       );
     }

@@ -124,9 +124,14 @@ export async function POST(request: NextRequest) {
       permissions: user.permissions,
     });
 
-    const parsedPermissions = typeof user.permissions === 'string'
-      ? JSON.parse(user.permissions || '[]')
-      : (user.permissions || []);
+    let parsedPermissions: string[] = [];
+    try {
+      parsedPermissions = typeof user.permissions === 'string'
+        ? JSON.parse(user.permissions || '[]')
+        : (user.permissions || []);
+    } catch {
+      parsedPermissions = [];
+    }
 
     const response = NextResponse.json({
       success: true,

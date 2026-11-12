@@ -1852,7 +1852,7 @@ export function HRView({ lang, currentUser }: HRViewProps) {
                 <div>
                   <h1 className="text-xl font-black tracking-tight text-red-700">LEGACY CUISINE GROUP SDN. BHD.</h1>
                   <p className="text-[10px] text-slate-500 font-medium">Company Reg: 202401039821-M • SST No: W10-2401-32000492</p>
-                  <p className="text-[10px] text-slate-500">Corporate HQ: Level 18, Menara JLO, Jalan Ampang, 50450 Kuala Lumpur, Malaysia</p>
+                  <p className="text-[10px] text-slate-500">Corporate HQ: Level 18, Menara Kencana, Jalan Ampang, 50450 Kuala Lumpur, Malaysia</p>
                   <p className="text-[10px] text-slate-500">Email: finance@lcgroup.com.my • Phone: +60 3-8888 2026</p>
                 </div>
                 <div className="text-right">

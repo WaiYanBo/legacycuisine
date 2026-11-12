@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { prisma } from '../prisma';
-import { hashPassword, verifyPassword, generateSessionToken, verifySessionToken, SessionPayload } from '../utils/security';
+import { hashPassword, verifyPassword, generateSessionToken, verifySessionToken, hasPermission, SessionPayload } from '../utils/security';
 
 /**
  * Extracts authenticated user session payload from request.
@@ -377,8 +377,8 @@ export async function updateStaff(req: Request, res: Response): Promise<void> {
 export async function resetStaffPassword(req: Request, res: Response): Promise<void> {
   try {
     const session = getAuthenticatedUser(req);
-    if (!session || session.role !== 'SUPER_ADMIN') {
-      res.status(403).json({ success: false, error: 'Access denied. Only Super Admins can reset passwords.' });
+    if (!session || !hasPermission(session, 'users:manage')) {
+      res.status(403).json({ success: false, error: 'Access denied. You do not have permission to reset passwords.' });
       return;
     }
 

@@ -7,6 +7,26 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: [
+          'var(--font-sans)',
+          '"Plus Jakarta Sans"',
+          'Inter',
+          '-apple-system',
+          'BlinkMacSystemFont',
+          '"Segoe UI"',
+          'Roboto',
+          'sans-serif',
+        ],
+        display: [
+          '"Plus Jakarta Sans"',
+          'Inter',
+          '-apple-system',
+          'BlinkMacSystemFont',
+          '"Segoe UI"',
+          'sans-serif',
+        ],
+      },
       colors: {
         vividRed: '#c81e1e',
         greyYellow: '#c5a059',

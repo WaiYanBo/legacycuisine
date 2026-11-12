@@ -46,6 +46,15 @@ const nextConfig = {
       },
     ];
   },
+  async rewrites() {
+    const backendPort = process.env.PORT || 3000;
+    return [
+      {
+        source: '/storage/:path*',
+        destination: `http://127.0.0.1:${backendPort}/storage/:path*`,
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;

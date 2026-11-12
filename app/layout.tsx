@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
+import { ThemeProvider } from '../components/corporate/ThemeProvider';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://lcgroup.com.my';
 
@@ -11,14 +12,14 @@ export const viewport: Viewport = {
   viewportFit: 'cover',
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#000000' },
+    { media: '(prefers-color-scheme: dark)', color: '#020617' },
   ],
 };
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: 'Legacy Cuisine - F&B Management',
-  description: 'Enterprise food delivery aggregator reconciliation ledger',
+  title: 'Legacy Cuisine - Authorised Foodpanda Intermediary',
+  description: 'Official Foodpanda merchant onboarding, menu digitization, device deployment, and weekly payout reconciliation agency in Malaysia.',
   icons: {
     icon: [
       { url: '/logo.png', type: 'image/png' },
@@ -29,8 +30,8 @@ export const metadata: Metadata = {
     apple: '/logo.png',
   },
   openGraph: {
-    title: 'Legacy Cuisine - F&B Management',
-    description: 'Enterprise food delivery aggregator reconciliation ledger',
+    title: 'Legacy Cuisine - Authorised Foodpanda Intermediary',
+    description: 'Official Foodpanda merchant onboarding, menu digitization, device deployment, and weekly payout reconciliation agency in Malaysia.',
     url: siteUrl,
     siteName: 'Legacy Cuisine',
     images: [
@@ -42,13 +43,13 @@ export const metadata: Metadata = {
         alt: 'Legacy Cuisine Logo',
       },
     ],
-    locale: 'en_US',
+    locale: 'en_MY',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Legacy Cuisine - F&B Management',
-    description: 'Enterprise food delivery aggregator reconciliation ledger',
+    title: 'Legacy Cuisine - Authorised Foodpanda Intermediary',
+    description: 'Official Foodpanda merchant onboarding, menu digitization, device deployment, and weekly payout reconciliation agency in Malaysia.',
     images: [`${siteUrl}/logo.png`],
   },
   manifest: '/site.webmanifest',
@@ -60,7 +61,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/logo.png" sizes="any" />
         <link rel="apple-touch-icon" href="/logo.png" />
@@ -74,9 +75,27 @@ export default function RootLayout({
         <meta property="og:image:height" content="1254" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://lcgroup.com.my" />
+
+        {/* Client theme anti-flash script */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                var theme = localStorage.getItem('lc_theme');
+                if (theme === 'dark') {
+                  document.documentElement.classList.add('dark');
+                } else if (!theme && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                  // Keep default light unless user explicitly chose dark
+                }
+              } catch (e) {}
+            `,
+          }}
+        />
       </head>
-      <body className="bg-slate-50 min-h-screen font-sans">
-        {children}
+      <body className="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen font-sans transition-colors duration-200">
+        <ThemeProvider>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

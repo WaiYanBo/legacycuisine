@@ -52,7 +52,7 @@ export async function middleware(request: NextRequest) {
   if (isProtectedPath) {
     const isValid = sessionToken ? await verifySessionTokenEdge(sessionToken) : false;
     if (!isValid) {
-      const loginUrl = new URL('/', request.url);
+      const loginUrl = new URL('/login', request.url);
       const res = NextResponse.redirect(loginUrl);
       if (sessionToken) {
         res.cookies.delete('lc_session');
