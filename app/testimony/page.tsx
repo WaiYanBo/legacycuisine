@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import CorporateNav from '../../components/corporate/CorporateNav';
 import CorporateFooter from '../../components/corporate/CorporateFooter';
-import PayoutCalculator from '../../components/corporate/PayoutCalculator';
 import FloatingPortalPill from '../../components/corporate/FloatingPortalPill';
 
 export default function TestimonyPage() {
@@ -178,9 +177,6 @@ export default function TestimonyPage() {
             ))}
           </div>
         </section>
-
-        {/* Embedded Calculator */}
-        <PayoutCalculator currentLang={lang} />
 
         {/* CTA */}
         <section className="bg-gradient-to-r from-slate-900 via-slate-950 to-red-950/40 text-white py-20 text-center border-t border-slate-800">

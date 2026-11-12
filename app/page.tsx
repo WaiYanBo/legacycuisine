@@ -6,7 +6,6 @@ import HomeHero from '../components/corporate/HomeHero';
 import ValuePillars from '../components/corporate/ValuePillars';
 import FoodpandaServicesGrid from '../components/corporate/FoodpandaServicesGrid';
 import OnboardingRoadmap from '../components/corporate/OnboardingRoadmap';
-import PayoutCalculator from '../components/corporate/PayoutCalculator';
 import ComparativeMatrix from '../components/corporate/ComparativeMatrix';
 import MerchantStories from '../components/corporate/MerchantStories';
 import OnboardingInquiryForm from '../components/corporate/OnboardingInquiryForm';
@@ -36,9 +35,6 @@ export default function CorporateHomePage() {
 
         {/* Applying Alone vs via Legacy Cuisine (Comparative Matrix) */}
         <ComparativeMatrix currentLang={lang} />
-
-        {/* Interactive Foodpanda Remittance Payout Calculator */}
-        <PayoutCalculator currentLang={lang} />
 
         {/* Real Merchant Success Stories */}
         <MerchantStories currentLang={lang} />
