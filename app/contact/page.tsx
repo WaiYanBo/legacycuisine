@@ -44,7 +44,7 @@ export default function ContactPage() {
     },
     {
       code: 'DESK-04',
-      badgeColor: 'bg-red-50 text-red-600 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-800',
+      badgeColor: 'bg-red-50 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-800',
       name: isEn ? 'Terminal Logistics & Kitchen Technical Support' : 'Sokongan Teknikal & Logistik Terminal Premis',
       email: 'support@legacycuisine.com.my',
       phone: '+60 3-8996 4204',
@@ -77,7 +77,7 @@ export default function ContactPage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
               <div className="lg:col-span-8">
-                <span className="inline-block px-3.5 py-1 rounded-full bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-red-400 text-xs font-bold uppercase tracking-wider border border-red-200 dark:border-red-800 mb-4">
+                <span className="inline-block px-3.5 py-1 rounded-full bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-400 text-xs font-bold uppercase tracking-wider border border-red-200 dark:border-red-800 mb-4">
                   {isEn ? 'Authorised Foodpanda Partner Desks' : 'Meja Operasi Rasmi Foodpanda'}
                 </span>
                 <h1 className="text-3xl sm:text-5xl font-sans font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
@@ -110,7 +110,7 @@ export default function ContactPage() {
                   <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                     {isEn ? 'STAFF & FIELD AGENTS' : 'STAF & EJEN MEDAN'}
                   </span>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-50 dark:bg-red-950 text-red-600 border border-red-200 dark:border-red-800">
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800">
                     {isEn ? 'Secure Portal' : 'Portal Selamat'}
                   </span>
                 </div>
@@ -140,7 +140,7 @@ export default function ContactPage() {
         <section className="bg-slate-50/60 dark:bg-[#070a12] py-20 sm:py-28 border-b border-slate-200 dark:border-slate-800 transition-colors">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="pb-8 border-b border-slate-200 dark:border-slate-800 mb-12">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 text-xs font-bold uppercase tracking-wider mb-3">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800 text-xs font-bold uppercase tracking-wider mb-3">
                 {isEn ? 'Department Directory' : 'Direktori Jabatan'}
               </div>
               <h2 className="text-2xl sm:text-4xl font-sans font-extrabold text-slate-900 dark:text-white tracking-tight">
@@ -187,7 +187,7 @@ export default function ContactPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
               <div className="lg:col-span-5 space-y-3">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 text-xs font-bold uppercase tracking-wider">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800 text-xs font-bold uppercase tracking-wider">
                   {isEn ? 'Official Registry' : 'Pendaftaran Rasmi'}
                 </div>
                 <h3 className="text-2xl font-sans font-extrabold text-slate-900 dark:text-white tracking-tight">

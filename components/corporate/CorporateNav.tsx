@@ -102,8 +102,8 @@ export default function CorporateNav({
             </div>
 
             <div className="hidden lg:flex items-center gap-1.5 text-slate-300 font-mono text-[11px]">
-              <span className="text-slate-500">Hotline:</span>
-              <a href="tel:+60389964200" className="text-white hover:text-red-500 transition-colors font-semibold">
+              <span className="text-slate-300">Hotline:</span>
+              <a href="tel:+60389964200" className="text-white hover:text-red-400 transition-colors font-semibold">
                 +60 3-8996 4200
               </a>
             </div>
@@ -136,7 +136,7 @@ export default function CorporateNav({
                 <span className="font-sans font-extrabold text-base sm:text-lg md:text-xl text-slate-900 dark:text-white tracking-tight group-hover:text-red-600 transition-colors truncate">
                   Legacy Cuisine
                 </span>
-                <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800/60 rounded-full shrink-0">
+                <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800/60 rounded-full shrink-0">
                   <span className="w-1.5 h-1.5 rounded-full bg-red-600" />
                   Foodpanda Intermediary
                 </span>

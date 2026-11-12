@@ -30,7 +30,7 @@ export default function ValuePillars({ currentLang = 'en' }: ValuePillarsProps) 
       num: '02',
       title: isEn ? 'On-Site Terminal & Kitchen SOP' : 'Penyerahan Terminal & Latihan Premis',
       subtitle: isEn ? 'Hands-On Deployment' : 'Pemasangan Terus Di Dapur',
-      badgeColor: 'bg-red-50 text-red-600 border-red-200 dark:bg-red-950/50 dark:text-red-400 dark:border-red-800',
+      badgeColor: 'bg-red-50 text-red-700 border-red-200 dark:bg-red-950/50 dark:text-red-400 dark:border-red-800',
       iconBg: 'bg-gradient-to-br from-red-600 to-red-800 shadow-red-500/20',
       icon: (
         <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -64,7 +64,7 @@ export default function ValuePillars({ currentLang = 'en' }: ValuePillarsProps) 
         
         {/* Section Header */}
         <div className="max-w-3xl mb-14">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 text-xs font-bold uppercase tracking-wider mb-3">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800 text-xs font-bold uppercase tracking-wider mb-3">
             {isEn ? 'The Intermediary Advantage' : 'Kelebihan Perantara Rasmi'}
           </div>
           <h2 className="text-2xl sm:text-4xl font-sans font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
@@ -109,12 +109,12 @@ export default function ValuePillars({ currentLang = 'en' }: ValuePillarsProps) 
               <div className="pt-6 mt-6 border-t border-slate-200/80 dark:border-slate-800 flex items-center justify-between">
                 <Link
                   href="/services"
-                  className="text-xs font-bold text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 inline-flex items-center gap-1.5 transition-colors"
+                  className="text-xs font-bold text-red-700 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 inline-flex items-center gap-1.5 transition-colors"
                 >
                   <span>{isEn ? 'Learn more about this workflow' : 'Ketahui aliran kerja ini'}</span>
                   <span>&rarr;</span>
                 </Link>
-                <span className="font-mono text-xs font-bold text-slate-300 dark:text-slate-700">
+                <span className="font-mono text-xs font-bold text-slate-400 dark:text-slate-500">
                   {pillar.num}
                 </span>
               </div>

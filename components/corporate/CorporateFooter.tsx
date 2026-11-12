@@ -113,7 +113,7 @@ export default function CorporateFooter({ currentLang = 'en' }: CorporateFooterP
               </Link>
             </div>
 
-            <div className="font-mono text-[11px] text-slate-500 pt-1">
+            <div className="font-mono text-[11px] text-slate-400 pt-1">
               {isEn ? 'Encrypted via TLS 1.3 &bull; PDPA 2010 Protected' : 'Penyulitan TLS 1.3 &bull; Dilindungi PDPA 2010'}
             </div>
           </div>

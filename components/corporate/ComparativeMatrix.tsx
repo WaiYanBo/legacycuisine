@@ -49,7 +49,7 @@ export default function ComparativeMatrix({ currentLang = 'en' }: ComparativeMat
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between pb-8 border-b border-slate-200 dark:border-slate-800 gap-6">
           <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 text-xs font-bold uppercase tracking-wider mb-3">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800 text-xs font-bold uppercase tracking-wider mb-3">
               {isEn ? 'The Intermediary Advantage' : 'Kelebihan Perantara Rasmi'}
             </div>
             <h2 className="text-2xl sm:text-4xl font-sans font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
@@ -84,10 +84,10 @@ export default function ComparativeMatrix({ currentLang = 'en' }: ComparativeMat
                 <th className="py-3.5 sm:py-4 px-4 sm:px-6 font-mono text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 w-1/4">
                   {isEn ? 'Operational Dimension' : 'Dimensi Operasi'}
                 </th>
-                <th className="py-3.5 sm:py-4 px-4 sm:px-6 font-mono text-xs font-bold uppercase tracking-wider text-slate-400 w-3/8 bg-slate-50/50 dark:bg-slate-900/40">
+                <th className="py-3.5 sm:py-4 px-4 sm:px-6 font-mono text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 w-3/8 bg-slate-50/50 dark:bg-slate-900/40">
                   {isEn ? 'Direct Self-Application' : 'Pendaftaran Sendiri'}
                 </th>
-                <th className="py-3.5 sm:py-4 px-4 sm:px-6 font-mono text-xs font-bold uppercase tracking-wider text-red-600 dark:text-red-400 w-3/8 bg-red-50/60 dark:bg-red-950/40 border-l border-red-200 dark:border-red-800/80">
+                <th className="py-3.5 sm:py-4 px-4 sm:px-6 font-mono text-xs font-bold uppercase tracking-wider text-red-700 dark:text-red-400 w-3/8 bg-red-50/60 dark:bg-red-950/40 border-l border-red-200 dark:border-red-800/80">
                   {isEn ? 'Via Legacy Cuisine (Authorised Intermediary)' : 'Melalui Legacy Cuisine (Perantara Rasmi)'}
                 </th>
               </tr>
@@ -98,12 +98,12 @@ export default function ComparativeMatrix({ currentLang = 'en' }: ComparativeMat
                   <td className="py-4 sm:py-5 px-4 sm:px-6 font-bold text-slate-900 dark:text-white align-top">
                     {row.dimension}
                   </td>
-                  <td className="py-4 sm:py-5 px-4 sm:px-6 text-slate-500 dark:text-slate-400 bg-slate-50/40 dark:bg-slate-900/30 align-top leading-relaxed">
-                    <span className="text-red-400 font-bold mr-2">✕</span>
+                  <td className="py-4 sm:py-5 px-4 sm:px-6 text-slate-600 dark:text-slate-400 bg-slate-50/40 dark:bg-slate-900/30 align-top leading-relaxed">
+                    <span className="text-red-600 font-bold mr-2">✕</span>
                     {row.direct}
                   </td>
                   <td className="py-4 sm:py-5 px-4 sm:px-6 text-slate-900 dark:text-slate-100 font-medium bg-red-50/20 dark:bg-red-950/20 border-l border-red-200/80 dark:border-red-800/60 align-top leading-relaxed">
-                    <span className="text-emerald-500 font-bold mr-2 text-sm">✓</span>
+                    <span className="text-emerald-700 dark:text-emerald-400 font-bold mr-2 text-sm">✓</span>
                     {row.intermediary}
                   </td>
                 </tr>
@@ -113,7 +113,7 @@ export default function ComparativeMatrix({ currentLang = 'en' }: ComparativeMat
         </div>
 
         <div className="mt-4 text-right">
-          <span className="font-mono text-[11px] text-slate-400 uppercase tracking-wider">
+          <span className="font-mono text-[11px] text-slate-600 dark:text-slate-400 uppercase tracking-wider">
             {isEn
               ? '* Based on average merchant activation benchmarks and Foodpanda audit records, 2026'
               : '* Berdasarkan penanda aras pengaktifan peniaga dan rekod audit Foodpanda, 2026'}

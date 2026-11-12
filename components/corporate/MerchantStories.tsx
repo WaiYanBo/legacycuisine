@@ -22,7 +22,7 @@ export default function MerchantStories({ currentLang = 'en' }: MerchantStoriesP
       author: isEn ? 'Mr. Tan Boon Kiat' : 'Encik Tan Boon Kiat',
       role: isEn ? 'Managing Director' : 'Pengarah Urusan',
       metric: isEn ? '+54% YoY Delivery Growth' : '+54% Pertumbuhan Jualan',
-      metricColor: 'text-emerald-500 bg-emerald-50 dark:bg-emerald-950/60 border-emerald-200 dark:border-emerald-800',
+      metricColor: 'text-emerald-700 bg-emerald-50 dark:bg-emerald-950/60 border-emerald-200 dark:border-emerald-800',
     },
     {
       name: isEn ? 'Restoran Nasi Kandar & Bistro' : 'Restoran Nasi Kandar & Bistro',
@@ -35,7 +35,7 @@ export default function MerchantStories({ currentLang = 'en' }: MerchantStoriesP
       author: isEn ? 'Haji Shahrul Nizam' : 'Haji Shahrul Nizam',
       role: isEn ? 'Chief Operating Officer' : 'Ketua Pegawai Operasi',
       metric: isEn ? 'Cancellation < 0.8%' : 'Pembatalan < 0.8%',
-      metricColor: 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/60 border-red-200 dark:border-red-800',
+      metricColor: 'text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-950/60 border-red-200 dark:border-red-800',
     },
   ];
 
@@ -46,7 +46,7 @@ export default function MerchantStories({ currentLang = 'en' }: MerchantStoriesP
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-14 gap-6">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 text-xs font-bold uppercase tracking-wider mb-3">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800 text-xs font-bold uppercase tracking-wider mb-3">
               {isEn ? 'Proven Merchant Results' : 'Hasil Peniaga Terbukti'}
             </div>
             <h2 className="text-2xl sm:text-4xl font-sans font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
@@ -117,7 +117,7 @@ export default function MerchantStories({ currentLang = 'en' }: MerchantStoriesP
                     {st.role}
                   </div>
                 </div>
-                <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 dark:text-emerald-400">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                   {isEn ? 'Verified Foodpanda Merchant' : 'Peniaga Foodpanda Sah'}
                 </span>

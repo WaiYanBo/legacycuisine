@@ -45,8 +45,8 @@ export default function FoodpandaServicesGrid({ currentLang = 'en' }: FoodpandaS
       code: 'FP-03',
       title: isEn ? 'Terminal Dispatch & Kitchen Staff Training' : 'Penyerahan Terminal & Latihan Kakitangan',
       sla: isEn ? 'On-Site Deployment' : 'Pemasangan Di Premis',
-      badgeColor: 'bg-red-50 text-red-600 border-red-200 dark:bg-red-950/60 dark:text-red-400 dark:border-red-800',
-      tagColor: 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/50',
+      badgeColor: 'bg-red-50 text-red-700 border-red-200 dark:bg-red-950/60 dark:text-red-400 dark:border-red-800',
+      tagColor: 'text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-950/50',
       summary: isEn
         ? 'Physical dispatch and configuration of official Foodpanda order-receiving tablet hardware at merchant premises. Live simulated order testing and operational staff training.'
         : 'Penghantaran dan konfigurasi peranti tablet penerimaan pesanan rasmi Foodpanda di premis peniaga. Ujian simulasi pesanan langsung dan latihan staf dapur.',
@@ -80,7 +80,7 @@ export default function FoodpandaServicesGrid({ currentLang = 'en' }: FoodpandaS
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-14 gap-6">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 text-xs font-bold uppercase tracking-wider mb-3">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800 text-xs font-bold uppercase tracking-wider mb-3">
               {isEn ? 'Our Scope of Work' : 'Skop Perkhidmatan Kami'}
             </div>
             <h2 className="text-2xl sm:text-4xl font-sans font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
@@ -97,7 +97,7 @@ export default function FoodpandaServicesGrid({ currentLang = 'en' }: FoodpandaS
 
           <Link
             href="/services"
-            className="text-xs font-bold uppercase tracking-wider text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 inline-flex items-center gap-1.5 shrink-0"
+            className="text-xs font-bold uppercase tracking-wider text-red-700 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 inline-flex items-center gap-1.5 shrink-0"
           >
             <span>{isEn ? 'View all specifications' : 'Lihat semua spesifikasi'}</span>
             <span>&rarr;</span>

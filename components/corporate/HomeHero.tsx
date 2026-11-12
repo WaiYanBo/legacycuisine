@@ -16,25 +16,25 @@ export default function HomeHero({ currentLang = 'en' }: HomeHeroProps) {
       value: '1,250+',
       label: isEn ? 'Active Outlets' : 'Cawangan Aktif',
       detail: isEn ? 'Restaurants onboarded' : 'Restoran diaktifkan',
-      color: 'text-red-600 dark:text-red-500',
+      color: 'text-red-700 dark:text-red-400',
     },
     {
       value: '< 48h',
       label: isEn ? 'Activation SLA' : 'SLA Pengaktifan',
       detail: isEn ? 'Fast-track direct approval' : 'Kelulusan saluran pantas',
-      color: 'text-emerald-500',
+      color: 'text-emerald-700 dark:text-emerald-400',
     },
     {
       value: '100%',
       label: isEn ? 'Appointed Mandate' : 'Mandat Sah',
       detail: isEn ? 'Authorised Foodpanda partner' : 'Rakan rasmi Foodpanda',
-      color: 'text-amber-500',
+      color: 'text-amber-700 dark:text-amber-400',
     },
     {
       value: 'RM 48M+',
       label: isEn ? 'Audited Payouts' : 'Bayaran Diaudit',
       detail: isEn ? 'Zero revenue leakage' : 'Sifar ketirisan hasil',
-      color: 'text-blue-500',
+      color: 'text-blue-700 dark:text-blue-400',
     },
   ];
 
@@ -52,7 +52,7 @@ export default function HomeHero({ currentLang = 'en' }: HomeHeroProps) {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-600 opacity-75" />
             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-600" />
           </span>
-          <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-red-600 dark:text-red-400">
+          <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-red-700 dark:text-red-400">
             {isEn ? 'Authorised Foodpanda Malaysia Intermediary' : 'Perantara Rasmi Foodpanda Malaysia'}
           </span>
           <span className="text-slate-300 dark:text-slate-700 hidden sm:inline">|</span>
@@ -214,7 +214,7 @@ export default function HomeHero({ currentLang = 'en' }: HomeHeroProps) {
 
             {/* Floating verification chip - safely contained on mobile */}
             <div className="absolute -bottom-4 left-2 sm:-left-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-xl rounded-xl p-2.5 sm:p-3 flex items-center gap-2.5 sm:gap-3 max-w-[90%] sm:max-w-none">
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-extrabold text-base sm:text-lg shrink-0">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 flex items-center justify-center font-extrabold text-base sm:text-lg shrink-0">
                 48h
               </div>
               <div className="min-w-0">

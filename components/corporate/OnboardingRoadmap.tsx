@@ -33,7 +33,7 @@ export default function OnboardingRoadmap({ currentLang = 'en' }: OnboardingRoad
       num: '03',
       title: isEn ? 'Terminal Delivery' : 'Penyerahan Tablet',
       time: isEn ? 'Days 4 - 5' : 'Hari 4 - 5',
-      badge: 'bg-red-50 text-red-600 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-800',
+      badge: 'bg-red-50 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-800',
       desc: isEn
         ? 'On-site terminal delivery, SIM/Wi-Fi setup, kitchen crew drill, and official store activation on the Foodpanda consumer app.'
         : 'Penghantaran peranti di premis, ujian sambungan, latihan staf dapur, dan pengaktifan rasmi restoran pada aplikasi Foodpanda.',
@@ -55,7 +55,7 @@ export default function OnboardingRoadmap({ currentLang = 'en' }: OnboardingRoad
         
         {/* Section Header */}
         <div className="max-w-3xl mb-14">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 text-xs font-bold uppercase tracking-wider mb-3">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800 text-xs font-bold uppercase tracking-wider mb-3">
             {isEn ? 'Fast & Transparent Process' : 'Proses Pantas & Telus'}
           </div>
           <h2 className="text-2xl sm:text-4xl font-sans font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
@@ -94,7 +94,7 @@ export default function OnboardingRoadmap({ currentLang = 'en' }: OnboardingRoad
                 </p>
               </div>
 
-              <div className="pt-4 mt-5 border-t border-slate-200/60 dark:border-slate-800 flex items-center gap-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+              <div className="pt-4 mt-5 border-t border-slate-200/60 dark:border-slate-800 flex items-center gap-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
                 <span className="w-4 h-4 rounded-full bg-emerald-100 dark:bg-emerald-950 flex items-center justify-center text-[10px] font-bold">✓</span>
                 <span>{isEn ? 'Intermediary Managed' : 'Diuruskan Perantara'}</span>
               </div>

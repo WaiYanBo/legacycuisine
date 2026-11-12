@@ -30,7 +30,7 @@ export default function AboutPage() {
     },
     {
       code: 'DIV-03',
-      badgeColor: 'bg-red-50 text-red-600 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-800',
+      badgeColor: 'bg-red-50 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-800',
       name: isEn ? 'Terminal Hardware Dispatch & On-Site Kitchen SOP' : 'Penyerahan Terminal & SOP Dapur Di Lokasi',
       desc: isEn
         ? 'Direct logistics deployment of official Foodpanda order-receiving hardware to merchant premises, conducting live staff drills to prevent fulfillment cancellations.'
@@ -99,7 +99,7 @@ export default function AboutPage() {
             </div>
 
             <div className="max-w-3xl">
-              <span className="inline-block px-3.5 py-1 rounded-full bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-red-400 text-xs font-bold uppercase tracking-wider border border-red-200 dark:border-red-800 mb-4">
+              <span className="inline-block px-3.5 py-1 rounded-full bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-400 text-xs font-bold uppercase tracking-wider border border-red-200 dark:border-red-800 mb-4">
                 {isEn ? 'Our Corporate Identity & Mandate' : 'Identiti Korporat & Mandat Kami'}
               </span>
               <h1 className="text-3xl sm:text-5xl font-sans font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
@@ -190,7 +190,7 @@ export default function AboutPage() {
         <section className="py-20 sm:py-28 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 transition-colors">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-3xl mb-14">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 text-xs font-bold uppercase tracking-wider mb-3">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800 text-xs font-bold uppercase tracking-wider mb-3">
                 {isEn ? 'Departmental Structure' : 'Struktur Jabatan'}
               </div>
               <h2 className="text-2xl sm:text-4xl font-sans font-extrabold text-slate-900 dark:text-white tracking-tight">
@@ -223,7 +223,7 @@ export default function AboutPage() {
         <section className="py-20 sm:py-28 border-b border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-[#070a12] transition-colors">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-3xl mb-14">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 text-xs font-bold uppercase tracking-wider mb-3">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800 text-xs font-bold uppercase tracking-wider mb-3">
                 {isEn ? 'Our Journey' : 'Perjalanan Kami'}
               </div>
               <h2 className="text-2xl sm:text-4xl font-sans font-extrabold text-slate-900 dark:text-white tracking-tight">
